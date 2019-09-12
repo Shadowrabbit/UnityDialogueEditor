@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3195d780b14f294428286c2e52e9d0b2, type: 3}
+  m_Name: MerchantDialogue
+  m_EditorClassIdentifier: 
+  Root:
+    uiX: 445.33508
+    uiY: 51.118286
+    ActionType: 0
+    ActionValue: Greetings, adventurer
+    Arg: 
+    Options:
+    - uiX: 285.87244
+      uiY: 162.62549
+      Value: What do you do?
+      Action:
+        uiX: 157.38217
+        uiY: 235.95117
+        ActionType: 0
+        ActionValue: I run a mighty weapons store.
+        Arg: 
+        Options:
+        - uiX: 38
+          uiY: 343
+          Value: Let me see your store
+          Action:
+            uiX: 35
+            uiY: 414
+            ActionType: 1
+            ActionValue: OPEN_SHOP
+            Arg: 
+            Options: []
+        - uiX: 282
+          uiY: 338
+          Value: Goodbye
+          Action:
+            uiX: 284
+            uiY: 413
+            ActionType: 0
+            ActionValue: No weapons for you, then.
+            Arg: 
+            Options: []
+    - uiX: 560.84863
+      uiY: 161.65079
+      Value: Goodbye
+      Action:
+        uiX: 578.23157
+        uiY: 233.68933
+        ActionType: 0
+        ActionValue: Farewell.
+        Arg: 
+        Options: []
