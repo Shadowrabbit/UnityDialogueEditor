@@ -10,12 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3195d780b14f294428286c2e52e9d0b2, type: 3}
-  m_Name: QueenDialogue
+  m_Name: NPCDialogue
   m_EditorClassIdentifier: 
   Root:
-    uiX: 339
-    uiY: 49
+    uiX: 220
+    uiY: 0
     ActionType: 0
-    ActionValue: Hello brave adventurer, how are you doing on this fine morning? dsfjkhdsfjkhdsfjkhsdfjkhds
-    Arg: 
+    ActionValue: 
     Options: []

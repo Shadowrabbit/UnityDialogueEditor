@@ -29,10 +29,17 @@ namespace DialogueEditor
     [System.Serializable]
     public abstract class NPCNode
     {
+        public NPCNode(NPCNode par)
+        {
+            parent = par;
+        }
+
         [SerializeField]
         public float uiX;
         [SerializeField]
         public float uiY;
+        [SerializeField]
+        public NPCNode parent;
 
         internal abstract void AddChildrenToList(ref List<NPCNode> nodes);
     }
@@ -40,13 +47,19 @@ namespace DialogueEditor
     [System.Serializable]
     public class NPCActionNode : NPCNode
     {
+        public NPCActionNode(NPCNode par) : base(par)
+        {
+
+        }
+
         /// <summary>
         /// Determines whether this node will result in the NPC saying 
         /// some dialogue or performing a given action (e.g. opening a shop, 
-        /// accepting a quest). 
+        /// accepting a quest). This option has zero impact on anything, it is 
+        /// merely for your own organisation. 
         /// </summary>
         [SerializeField]
-        public eNodeType ActionType;
+        public eNodeType ActionType = eNodeType.Dialogue;
 
         /// <summary>
         /// If Dialogue: The speech value of the node
@@ -57,13 +70,6 @@ namespace DialogueEditor
         /// </summary>
         [SerializeField]
         public string ActionValue;
-
-        /// <summary>
-        /// An optional argument for an Action
-        /// E.g. (QUEST_DELIVER_MEDICINE)
-        /// </summary>
-        [SerializeField]
-        public string Arg;
 
         /// <summary>
         /// A list of possible options this Node has
@@ -90,28 +96,33 @@ namespace DialogueEditor
                 }
             }
         }
+
+        public bool IsEffectivelyNull()
+        {
+            return (Options == null && ActionValue == null && uiX == 0 && uiY == 0 && parent == null);
+        }
     }
 
     [System.Serializable]
     public class NPCOptionNode : NPCNode
     {
+        public NPCOptionNode(NPCNode par) : base(par)
+        {
+            Action = null;
+        }
+
         /// <summary>
         /// The text value of this option. 
         /// E.g. (Accept Quest)
         /// </summary>
         [SerializeField]
-        public string Value;
+        public string Value = "";
 
         /// <summary>
         /// The NPCDialogueNode this Option leads to
         /// </summary>
         [SerializeField]
-        public NPCActionNode Action;
-
-        public void SetResult(NPCActionNode node)
-        {
-            Action = node;
-        }
+        public NPCActionNode Action = null;
 
         internal override void AddChildrenToList(ref List<NPCNode> nodes)
         {

@@ -7,12 +7,24 @@ namespace DialogueEditor
 {
     public class DialogueEditorWindow : EditorWindow
     {
+
+        public enum eInputState
+        {
+            Regular             =   0,
+            PlacingOption,
+            ConnectingOption,
+            PlacingAction,
+            ConnectingAction,
+        }
+
         // Consts
         public const float TOOLBAR_HEIGHT = 17;
         public const float PANEL_WIDTH = 200;
 
         // Static
         public static bool NodeClickedOnThisUpdate { get; set; }
+
+        private static UINode CurrentlySelectedNode { get; set; }
 
         // The NPCDialogue scriptable object that is currently being viewed/edited
         private NPCDialogue Dialogue;
@@ -34,7 +46,11 @@ namespace DialogueEditor
         // Dragging information
         private bool clickInBox;
         private Vector2 offset;
-        private Vector2 dragDelta;   
+        private Vector2 dragDelta;
+
+        // Input stuff
+        private eInputState m_inputState;
+        private UINode m_currentPlacingNode = null;
 
         // Cleanup
         bool placeholder_toggle_bool;
@@ -80,7 +96,7 @@ namespace DialogueEditor
 
             if (Dialogue.Root == null)
             {
-                Dialogue.Root = new NPCActionNode();
+                Dialogue.Root = new NPCActionNode(null);
                 Dialogue.Root.uiX = (Screen.width / 2) - (UIActionNode.Width / 2);
                 Dialogue.Root.uiY = 0;
             }
@@ -103,7 +119,7 @@ namespace DialogueEditor
             {
                 if (nodes[i].Info == Dialogue.Root)
                 {
-                    UINode.SelectedNode = nodes[i];
+                    CurrentlySelectedNode = nodes[i];
                 }
             }
 
@@ -123,8 +139,10 @@ namespace DialogueEditor
                 nodes = new List<UINode>();
 
             InitGUIStyles();
-            UINode.OnNodeRemoved += RemoveNode;
-            UINode.OnOptionAdded += AddOption;
+
+            UINode.OnUINodeSelected += SelectNode;
+            UIActionNode.OnCreateOption += CreateNewOption;
+            UIOptionNode.OnCreateAction += CreateNewAction;
         }
 
         private void InitGUIStyles()
@@ -148,8 +166,9 @@ namespace DialogueEditor
 
         private void OnDisable()
         {
-            UINode.OnNodeRemoved -= RemoveNode;
-            UINode.OnOptionAdded -= AddOption;
+            UINode.OnUINodeSelected -= SelectNode;
+            UIActionNode.OnCreateOption -= CreateNewOption;
+            UIOptionNode.OnCreateAction -= CreateNewAction;
         }
 
 
@@ -187,7 +206,15 @@ namespace DialogueEditor
             {
                 Dialogue = null;
                 Repaint();
-            }          
+            }
+
+            switch (m_inputState)
+            {
+                case eInputState.PlacingOption:
+                case eInputState.PlacingAction:
+                    Repaint();
+                    break;
+            }
         }
 
 
@@ -207,8 +234,7 @@ namespace DialogueEditor
             }
 
             // Process interactions
-            ProcessNodeEvents(Event.current);
-            ProcessEvents(Event.current);
+            ProcessInput();
 
             // Draw
             DrawGrid(20, 0.2f, Color.gray);
@@ -228,7 +254,7 @@ namespace DialogueEditor
             GUILayout.BeginHorizontal(EditorStyles.toolbar);
             if (GUILayout.Button("Reset view", EditorStyles.toolbarButton))
             {
-                RepositionNodes();
+                Recenter();
             }
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
@@ -285,14 +311,14 @@ namespace DialogueEditor
             GUILayout.BeginArea(panelRect, panelStyle);
 
             // Draw info of selected node
-            if (UINode.SelectedNode != null)
+            if (CurrentlySelectedNode != null)
             {
                 // Clear focus upon switching focus to another node.
-                if (UINode.SelectedNode != m_cachedSelectedNode)
+                if (CurrentlySelectedNode != m_cachedSelectedNode)
                 {
                     GUI.FocusControl("");
                 }
-                m_cachedSelectedNode = UINode.SelectedNode;
+                m_cachedSelectedNode = CurrentlySelectedNode;
 
                 // GUIStyle for box title
                 panelTitleStyle = new GUIStyle();
@@ -310,9 +336,9 @@ namespace DialogueEditor
                 int bigGap = 30;
 
                 // Action node info
-                if (UINode.SelectedNode is UIActionNode)
+                if (CurrentlySelectedNode is UIActionNode)
                 {
-                    NPCActionNode node = (UINode.SelectedNode.Info as NPCActionNode);
+                    NPCActionNode node = (CurrentlySelectedNode.Info as NPCActionNode);
 
                     // Title
                     EditorGUI.LabelField(propertyRect, "Action Node", panelTitleStyle);
@@ -336,9 +362,9 @@ namespace DialogueEditor
                 }
 
                 // Option node info
-                else if (UINode.SelectedNode is UIOptionNode)
+                else if (CurrentlySelectedNode is UIOptionNode)
                 {
-                    NPCOptionNode node = UINode.SelectedNode.Info as NPCOptionNode;
+                    NPCOptionNode node = CurrentlySelectedNode.Info as NPCOptionNode;
 
                     // Title
                     EditorGUI.LabelField(propertyRect, "Option Node", panelTitleStyle);
@@ -377,8 +403,55 @@ namespace DialogueEditor
 
 
         //--------------------------------------
-        // Input/Events
+        // Input
         //--------------------------------------
+
+        private void ProcessInput()
+        {
+            Event e = Event.current;
+
+            switch (m_inputState)
+            {
+                case eInputState.Regular:
+                    ProcessNodeEvents(e);
+                    ProcessEvents(e);
+                    break;
+
+                case eInputState.PlacingOption:
+                    m_currentPlacingNode.SetPosition(e.mousePosition);
+
+                    // Left click
+                    if (e.type == EventType.MouseDown && e.button == 0)
+                    {
+                        // Place the option
+                        SelectNode(m_currentPlacingNode, true);
+                        m_inputState = eInputState.Regular;
+                        Repaint();
+                    }
+                    break;
+
+                case eInputState.ConnectingOption:
+                    break;
+
+                case eInputState.PlacingAction:
+                    m_currentPlacingNode.SetPosition(e.mousePosition);
+
+                    // Left click
+                    if (e.type == EventType.MouseDown && e.button == 0)
+                    {
+                        // Place the option
+                        SelectNode(m_currentPlacingNode, true);
+                        m_inputState = eInputState.Regular;
+                        Repaint();
+                    }
+                    break;
+
+                case eInputState.ConnectingAction:
+                    break;
+            }
+
+
+        }
 
         private void ProcessEvents(Event e)
         {
@@ -398,7 +471,7 @@ namespace DialogueEditor
                             clickInBox = false;
                             if (!DialogueEditorWindow.NodeClickedOnThisUpdate)
                             {
-                                UINode.SelectedNode = null;
+                                UnselectNode();
                             }
                         }
                     }
@@ -428,6 +501,61 @@ namespace DialogueEditor
             }
         }
 
+
+
+
+        //--------------------------------------
+        // Event listeners
+        //--------------------------------------
+
+        public void CreateNewOption(UIActionNode action)
+        {
+            // Create new option, the argument action is the options parent
+            NPCOptionNode newOption = new NPCOptionNode(action.NodeInfo.parent);
+
+            // Add the option to the actions list
+            action.NodeInfo.AddOption(newOption);
+
+            // The option doesn't point to an action yet
+            newOption.Action = null;
+
+            // Create a new UI object to represent the new option
+            UIOptionNode ui = new UIOptionNode(newOption, Vector2.zero, defaultNodeStyle, selectedNodeStyle);
+            nodes.Add(ui);
+
+            // Set the input state appropriately
+            m_inputState = eInputState.PlacingOption;
+            m_currentPlacingNode = ui;
+        }
+
+
+
+        public void CreateNewAction(UIOptionNode option)
+        {
+            // Create new action, the argument option is the actions parent
+            NPCActionNode newAction = new NPCActionNode(option.NodeInfo.parent);
+
+            // Set this new action as the options child
+            option.NodeInfo.Action = newAction;
+
+            // This new action doesn't have any children yet
+            newAction.Options = null;
+
+            // Create a new UI object to represent the new action
+            UIActionNode ui = new UIActionNode(newAction, Vector2.zero, defaultNodeStyle, selectedNodeStyle);
+            nodes.Add(ui);
+
+            // Set the input state appropriately
+            m_inputState = eInputState.PlacingAction;
+            m_currentPlacingNode = ui;
+        }
+
+
+
+
+
+
+
         private void RemoveNode(UINode node)
         {
             if (node.Info == Dialogue.Root)
@@ -435,22 +563,19 @@ namespace DialogueEditor
                 Debug.Log("You cannot delete the root node");
                 return;
             }
+
+            node.DeleteSelf();
             nodes.Remove(node);
         }
 
-        private void AddOption(UIActionNode node)
-        {
-            NPCOptionNode option = new NPCOptionNode();
-            NPCActionNode resultingAction = new NPCActionNode();
 
-            // node -> option -> action
-            (node.Info as NPCActionNode).AddOption(option);
-            option.SetResult(resultingAction);
 
-            // Create UI nodes
-            nodes.Add(new UIOptionNode(option, Vector2.zero, defaultNodeStyle, selectedNodeStyle));
-            nodes.Add(new UIActionNode(resultingAction, Vector2.one * 5, defaultNodeStyle, selectedNodeStyle));
-        }
+
+
+
+        //--------------------------------------
+        // MISC
+        //--------------------------------------
 
         private void OnDrag(Vector2 delta)
         {
@@ -467,6 +592,38 @@ namespace DialogueEditor
             GUI.changed = true;
         }
 
+
+
+
+
+
+        //--------------------------------------
+        // Util
+        //--------------------------------------
+
+        private void SelectNode(UINode node, bool selected)
+        {
+            if (selected)
+            {
+                if (CurrentlySelectedNode != null)
+                    CurrentlySelectedNode.SetSelected(false);
+
+                CurrentlySelectedNode = node;
+                CurrentlySelectedNode.SetSelected(true);
+            }
+            else
+            {
+                node.SetSelected(false);
+                CurrentlySelectedNode = null;
+            }
+        }
+
+        private void UnselectNode()
+        {
+            if (CurrentlySelectedNode != null)
+                CurrentlySelectedNode.SetSelected(false);
+        }
+
         private bool IsANodeSelected()
         {
             if (nodes != null)
@@ -479,17 +636,10 @@ namespace DialogueEditor
             return false;
         }
 
-
-
-
-        //--------------------------------------
-        // Util
-        //--------------------------------------
-
-        public void RepositionNodes()
+        public void Recenter()
         {
             // Calc delta to move head to (middle, 0) and then apply this to all nodes
-            Vector2 target = new Vector2((position.width / 2) - (UIActionNode.Width / 2), TOOLBAR_HEIGHT);
+            Vector2 target = new Vector2((position.width / 2) - (UIActionNode.Width / 2) - (PANEL_WIDTH / 2), TOOLBAR_HEIGHT);
             Vector2 delta = target - new Vector2(Dialogue.Root.uiX, Dialogue.Root.uiY);
             for (int i = 0; i < nodes.Count; i++)
             {
