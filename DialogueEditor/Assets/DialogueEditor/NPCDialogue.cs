@@ -4,133 +4,117 @@ using UnityEngine;
 
 namespace DialogueEditor
 {
+
     public enum eNodeType
     {
         Dialogue,
         Action
     }
 
-    [CreateAssetMenu(fileName = "NPCDialogue", menuName = "NPCDialogue/Dialogue")]
-    [System.Serializable]
-    public class NPCDialogue : ScriptableObject
-    {
-        [SerializeField]
-        public NPCActionNode Root;
+    //[CreateAssetMenu(fileName = "NPCDialogue", menuName = "NPCDialogue/Dialogue")]
+    //[System.Serializable]
+    //public class OLDNPCDialogue : ScriptableObject
+    //{
+    //    public OLDNPCActionNode Root;
 
-        public List<NPCNode> GetAllNodesInTree()
-        {
-            List<NPCNode> nodes = new List<NPCNode>();
-            nodes.Add(Root);
-            Root.AddChildrenToList(ref nodes);
-            return nodes;
-        }
-    }
+    //    public string json;
 
-    [System.Serializable]
-    public abstract class NPCNode
-    {
-        public NPCNode(NPCNode par)
-        {
-            parent = par;
-        }
+    //    public void Jsonify()
+    //    {
 
-        [SerializeField]
-        public float uiX;
-        [SerializeField]
-        public float uiY;
-        [SerializeField]
-        public NPCNode parent;
+    //    }
 
-        internal abstract void AddChildrenToList(ref List<NPCNode> nodes);
-    }
+    //    public List<OLDNPCNode> GetAllNodesInTree()
+    //    {
+    //        List<OLDNPCNode> nodes = new List<OLDNPCNode>();
+    //        nodes.Add(Root);
+    //        Root.AddChildrenToList(ref nodes);
+    //        return nodes;
+    //    }
+    //}
 
-    [System.Serializable]
-    public class NPCActionNode : NPCNode
-    {
-        public NPCActionNode(NPCNode par) : base(par)
-        {
+    //[System.Serializable]
+    //public abstract class OLDNPCNode
+    //{
+    //    public float uiX;
+    //    public float uiY;
 
-        }
+    //    internal abstract void AddChildrenToList(ref List<OLDNPCNode> nodes);
+    //}
 
-        /// <summary>
-        /// Determines whether this node will result in the NPC saying 
-        /// some dialogue or performing a given action (e.g. opening a shop, 
-        /// accepting a quest). This option has zero impact on anything, it is 
-        /// merely for your own organisation. 
-        /// </summary>
-        [SerializeField]
-        public eNodeType ActionType = eNodeType.Dialogue;
+    //[System.Serializable]
+    //public class OLDNPCActionNode : OLDNPCNode
+    //{
+    //    /// <summary>
+    //    /// Determines whether this node will result in the NPC saying 
+    //    /// some dialogue or performing a given action (e.g. opening a shop, 
+    //    /// accepting a quest). This option has zero impact on anything, it is 
+    //    /// merely for your own organisation. 
+    //    /// </summary>
+    //    public eNodeType ActionType = eNodeType.Dialogue;
 
-        /// <summary>
-        /// If Dialogue: The speech value of the node
-        /// E.g. (Greetings Traveler, how are you today?)
-        /// 
-        /// If Action: The value to send to the NPC
-        /// E.g. (ACCEPT_QUEST)
-        /// </summary>
-        [SerializeField]
-        public string ActionValue;
+    //    /// <summary>
+    //    /// If Dialogue: The speech value of the node
+    //    /// E.g. (Greetings Traveler, how are you today?)
+    //    /// 
+    //    /// If Action: The value to send to the NPC
+    //    /// E.g. (ACCEPT_QUEST)
+    //    /// </summary>
+    //    public string ActionValue;
 
-        /// <summary>
-        /// A list of possible options this Node has
-        /// </summary>
-        [SerializeField]
-        public List<NPCOptionNode> Options;
+    //    /// <summary>
+    //    /// A list of possible options this Node has
+    //    /// </summary>
+    //    public List<OLDNPCOptionNode> Options;
 
-        public void AddOption(NPCOptionNode node)
-        {
-            if (Options == null) { Options = new List<NPCOptionNode>(); }
-            Options.Add(node);
-        }
+    //    public void AddOption(OLDNPCOptionNode node)
+    //    {
+    //        if (Options == null) { Options = new List<OLDNPCOptionNode>(); }
+    //        Options.Add(node);
+    //    }
 
-        internal override void AddChildrenToList(ref List<NPCNode> nodes)
-        {
-            if (Options == null) { Options = new List<NPCOptionNode>(); }
 
-            if (Options.Count > 0)
-            {
-                for (int i = 0; i < Options.Count; i++)
-                {
-                    nodes.Add(Options[i]);
-                    Options[i].AddChildrenToList(ref nodes);
-                }
-            }
-        }
+    //    internal override void AddChildrenToList(ref List<OLDNPCNode> nodes)
+    //    {
+    //        if (Options == null) { Options = new List<OLDNPCOptionNode>(); }
 
-        public bool IsEffectivelyNull()
-        {
-            return (Options == null && ActionValue == null && uiX == 0 && uiY == 0 && parent == null);
-        }
-    }
+    //        if (Options.Count > 0)
+    //        {
+    //            for (int i = 0; i < Options.Count; i++)
+    //            {
+    //                nodes.Add(Options[i]);
+    //                Options[i].AddChildrenToList(ref nodes);
+    //            }
+    //        }
+    //    }
 
-    [System.Serializable]
-    public class NPCOptionNode : NPCNode
-    {
-        public NPCOptionNode(NPCNode par) : base(par)
-        {
-            Action = null;
-        }
+    //    public bool IsEffectivelyNull()
+    //    {
+    //        return (Options == null && ActionValue == null && uiX == 0 && uiY == 0);
+    //    }
+    //}
 
-        /// <summary>
-        /// The text value of this option. 
-        /// E.g. (Accept Quest)
-        /// </summary>
-        [SerializeField]
-        public string Value = "";
+    //[System.Serializable]
+    //public class OLDNPCOptionNode : OLDNPCNode
+    //{
+    //    /// <summary>
+    //    /// The text value of this option. 
+    //    /// E.g. (Accept Quest)
+    //    /// </summary>
+    //    public string Value = "";
 
-        /// <summary>
-        /// The NPCDialogueNode this Option leads to
-        /// </summary>
-        [SerializeField]
-        public NPCActionNode Action = null;
+    //    /// <summary>
+    //    /// The NPCDialogueNode this Option leads to
+    //    /// </summary>
+    //    public OLDNPCActionNode Action = null;
 
-        internal override void AddChildrenToList(ref List<NPCNode> nodes)
-        {
-            if (Action != null)
-            {
-                nodes.Add(Action);
-                Action.AddChildrenToList(ref nodes);
-            }
-        }
-    }
+    //    internal override void AddChildrenToList(ref List<OLDNPCNode> nodes)
+    //    {
+    //        if (Action != null)
+    //        {
+    //            nodes.Add(Action);
+    //            Action.AddChildrenToList(ref nodes);
+    //        }
+    //    }
+    //}
 }

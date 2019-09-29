@@ -27,10 +27,11 @@ namespace DialogueEditor
         private static UINode CurrentlySelectedNode { get; set; }
 
         // The NPCDialogue scriptable object that is currently being viewed/edited
-        private NPCDialogue Dialogue;
+        private NPCConversation CurrentAsset;
+        private ConversationAction ConversationRoot;
 
         // List of all nodes and connections currently being drawn in editor window
-        private List<UINode> nodes;
+        private List<UINode> uiNodes;
 
         // Node GUIStyles
         private GUIStyle defaultNodeStyle;
@@ -71,13 +72,13 @@ namespace DialogueEditor
         [UnityEditor.Callbacks.OnOpenAsset(1)]
         public static bool OpenDialogue(int assetInstanceID, int line)
         {
-            NPCDialogue dialogue = EditorUtility.InstanceIDToObject(assetInstanceID) as NPCDialogue;
+            NPCConversation conversation = EditorUtility.InstanceIDToObject(assetInstanceID) as NPCConversation;
 
-            if (dialogue != null)
+            if (conversation != null)
             {
                 DialogueEditorWindow window = ShowWindow();
-                window.Dialogue = dialogue;
-                window.OnDialogueChanged();
+                window.CurrentAsset = conversation;
+                window.OnNewAssetSelected();
                 return true;
             }
             return false;
@@ -90,36 +91,44 @@ namespace DialogueEditor
         // New NPCDialogue asset selected
         //--------------------------------------
 
-        public void OnDialogueChanged()
+        public void OnNewAssetSelected()
         {
-            nodes.Clear();
+            uiNodes.Clear();
 
-            if (Dialogue.Root == null)
+            // Deseralize the asset to get the conversation root
+            ConversationRoot = CurrentAsset.GetDeserialized();
+
+            // If it's null, create a root
+            if (ConversationRoot == null)
             {
-                Dialogue.Root = new NPCActionNode(null);
-                Dialogue.Root.uiX = (Screen.width / 2) - (UIActionNode.Width / 2);
-                Dialogue.Root.uiY = 0;
+                ConversationRoot = new ConversationAction();
+                ConversationRoot.EditorInfo.xPos = (Screen.width / 2) - (UIActionNode.Width / 2);
+                ConversationRoot.EditorInfo.yPos = 0;
             }
 
-            List<NPCNode> npcNodes = Dialogue.GetAllNodesInTree();
+            // Get a list of every node in the conversation
+            List<ConversationNode> allNodes = DialogueEditorUtil.GetAllNodes(ConversationRoot);
 
-            foreach (NPCNode node in npcNodes)
+            // For every node, create a corresponding UI Node to represent it, and add it to the list
+            for (int i = 0; i < allNodes.Count; i++)
             {
-                if (node is NPCActionNode)
-                {
-                    nodes.Add(new UIActionNode(node, new Vector2(node.uiX, node.uiY), defaultNodeStyle, selectedNodeStyle));
-                }
-                else if (node is NPCOptionNode)
-                {
-                    nodes.Add(new UIOptionNode(node, new Vector2(node.uiX, node.uiY), defaultNodeStyle, selectedNodeStyle));
-                }
-            }
+                ConversationNode node = allNodes[i];
 
-            for (int i = 0; i < nodes.Count; i++)
-            {
-                if (nodes[i].Info == Dialogue.Root)
+                if (node is ConversationAction)
                 {
-                    CurrentlySelectedNode = nodes[i];
+                    UIActionNode uiNode = new UIActionNode(node,
+                        new Vector2(node.EditorInfo.xPos, node.EditorInfo.yPos),
+                        defaultNodeStyle, selectedNodeStyle);
+
+                    uiNodes.Add(uiNode);
+                }
+                else
+                {
+                    UIOptionNode uiNode = new UIOptionNode(node,
+                        new Vector2(node.EditorInfo.xPos, node.EditorInfo.yPos),
+                        defaultNodeStyle, selectedNodeStyle);
+
+                    uiNodes.Add(uiNode);
                 }
             }
 
@@ -135,8 +144,8 @@ namespace DialogueEditor
 
         private void OnEnable()
         {
-            if (nodes == null)
-                nodes = new List<UINode>();
+            if (uiNodes == null)
+                uiNodes = new List<UINode>();
 
             InitGUIStyles();
 
@@ -178,33 +187,33 @@ namespace DialogueEditor
         // Update
         //--------------------------------------
 
-        ScriptableObject _currentlySelectedAsset;
-        NPCDialogue _npcDialogue;
+        NPCConversation _cachedSelectedAsset;
+        ScriptableObject _newlySelectedAsset;    
 
         private void Update()
         {
-            _currentlySelectedAsset = EditorUtility.InstanceIDToObject(Selection.activeInstanceID) as ScriptableObject;
-            if (_currentlySelectedAsset)
+            _newlySelectedAsset = EditorUtility.InstanceIDToObject(Selection.activeInstanceID) as ScriptableObject;
+            if (_newlySelectedAsset != null)
             {
-                if (_currentlySelectedAsset is NPCDialogue)
+                if (_newlySelectedAsset is NPCConversation)
                 {
-                    _npcDialogue = _currentlySelectedAsset as NPCDialogue;
+                    _cachedSelectedAsset = _newlySelectedAsset as NPCConversation;
 
-                    if (_npcDialogue != Dialogue)
+                    if (_cachedSelectedAsset != CurrentAsset)
                     {
-                        Dialogue = _npcDialogue;
-                        OnDialogueChanged();
+                        CurrentAsset = _cachedSelectedAsset;
+                        OnNewAssetSelected();
                     }                      
                 }
                 else
                 {
-                    Dialogue = null;
+                    CurrentAsset = null;
                     Repaint();
                 }
             }
             else
             {
-                Dialogue = null;
+                CurrentAsset = null;
                 Repaint();
             }
 
@@ -226,7 +235,7 @@ namespace DialogueEditor
 
         private void OnGUI()
         {
-            if (Dialogue == null)
+            if (CurrentAsset == null)
             {
                 DrawTitleBar();
                 Repaint();
@@ -257,25 +266,29 @@ namespace DialogueEditor
                 Recenter();
             }
             GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Save", EditorStyles.toolbarButton))
+            {
+                Save();
+            }
             GUILayout.EndHorizontal();
         }
 
         private void DrawNodes()
         {
-            if (nodes != null)
+            if (uiNodes != null)
             {
-                for (int i = 0; i < nodes.Count; i++)
+                for (int i = 0; i < uiNodes.Count; i++)
                 {
-                    nodes[i].Draw();
+                    uiNodes[i].Draw();
                 }
             }
         }
 
         private void DrawConnections()
         {
-            for (int i = 0; i < nodes.Count; i++)
+            for (int i = 0; i < uiNodes.Count; i++)
             {
-                nodes[i].DrawConnection();
+                uiNodes[i].DrawConnection();
             }
         }
 
@@ -338,25 +351,16 @@ namespace DialogueEditor
                 // Action node info
                 if (CurrentlySelectedNode is UIActionNode)
                 {
-                    NPCActionNode node = (CurrentlySelectedNode.Info as NPCActionNode);
+                    ConversationAction node = (CurrentlySelectedNode.Info as ConversationAction);
 
                     // Title
                     EditorGUI.LabelField(propertyRect, "Action Node", panelTitleStyle);
                     propertyRect.y += bigGap;
 
-                    // Action Type
-                    EditorGUI.LabelField(propertyRect, "Action Type", panelPropertyStyle);
-                    propertyRect.y += smallGap;
-                    node.ActionType = (eNodeType)EditorGUI.EnumPopup(propertyRect, node.ActionType);
-                    propertyRect.y += bigGap;
-
-                    // Action Value
-                    string valueTitle = (node.ActionType == eNodeType.Dialogue) ? "Dialogue" : "Action";
-                    EditorGUI.LabelField(propertyRect, valueTitle, panelPropertyStyle);
-                    propertyRect.y += smallGap;
+                    // Action text
                     int textBoxHeight = 100;
                     propertyRect.height += textBoxHeight;
-                    node.ActionValue = EditorGUI.TextField(propertyRect, node.ActionValue);
+                    node.Text = EditorGUI.TextField(propertyRect, node.Text);
                     propertyRect.height -= textBoxHeight;
                     propertyRect.y += bigGap + textBoxHeight;
                 }
@@ -364,7 +368,7 @@ namespace DialogueEditor
                 // Option node info
                 else if (CurrentlySelectedNode is UIOptionNode)
                 {
-                    NPCOptionNode node = CurrentlySelectedNode.Info as NPCOptionNode;
+                    ConversationOption node = CurrentlySelectedNode.Info as ConversationOption;
 
                     // Title
                     EditorGUI.LabelField(propertyRect, "Option Node", panelTitleStyle);
@@ -376,7 +380,7 @@ namespace DialogueEditor
                     propertyRect.y += smallGap;
                     int textBoxHeight = 100;
                     propertyRect.height += textBoxHeight;
-                    node.Value = EditorGUI.TextField(propertyRect, node.Value);
+                    node.Text = EditorGUI.TextField(propertyRect, node.Text);
                     propertyRect.height -= textBoxHeight;
                     propertyRect.y += bigGap + textBoxHeight;
                 }
@@ -488,13 +492,13 @@ namespace DialogueEditor
 
         private void ProcessNodeEvents(Event e)
         {
-            if (nodes != null)
+            if (uiNodes != null)
             {
                 NodeClickedOnThisUpdate = false;
 
-                for (int i = 0; i < nodes.Count; i++)
+                for (int i = 0; i < uiNodes.Count; i++)
                 {
-                    bool guiChanged = nodes[i].ProcessEvents(e);
+                    bool guiChanged = uiNodes[i].ProcessEvents(e);
                     if (guiChanged)
                         GUI.changed = true;
                 }
@@ -511,17 +515,19 @@ namespace DialogueEditor
         public void CreateNewOption(UIActionNode action)
         {
             // Create new option, the argument action is the options parent
-            NPCOptionNode newOption = new NPCOptionNode(action.NodeInfo.parent);
+            ConversationOption newOption = new ConversationOption();
 
             // Add the option to the actions list
-            action.NodeInfo.AddOption(newOption);
+            if (action.ConversationNode.Options == null)
+                action.ConversationNode.Options = new List<ConversationOption>();
+            action.ConversationNode.Options.Add(newOption);
 
             // The option doesn't point to an action yet
             newOption.Action = null;
 
             // Create a new UI object to represent the new option
             UIOptionNode ui = new UIOptionNode(newOption, Vector2.zero, defaultNodeStyle, selectedNodeStyle);
-            nodes.Add(ui);
+            uiNodes.Add(ui);
 
             // Set the input state appropriately
             m_inputState = eInputState.PlacingOption;
@@ -533,42 +539,22 @@ namespace DialogueEditor
         public void CreateNewAction(UIOptionNode option)
         {
             // Create new action, the argument option is the actions parent
-            NPCActionNode newAction = new NPCActionNode(option.NodeInfo.parent);
+            ConversationAction newAction = new ConversationAction();
 
             // Set this new action as the options child
-            option.NodeInfo.Action = newAction;
+            option.OptionNode.Action = newAction;
 
             // This new action doesn't have any children yet
             newAction.Options = null;
 
             // Create a new UI object to represent the new action
             UIActionNode ui = new UIActionNode(newAction, Vector2.zero, defaultNodeStyle, selectedNodeStyle);
-            nodes.Add(ui);
+            uiNodes.Add(ui);
 
             // Set the input state appropriately
             m_inputState = eInputState.PlacingAction;
             m_currentPlacingNode = ui;
         }
-
-
-
-
-
-
-
-        private void RemoveNode(UINode node)
-        {
-            if (node.Info == Dialogue.Root)
-            {
-                Debug.Log("You cannot delete the root node");
-                return;
-            }
-
-            node.DeleteSelf();
-            nodes.Remove(node);
-        }
-
-
 
 
 
@@ -581,11 +567,11 @@ namespace DialogueEditor
         {
             dragDelta = delta;
 
-            if (nodes != null)
+            if (uiNodes != null)
             {
-                for (int i = 0; i < nodes.Count; i++)
+                for (int i = 0; i < uiNodes.Count; i++)
                 {
-                    nodes[i].Drag(delta);
+                    uiNodes[i].Drag(delta);
                 }
             }
 
@@ -626,11 +612,11 @@ namespace DialogueEditor
 
         private bool IsANodeSelected()
         {
-            if (nodes != null)
+            if (uiNodes != null)
             {
-                for (int i = 0; i < nodes.Count; i++)
+                for (int i = 0; i < uiNodes.Count; i++)
                 {
-                    if (nodes[i].isSelected) return true;
+                    if (uiNodes[i].isSelected) return true;
                 }
             }
             return false;
@@ -638,13 +624,21 @@ namespace DialogueEditor
 
         public void Recenter()
         {
+            if (ConversationRoot == null) { return; }
+
             // Calc delta to move head to (middle, 0) and then apply this to all nodes
             Vector2 target = new Vector2((position.width / 2) - (UIActionNode.Width / 2) - (PANEL_WIDTH / 2), TOOLBAR_HEIGHT);
-            Vector2 delta = target - new Vector2(Dialogue.Root.uiX, Dialogue.Root.uiY);
-            for (int i = 0; i < nodes.Count; i++)
+            Vector2 delta = target - new Vector2(ConversationRoot.EditorInfo.xPos, ConversationRoot.EditorInfo.yPos);
+            for (int i = 0; i < uiNodes.Count; i++)
             {
-                nodes[i].Drag(delta);
+                uiNodes[i].Drag(delta);
             }
+        }
+
+        private void Save()
+        {
+            if (CurrentAsset != null)
+                CurrentAsset.Serialize(ConversationRoot);
         }
     }
 }

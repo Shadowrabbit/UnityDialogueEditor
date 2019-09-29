@@ -21,11 +21,11 @@ namespace DialogueEditor
         public GUIStyle selectedNodeStyle;
 
         // Properties
-        public NPCNode Info { get; protected set; }
+        public ConversationNode Info { get; protected set; }
 
 
         // Constructor and creation logic
-        public UINode(NPCNode infoNode, Vector2 pos, GUIStyle defaultStyle, GUIStyle selectedStyle)
+        public UINode(ConversationNode infoNode, Vector2 pos, GUIStyle defaultStyle, GUIStyle selectedStyle)
         {
             Info = infoNode;
             style = defaultStyle;
@@ -36,8 +36,8 @@ namespace DialogueEditor
         protected void CreateRect(Vector2 pos, float wid, float hei)
         {
             rect = new Rect(pos.x, pos.y, wid, hei);
-            Info.uiX = rect.x;
-            Info.uiY = rect.y;
+            Info.EditorInfo.xPos = rect.x;
+            Info.EditorInfo.yPos = rect.y;
         }
 
 
@@ -46,20 +46,20 @@ namespace DialogueEditor
         {
             Vector2 centeredPos = new Vector2(newPos.x - rect.width / 2, newPos.y - rect.height / 2);
             rect.position = centeredPos;
-            Info.uiX = centeredPos.x;
-            Info.uiY = centeredPos.y;
+            Info.EditorInfo.xPos = centeredPos.x;
+            Info.EditorInfo.yPos = centeredPos.y;
         }
 
         public void Drag(Vector2 moveDelta)
         {
             rect.position += moveDelta;
-            Info.uiX = rect.x;
-            Info.uiY = rect.y;
+            Info.EditorInfo.xPos = rect.x;
+            Info.EditorInfo.yPos = rect.y;
         }
 
         public void Draw()
         {
-            GUI.Box(rect, title, style);
+            GUI.Box(rect, title);
             OnDraw();
         }
 
@@ -137,10 +137,10 @@ namespace DialogueEditor
         public static int Width { get { return 200; } }
         public static int Height { get { return 100; } }
 
-        public NPCActionNode NodeInfo { get { return Info as NPCActionNode; } }
+        public ConversationAction ConversationNode { get { return Info as ConversationAction; } }
 
 
-        public UIActionNode(NPCNode infoNode, Vector2 pos, GUIStyle defaultStyle, GUIStyle selectedStyle)
+        public UIActionNode(ConversationNode infoNode, Vector2 pos, GUIStyle defaultStyle, GUIStyle selectedStyle)
             : base(infoNode, pos, defaultStyle, selectedStyle)
         {
             CreateRect(pos, Width, Height);
@@ -162,25 +162,22 @@ namespace DialogueEditor
             rect.x += border;
             rect.width -= border * 2;
 
-            GUI.Label(rect, "Type: " + NodeInfo.ActionType.ToString());
-            rect.y += 25;
-
-            GUI.Box(rect, NodeInfo.ActionValue);
+            GUI.Box(rect, ConversationNode.Text);
         }
 
         public override void DrawConnection()
         {
-            if (NodeInfo.Options != null)
+            if (ConversationNode.Options != null)
             {
                 Vector2 boxCenter = new Vector2(rect.x + rect.width / 2, rect.y + rect.height / 2);
 
-                for (int i = 0; i < NodeInfo.Options.Count; i++)
+                for (int i = 0; i < ConversationNode.Options.Count; i++)
                 {
-                    NPCOptionNode option = NodeInfo.Options[i];
+                    ConversationOption option = ConversationNode.Options[i];
 
                     Vector2 optionCenter = new Vector2(
-                        option.uiX + UIOptionNode.Width / 2,
-                        option.uiY + UIOptionNode.Height / 2);
+                        option.EditorInfo.xPos + UIOptionNode.Width / 2,
+                        option.EditorInfo.yPos + UIOptionNode.Height / 2);
 
                     Vector2 toOption = (boxCenter - optionCenter).normalized;
                     Vector2 toAction = (optionCenter - boxCenter).normalized;
@@ -194,20 +191,7 @@ namespace DialogueEditor
 
         public override void DeleteSelf()
         {
-            // The parent node no longer points to this as its child
-            (NodeInfo.parent as NPCOptionNode).Action = null;
 
-            // This no longer has a parent
-            NodeInfo.parent = null;
-
-            // My children no longer point to me as parent
-            foreach (var v in NodeInfo.Options)
-            {
-                v.parent = null;
-            }
-
-            // Clear my child nodes
-            NodeInfo.Options.Clear();
         }
 
         protected override void ProcessContextMenu()
@@ -252,10 +236,10 @@ namespace DialogueEditor
         public static int Width { get { return 200; } }
         public static int Height { get { return 50; } }
 
-        public NPCOptionNode NodeInfo { get { return Info as NPCOptionNode; } }
+        public ConversationOption OptionNode { get { return Info as ConversationOption; } }
 
 
-        public UIOptionNode(NPCNode infoNode, Vector2 pos, GUIStyle defaultStyle, GUIStyle selectedStyle)
+        public UIOptionNode(ConversationNode infoNode, Vector2 pos, GUIStyle defaultStyle, GUIStyle selectedStyle)
             : base(infoNode, pos, defaultStyle, selectedStyle)
         {
             CreateRect(pos, Width, Height);
@@ -277,19 +261,19 @@ namespace DialogueEditor
             rect.x += border;
             rect.width -= border * 2;
 
-            GUI.Box(rect, NodeInfo.Value);
+            GUI.Box(rect, OptionNode.Text);
         }
 
         public override void DrawConnection()
         {
-            if (NodeInfo.Action != null && !NodeInfo.Action.IsEffectivelyNull())
+            if (OptionNode.Action != null)
             {
                 Vector2 boxCenter = new Vector2(rect.x + rect.width / 2, rect.y + rect.height / 2);
 
-                NPCActionNode action = NodeInfo.Action;
+                ConversationAction action = OptionNode.Action;
                 Vector2 actionCenter = new Vector2(
-                    action.uiX + UIActionNode.Width / 2,
-                    action.uiY + UIActionNode.Height / 2);
+                    action.EditorInfo.xPos + UIActionNode.Width / 2,
+                    action.EditorInfo.yPos + UIActionNode.Height / 2);
 
                 Vector2 toOption = (boxCenter - actionCenter).normalized;
                 Vector2 toAction = (actionCenter - boxCenter).normalized;
@@ -302,17 +286,7 @@ namespace DialogueEditor
 
         public override void DeleteSelf()
         {
-            // This node is no longer an option of its parent
-            (NodeInfo.parent as NPCActionNode).Options.Remove(NodeInfo);
 
-            // This no longer has a parent
-            NodeInfo.parent = null;
-
-            // My child no longer points to me as parent
-            NodeInfo.Action.parent = null;
-
-            // Clear my child node
-            NodeInfo.Action = null;
         }
 
         protected override void ProcessContextMenu()
