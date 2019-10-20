@@ -49,9 +49,10 @@ namespace DialogueEditor
         private Vector2 offset;
         private Vector2 dragDelta;
 
-        // Input stuff
+        // Input and input-state logic
         private eInputState m_inputState;
         private UINode m_currentPlacingNode = null;
+        private UINode m_currentConnectingNode = null;
 
         // Cleanup
         bool placeholder_toggle_bool;
@@ -150,6 +151,7 @@ namespace DialogueEditor
             InitGUIStyles();
 
             UINode.OnUINodeSelected += SelectNode;
+            UINode.OnUINodeDeleted += DeleteUINode;
             UIActionNode.OnCreateOption += CreateNewOption;
             UIOptionNode.OnCreateAction += CreateNewAction;
         }
@@ -176,6 +178,7 @@ namespace DialogueEditor
         private void OnDisable()
         {
             UINode.OnUINodeSelected -= SelectNode;
+            UINode.OnUINodeDeleted -= DeleteUINode;
             UIActionNode.OnCreateOption -= CreateNewOption;
             UIOptionNode.OnCreateAction -= CreateNewAction;
         }
@@ -288,7 +291,7 @@ namespace DialogueEditor
         {
             for (int i = 0; i < uiNodes.Count; i++)
             {
-                uiNodes[i].DrawConnection();
+                uiNodes[i].DrawConnections();
             }
         }
 
@@ -505,64 +508,6 @@ namespace DialogueEditor
             }
         }
 
-
-
-
-        //--------------------------------------
-        // Event listeners
-        //--------------------------------------
-
-        public void CreateNewOption(UIActionNode action)
-        {
-            // Create new option, the argument action is the options parent
-            ConversationOption newOption = new ConversationOption();
-
-            // Add the option to the actions list
-            if (action.ConversationNode.Options == null)
-                action.ConversationNode.Options = new List<ConversationOption>();
-            action.ConversationNode.Options.Add(newOption);
-
-            // The option doesn't point to an action yet
-            newOption.Action = null;
-
-            // Create a new UI object to represent the new option
-            UIOptionNode ui = new UIOptionNode(newOption, Vector2.zero, defaultNodeStyle, selectedNodeStyle);
-            uiNodes.Add(ui);
-
-            // Set the input state appropriately
-            m_inputState = eInputState.PlacingOption;
-            m_currentPlacingNode = ui;
-        }
-
-
-
-        public void CreateNewAction(UIOptionNode option)
-        {
-            // Create new action, the argument option is the actions parent
-            ConversationAction newAction = new ConversationAction();
-
-            // Set this new action as the options child
-            option.OptionNode.Action = newAction;
-
-            // This new action doesn't have any children yet
-            newAction.Options = null;
-
-            // Create a new UI object to represent the new action
-            UIActionNode ui = new UIActionNode(newAction, Vector2.zero, defaultNodeStyle, selectedNodeStyle);
-            uiNodes.Add(ui);
-
-            // Set the input state appropriately
-            m_inputState = eInputState.PlacingAction;
-            m_currentPlacingNode = ui;
-        }
-
-
-
-
-        //--------------------------------------
-        // MISC
-        //--------------------------------------
-
         private void OnDrag(Vector2 delta)
         {
             dragDelta = delta;
@@ -579,6 +524,70 @@ namespace DialogueEditor
         }
 
 
+
+
+        //--------------------------------------
+        // Event listeners
+        //--------------------------------------
+
+        /* -- Creating Nodes -- */
+
+        public void CreateNewOption(UIActionNode actionUI)
+        {
+            // Create new option, the argument action is the options parent
+            ConversationOption newOption = new ConversationOption();
+
+            // Add the option to the actions' list of options
+            actionUI.ConversationNode.AddOption(newOption);       
+
+            // The option doesn't point to an action yet
+            newOption.Action = null;
+
+            // Create a new UI object to represent the new option
+            UIOptionNode ui = new UIOptionNode(newOption, Vector2.zero, defaultNodeStyle, selectedNodeStyle);
+            uiNodes.Add(ui);
+
+            // Create a connection from ActionUI -> OptionUI
+            actionUI.AddConnection(ui);
+
+            // Set the input state appropriately
+            m_inputState = eInputState.PlacingOption;
+            m_currentPlacingNode = ui;
+        }
+
+
+        public void CreateNewAction(UIOptionNode option)
+        {
+            // Create new action, the argument option is the actions parent
+            ConversationAction newAction = new ConversationAction();
+
+            // Set this new action as the options child
+            option.OptionNode.SetAction(newAction);
+
+            // This new action doesn't have any children yet
+            newAction.Options = null;
+
+            // Create a new UI object to represent the new action
+            UIActionNode ui = new UIActionNode(newAction, Vector2.zero, defaultNodeStyle, selectedNodeStyle);
+            uiNodes.Add(ui);
+
+            // Set the input state appropriately
+            m_inputState = eInputState.PlacingAction;
+            m_currentPlacingNode = ui;
+        }
+
+
+        /* -- Deleting Nodes -- */
+
+        public void DeleteUINode(UINode node)
+        {
+            // Delete tree/internal objects
+            node.Info.RemoveSelfFromTree();
+
+            // Delete the UI classes
+            uiNodes.Remove(node);
+            node = null;
+        }
 
 
 

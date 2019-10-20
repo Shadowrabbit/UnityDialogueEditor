@@ -5,11 +5,20 @@ using UnityEditor;
 
 namespace DialogueEditor
 {
+    public class UIConnection
+    {
+        public UINode From;
+        public ConversationNode To;
+    }
+
     public abstract class UINode
     {
         // Events
         public delegate void UINodeSelectedEvent(UINode node, bool selected);
         public static UINodeSelectedEvent OnUINodeSelected;
+
+        public delegate void UINodeDeletedEvent(UINode node);
+        public static UINodeDeletedEvent OnUINodeDeleted;
 
         // Members
         public Rect rect;
@@ -118,8 +127,9 @@ namespace DialogueEditor
 
         // Abstract methods
         public abstract void OnDraw();
-        public abstract void DrawConnection();
-        public abstract void DeleteSelf();
+        public abstract void DrawConnections();
+        public abstract void AddConnection(UINode node);
+        protected abstract void ValidateConnections();
         protected abstract void ProcessContextMenu();
     }
 
@@ -139,6 +149,7 @@ namespace DialogueEditor
 
         public ConversationAction ConversationNode { get { return Info as ConversationAction; } }
 
+        private List<UIConnection> connections;
 
         public UIActionNode(ConversationNode infoNode, Vector2 pos, GUIStyle defaultStyle, GUIStyle selectedStyle)
             : base(infoNode, pos, defaultStyle, selectedStyle)
@@ -165,33 +176,88 @@ namespace DialogueEditor
             GUI.Box(rect, ConversationNode.Text);
         }
 
-        public override void DrawConnection()
+        public override void DrawConnections()
         {
-            if (ConversationNode.Options != null)
+            ValidateConnections();
+
+            if (connections != null && connections.Count > 0)
             {
-                Vector2 boxCenter = new Vector2(rect.x + rect.width / 2, rect.y + rect.height / 2);
+                Vector2 start, end;
 
-                for (int i = 0; i < ConversationNode.Options.Count; i++)
+                for (int i = 0; i < connections.Count; i++)
                 {
-                    ConversationOption option = ConversationNode.Options[i];
+                    DialogueEditorUtil.GetConnectionDrawInfo(rect, connections[i].To, out start, out end);
 
-                    Vector2 optionCenter = new Vector2(
-                        option.EditorInfo.xPos + UIOptionNode.Width / 2,
-                        option.EditorInfo.yPos + UIOptionNode.Height / 2);
+                    Vector2 toOption = (start - end).normalized;
+                    Vector2 toAction = (end - start).normalized;
 
-                    Vector2 toOption = (boxCenter - optionCenter).normalized;
-                    Vector2 toAction = (optionCenter - boxCenter).normalized;
-
-                    Handles.DrawBezier(boxCenter, optionCenter,
-                        boxCenter + toAction * 50f, optionCenter + toOption * 50f,
+                    Handles.DrawBezier(
+                        start, end,
+                        start + toAction * 50f,
+                        end + toOption * 50f,
                         Color.black, null, 5f);
                 }
             }
         }
 
-        public override void DeleteSelf()
+        public override void AddConnection(UINode node)
         {
+            if (connections == null)
+                connections = new List<UIConnection>();
 
+            UIConnection newConnection = new UIConnection
+            {
+                From = this,
+                To = node.Info
+            };
+            connections.Add(newConnection);
+        }
+
+        protected override void ValidateConnections()
+        {
+            if (ConversationNode.Options == null || ConversationNode.Options.Count == 0)
+                return;
+
+            if (connections == null)
+            {
+                RecreateConnections();
+                return;
+            }
+
+            if (connections.Count != ConversationNode.Options.Count)
+            {
+                RecreateConnections();
+                return;
+            }
+
+            for (int i = 0; i < ConversationNode.Options.Count; i++)
+            {
+                if (connections[i].To != ConversationNode.Options[i])
+                {
+                    RecreateConnections();
+                    return;
+                }
+            }
+        }
+
+        private void RecreateConnections()
+        {
+            if (connections == null)
+                connections = new List<UIConnection>();
+            connections.Clear();
+
+            if (ConversationNode.Options != null && ConversationNode.Options.Count > 0)
+            {
+                for (int i = 0; i < ConversationNode.Options.Count; i++)
+                {
+                    UIConnection c = new UIConnection
+                    {
+                        From = this,
+                        To = ConversationNode.Options[i]
+                    };
+                    connections.Add(c);
+                }
+            }
         }
 
         protected override void ProcessContextMenu()
@@ -215,7 +281,7 @@ namespace DialogueEditor
 
         private void DeleteThisNode()
         {
-
+            OnUINodeDeleted?.Invoke(this);
         }
 
 
@@ -238,6 +304,7 @@ namespace DialogueEditor
 
         public ConversationOption OptionNode { get { return Info as ConversationOption; } }
 
+        private UIConnection connection;
 
         public UIOptionNode(ConversationNode infoNode, Vector2 pos, GUIStyle defaultStyle, GUIStyle selectedStyle)
             : base(infoNode, pos, defaultStyle, selectedStyle)
@@ -264,29 +331,56 @@ namespace DialogueEditor
             GUI.Box(rect, OptionNode.Text);
         }
 
-        public override void DrawConnection()
+        public override void DrawConnections()
         {
-            if (OptionNode.Action != null)
+            ValidateConnections();
+
+            if (connection != null)
             {
-                Vector2 boxCenter = new Vector2(rect.x + rect.width / 2, rect.y + rect.height / 2);
+                Vector2 start, end;
+                DialogueEditorUtil.GetConnectionDrawInfo(rect, connection.To, out start, out end);
 
-                ConversationAction action = OptionNode.Action;
-                Vector2 actionCenter = new Vector2(
-                    action.EditorInfo.xPos + UIActionNode.Width / 2,
-                    action.EditorInfo.yPos + UIActionNode.Height / 2);
+                Vector2 toOption = (start - end).normalized;
+                Vector2 toAction = (end - start).normalized;
 
-                Vector2 toOption = (boxCenter - actionCenter).normalized;
-                Vector2 toAction = (actionCenter - boxCenter).normalized;
-
-                Handles.DrawBezier(boxCenter, actionCenter,
-                    boxCenter + toAction * 50f, actionCenter + toOption * 50f,
+                Handles.DrawBezier(
+                    start, end,
+                    start + toAction * 50f,
+                    end + toOption * 50f,
                     Color.black, null, 5f);
             }
         }
 
-        public override void DeleteSelf()
+        public override void AddConnection(UINode node)
         {
 
+        }
+
+        protected override void ValidateConnections()
+        {
+            // No connection required
+            if (OptionNode.Action == null)
+            {
+                if (connection != null)
+                    connection = null;
+                return;
+            }
+
+            // Connection must be created
+            if (OptionNode.Action != null && connection == null)
+            {
+                connection = new UIConnection
+                {
+                    From = this,
+                    To = this.OptionNode.Action
+                };
+            }
+            // Connection exists but is incorrect (links to another node, etc
+            else if (connection.To != OptionNode.Action)
+            {
+                connection.From = this;
+                connection.To = OptionNode.Action;
+            }
         }
 
         protected override void ProcessContextMenu()
@@ -310,7 +404,7 @@ namespace DialogueEditor
 
         private void DeleteThisNode()
         {
-
+            OnUINodeDeleted?.Invoke(this);
         }
     }
 }

@@ -6,6 +6,90 @@ using System.Runtime.Serialization.Json;
 
 namespace DialogueEditor
 {
+    [DataContract]
+    public abstract class ConversationNode
+    {
+        /// <summary> Info used internally by the editor window. </summary>
+        [DataMember]
+        public EditorArgs EditorInfo = new EditorArgs();
+
+        [DataMember]
+        public string Text;
+
+        [DataMember]
+        public ConversationNode Parent;
+
+        public abstract void RemoveSelfFromTree();
+    }
+
+    [DataContract]
+    public class ConversationAction : ConversationNode
+    {
+        /// <summary>
+        /// The selectable options of this Action.
+        /// </summary>
+        [DataMember]
+        public List<ConversationOption> Options;
+
+        public void AddOption(ConversationOption newOption)
+        {
+            if (Options == null) { Options = new List<ConversationOption>(); }
+
+            newOption.Parent = this;
+            Options.Add(newOption);
+        }
+
+        public override void RemoveSelfFromTree()
+        {
+            if (Parent != null)
+            {
+                (Parent as ConversationOption).Action = null;
+            }
+        }
+    }
+
+    [DataContract]
+    public class ConversationOption : ConversationNode
+    {
+        /// <summary>
+        /// The Action this option leads to.
+        /// </summary>
+        [DataMember]
+        public ConversationAction Action;
+
+        public void SetAction(ConversationAction newAction)
+        {
+            this.Action = newAction;
+            newAction.Parent = this;
+        }
+
+        public override void RemoveSelfFromTree()
+        {
+            if (Parent != null)
+            {
+                (Parent as ConversationAction).Options.Remove(this);
+            }
+        }
+    }
+
+    /// <summary> Info used internally by the editor window. </summary>
+    [DataContract]
+    public class EditorArgs
+    {
+        [DataMember]
+        public float xPos;
+
+        [DataMember]
+        public float yPos;
+    }
+
+
+
+
+    //--------------------------------------
+    // Scriptable and Serialization
+    //--------------------------------------
+
     [CreateAssetMenu(fileName = "NPC_Conversation", menuName = "NPC_Conversation/Conversation")]
     [System.Serializable]
     public class NPCConversation : ScriptableObject
@@ -38,41 +122,5 @@ namespace DialogueEditor
             ms.Close();
             return deserialized;
         }
-    }
-
-    [DataContract]
-    public abstract class ConversationNode
-    {
-        /// <summary> Info used internally by the editor window. </summary>
-        [DataMember]
-        public EditorArgs EditorInfo = new EditorArgs();
-
-        [DataMember]
-        public string Text;
-    }
-
-    [DataContract]
-    public class ConversationAction : ConversationNode
-    {
-        [DataMember]
-        public List<ConversationOption> Options;
-    }
-
-    [DataContract]
-    public class ConversationOption : ConversationNode
-    {
-        [DataMember]
-        public ConversationAction Action;
-    }
-
-    /// <summary> Info used internally by the editor window. </summary>
-    [DataContract]
-    public class EditorArgs
-    {
-        [DataMember]
-        public float xPos;
-
-        [DataMember]
-        public float yPos;
     }
 }
