@@ -5,12 +5,6 @@ using UnityEditor;
 
 namespace DialogueEditor
 {
-    public class UIConnection
-    {
-        public UINode From;
-        public ConversationNode To;
-    }
-
     public abstract class UINode
     {
         // Events
@@ -25,21 +19,17 @@ namespace DialogueEditor
         public string title;
         public bool isDragged;
         public bool isSelected;
-        public GUIStyle style;
-        public GUIStyle defaultNodeStyle;
-        public GUIStyle selectedNodeStyle;
+
+        protected GUIStyle currentBoxStyle;
 
         // Properties
         public ConversationNode Info { get; protected set; }
 
 
         // Constructor and creation logic
-        public UINode(ConversationNode infoNode, Vector2 pos, GUIStyle defaultStyle, GUIStyle selectedStyle)
+        public UINode(ConversationNode infoNode, Vector2 pos)
         {
             Info = infoNode;
-            style = defaultStyle;
-            defaultNodeStyle = defaultStyle;
-            selectedNodeStyle = selectedStyle;
         }
 
         protected void CreateRect(Vector2 pos, float wid, float hei)
@@ -68,7 +58,6 @@ namespace DialogueEditor
 
         public void Draw()
         {
-            GUI.Box(rect, title);
             OnDraw();
         }
 
@@ -78,14 +67,14 @@ namespace DialogueEditor
             {
                 isDragged = true;
                 isSelected = true;
-                style = selectedNodeStyle;
                 DialogueEditorWindow.NodeClickedOnThisUpdate = true;
             }
             else
             {
                 isSelected = false;
-                style = defaultNodeStyle;
             }
+
+            OnSetSelected(selected);
         }
 
         public bool ProcessEvents(Event e)
@@ -128,9 +117,8 @@ namespace DialogueEditor
         // Abstract methods
         public abstract void OnDraw();
         public abstract void DrawConnections();
-        public abstract void AddConnection(UINode node);
-        protected abstract void ValidateConnections();
         protected abstract void ProcessContextMenu();
+        protected abstract void OnSetSelected(bool selected);
     }
 
 
@@ -149,44 +137,70 @@ namespace DialogueEditor
 
         public ConversationAction ConversationNode { get { return Info as ConversationAction; } }
 
-        private List<UIConnection> connections;
+        protected static GUIStyle defaultNodeStyle;
+        protected static GUIStyle selectedNodeStyle;
 
-        public UIActionNode(ConversationNode infoNode, Vector2 pos, GUIStyle defaultStyle, GUIStyle selectedStyle)
-            : base(infoNode, pos, defaultStyle, selectedStyle)
+        public UIActionNode(ConversationNode infoNode, Vector2 pos)
+            : base(infoNode, pos)
         {
+            if (defaultNodeStyle == null)
+            {
+                defaultNodeStyle = new GUIStyle();
+                Texture2D t2d = new Texture2D(Width, Height);
+                for (int x = 0; x < Width - 1; x++)
+                    for (int y = 0; y < Height - 1; y++)
+                        t2d.SetPixel(x, y, DialogueEditorUtil.Colour(173, 25, 15));
+                t2d.Apply();
+                defaultNodeStyle.normal.background = t2d;
+            }
+            if (selectedNodeStyle == null)
+            {
+                selectedNodeStyle = new GUIStyle();
+                Texture2D t2d = new Texture2D(Width, Height);
+                for (int x = 0; x < Width - 1; x++)
+                    for (int y = 0; y < Height - 1; y++)
+                        t2d.SetPixel(x, y, DialogueEditorUtil.Colour(217, 36, 20));
+                t2d.Apply();
+                selectedNodeStyle.normal.background = t2d;
+            }
+
+            currentBoxStyle = defaultNodeStyle;
+
             CreateRect(pos, Width, Height);
         }
 
         public override void OnDraw()
         {
+            // Box
+            GUI.Box(rect, title, currentBoxStyle);
+
+            // Internals 
+            Rect internalText = new Rect(base.rect.x, base.rect.y, base.rect.width, 25);
+
+            // Title
             GUIStyle titleStyle = new GUIStyle();
             titleStyle.alignment = TextAnchor.MiddleCenter;
             titleStyle.fontStyle = FontStyle.Bold;
-
-            // Title
-            Rect rect = new Rect(base.rect.x, base.rect.y, base.rect.width, 25);
-            GUI.Label(rect, "Action node", titleStyle);
-            rect.y += 25;
+        
+            GUI.Label(internalText, "Action node", titleStyle);
+            internalText.y += 25;
 
             // Properties
             int border = 5;
-            rect.x += border;
-            rect.width -= border * 2;
+            internalText.x += border;
+            internalText.width -= border * 2;
 
-            GUI.Box(rect, ConversationNode.Text);
+            GUI.Box(internalText, ConversationNode.Text);
         }
 
         public override void DrawConnections()
         {
-            ValidateConnections();
-
-            if (connections != null && connections.Count > 0)
+            if (ConversationNode.Options != null && ConversationNode.Options.Count > 0)
             {
                 Vector2 start, end;
-
-                for (int i = 0; i < connections.Count; i++)
+                for (int i = 0; i < ConversationNode.Options.Count; i++)
                 {
-                    DialogueEditorUtil.GetConnectionDrawInfo(rect, connections[i].To, out start, out end);
+                    DialogueEditorUtil.GetConnectionDrawInfo(rect, ConversationNode.Options[i], out start, out end);
 
                     Vector2 toOption = (start - end).normalized;
                     Vector2 toAction = (end - start).normalized;
@@ -195,69 +209,18 @@ namespace DialogueEditor
                         start, end,
                         start + toAction * 50f,
                         end + toOption * 50f,
-                        Color.black, null, 5f);
+                        Color.red, null, 5f);
                 }
             }
+
         }
 
-        public override void AddConnection(UINode node)
+        protected override void OnSetSelected(bool selected)
         {
-            if (connections == null)
-                connections = new List<UIConnection>();
-
-            UIConnection newConnection = new UIConnection
-            {
-                From = this,
-                To = node.Info
-            };
-            connections.Add(newConnection);
-        }
-
-        protected override void ValidateConnections()
-        {
-            if (ConversationNode.Options == null || ConversationNode.Options.Count == 0)
-                return;
-
-            if (connections == null)
-            {
-                RecreateConnections();
-                return;
-            }
-
-            if (connections.Count != ConversationNode.Options.Count)
-            {
-                RecreateConnections();
-                return;
-            }
-
-            for (int i = 0; i < ConversationNode.Options.Count; i++)
-            {
-                if (connections[i].To != ConversationNode.Options[i])
-                {
-                    RecreateConnections();
-                    return;
-                }
-            }
-        }
-
-        private void RecreateConnections()
-        {
-            if (connections == null)
-                connections = new List<UIConnection>();
-            connections.Clear();
-
-            if (ConversationNode.Options != null && ConversationNode.Options.Count > 0)
-            {
-                for (int i = 0; i < ConversationNode.Options.Count; i++)
-                {
-                    UIConnection c = new UIConnection
-                    {
-                        From = this,
-                        To = ConversationNode.Options[i]
-                    };
-                    connections.Add(c);
-                }
-            }
+            if (selected)
+                currentBoxStyle = selectedNodeStyle;
+            else
+                currentBoxStyle = defaultNodeStyle;
         }
 
         protected override void ProcessContextMenu()
@@ -304,41 +267,68 @@ namespace DialogueEditor
 
         public ConversationOption OptionNode { get { return Info as ConversationOption; } }
 
-        private UIConnection connection;
+        protected static GUIStyle defaultNodeStyle;
+        protected static GUIStyle selectedNodeStyle;
 
-        public UIOptionNode(ConversationNode infoNode, Vector2 pos, GUIStyle defaultStyle, GUIStyle selectedStyle)
-            : base(infoNode, pos, defaultStyle, selectedStyle)
+        public UIOptionNode(ConversationNode infoNode, Vector2 pos)
+            : base(infoNode, pos)
         {
+            if (defaultNodeStyle == null)
+            {
+                defaultNodeStyle = new GUIStyle();
+                Texture2D t2d = new Texture2D(Width, Height);
+                for (int x = 0; x < Width - 1; x++)
+                    for (int y = 0; y < Height - 1; y++)
+                        t2d.SetPixel(x, y, DialogueEditorUtil.Colour(20, 138, 254));
+                t2d.Apply();
+                defaultNodeStyle.normal.background = t2d;
+            }
+            if (selectedNodeStyle == null)
+            {
+                selectedNodeStyle = new GUIStyle();
+                Texture2D t2d = new Texture2D(Width, Height);
+                for (int x = 0; x < Width - 1; x++)
+                    for (int y = 0; y < Height - 1; y++)
+                        t2d.SetPixel(x, y, DialogueEditorUtil.Colour(0, 188, 254));
+                t2d.Apply();
+                selectedNodeStyle.normal.background = t2d;
+            }
+
+            currentBoxStyle = defaultNodeStyle;
+
             CreateRect(pos, Width, Height);
         }
 
         public override void OnDraw()
         {
+            // Box
+            GUI.Box(rect, title, currentBoxStyle);
+
+            // Internal rect
+            Rect internalRect = new Rect(base.rect.x, base.rect.y, base.rect.width, 25);
+
+            // Title
             GUIStyle titleStyle = new GUIStyle();
             titleStyle.alignment = TextAnchor.MiddleCenter;
             titleStyle.fontStyle = FontStyle.Bold;
 
-            // Title
-            Rect rect = new Rect(base.rect.x, base.rect.y, base.rect.width, 25);
-            GUI.Label(rect, "Option node", titleStyle);
-            rect.y += 25;
+            GUI.Label(internalRect, "Option node", titleStyle);
+            internalRect.y += 25;
 
             // Properties
             int border = 5;
-            rect.x += border;
-            rect.width -= border * 2;
+            internalRect.x += border;
+            internalRect.width -= border * 2;
 
-            GUI.Box(rect, OptionNode.Text);
+            GUI.Box(internalRect, OptionNode.Text);
         }
 
         public override void DrawConnections()
         {
-            ValidateConnections();
-
-            if (connection != null)
+            if (OptionNode.Action != null)
             {
                 Vector2 start, end;
-                DialogueEditorUtil.GetConnectionDrawInfo(rect, connection.To, out start, out end);
+                DialogueEditorUtil.GetConnectionDrawInfo(rect, OptionNode.Action, out start, out end);
 
                 Vector2 toOption = (start - end).normalized;
                 Vector2 toAction = (end - start).normalized;
@@ -347,40 +337,16 @@ namespace DialogueEditor
                     start, end,
                     start + toAction * 50f,
                     end + toOption * 50f,
-                    Color.black, null, 5f);
+                    Color.blue, null, 5f);
             }
         }
 
-        public override void AddConnection(UINode node)
+        protected override void OnSetSelected(bool selected)
         {
-
-        }
-
-        protected override void ValidateConnections()
-        {
-            // No connection required
-            if (OptionNode.Action == null)
-            {
-                if (connection != null)
-                    connection = null;
-                return;
-            }
-
-            // Connection must be created
-            if (OptionNode.Action != null && connection == null)
-            {
-                connection = new UIConnection
-                {
-                    From = this,
-                    To = this.OptionNode.Action
-                };
-            }
-            // Connection exists but is incorrect (links to another node, etc
-            else if (connection.To != OptionNode.Action)
-            {
-                connection.From = this;
-                connection.To = OptionNode.Action;
-            }
+            if (selected)
+                currentBoxStyle = selectedNodeStyle;
+            else
+                currentBoxStyle = defaultNodeStyle;
         }
 
         protected override void ProcessContextMenu()

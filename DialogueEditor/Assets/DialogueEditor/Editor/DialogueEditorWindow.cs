@@ -33,10 +33,6 @@ namespace DialogueEditor
         // List of all nodes and connections currently being drawn in editor window
         private List<UINode> uiNodes;
 
-        // Node GUIStyles
-        private GUIStyle defaultNodeStyle;
-        private GUIStyle selectedNodeStyle;
-
         // Right-hand display pannel vars
         private Rect panelRect;
         private GUIStyle panelStyle;
@@ -110,28 +106,42 @@ namespace DialogueEditor
             // Get a list of every node in the conversation
             List<ConversationNode> allNodes = DialogueEditorUtil.GetAllNodes(ConversationRoot);
 
-            // For every node, create a corresponding UI Node to represent it, and add it to the list
+            // For every node: 
+            // 1: Create a corresponding UI Node to represent it, and add it to the list
+            // 2: Tell any of the nodes children that the node is the childs parent
             for (int i = 0; i < allNodes.Count; i++)
             {
                 ConversationNode node = allNodes[i];
 
                 if (node is ConversationAction)
                 {
+                    // 1
                     UIActionNode uiNode = new UIActionNode(node,
-                        new Vector2(node.EditorInfo.xPos, node.EditorInfo.yPos),
-                        defaultNodeStyle, selectedNodeStyle);
+                        new Vector2(node.EditorInfo.xPos, node.EditorInfo.yPos));
 
                     uiNodes.Add(uiNode);
+
+                    // 2
+                    ConversationAction action = node as ConversationAction;
+                    if (action.Options != null)
+                        for (int j = 0; j < action.Options.Count; j++)
+                            action.Options[j].Parent = action;
                 }
                 else
                 {
+                    // 1
                     UIOptionNode uiNode = new UIOptionNode(node,
-                        new Vector2(node.EditorInfo.xPos, node.EditorInfo.yPos),
-                        defaultNodeStyle, selectedNodeStyle);
+                        new Vector2(node.EditorInfo.xPos, node.EditorInfo.yPos));
 
                     uiNodes.Add(uiNode);
+
+                    // 2
+                    ConversationOption option = node as ConversationOption;
+                    if (option.Action != null)
+                        option.Action.Parent = option;
                 }
             }
+
 
             Repaint();
         }
@@ -158,18 +168,6 @@ namespace DialogueEditor
 
         private void InitGUIStyles()
         {
-            // Default node style
-            defaultNodeStyle = new GUIStyle();
-            defaultNodeStyle.normal.background = new Texture2D(1, 1);
-            defaultNodeStyle.normal.background = EditorGUIUtility.Load("builtin skins/lightskin/images/node0.png") as Texture2D;
-            defaultNodeStyle.border = new RectOffset(12, 12, 12, 12);
-
-            // Selected node style
-            selectedNodeStyle = new GUIStyle();
-            selectedNodeStyle.normal.background = new Texture2D(1, 1);
-            selectedNodeStyle.normal.background = EditorGUIUtility.Load("builtin skins/lightskin/images/node0 on.png") as Texture2D;
-            selectedNodeStyle.border = new RectOffset(12, 12, 12, 12);
-
             // Panel style
             panelStyle = new GUIStyle();
             panelStyle.normal.background = EditorGUIUtility.Load("builtin skins/lightskin/images/backgroundwithinnershadow.png") as Texture2D;
@@ -544,11 +542,8 @@ namespace DialogueEditor
             newOption.Action = null;
 
             // Create a new UI object to represent the new option
-            UIOptionNode ui = new UIOptionNode(newOption, Vector2.zero, defaultNodeStyle, selectedNodeStyle);
+            UIOptionNode ui = new UIOptionNode(newOption, Vector2.zero);
             uiNodes.Add(ui);
-
-            // Create a connection from ActionUI -> OptionUI
-            actionUI.AddConnection(ui);
 
             // Set the input state appropriately
             m_inputState = eInputState.PlacingOption;
@@ -568,7 +563,7 @@ namespace DialogueEditor
             newAction.Options = null;
 
             // Create a new UI object to represent the new action
-            UIActionNode ui = new UIActionNode(newAction, Vector2.zero, defaultNodeStyle, selectedNodeStyle);
+            UIActionNode ui = new UIActionNode(newAction, Vector2.zero);
             uiNodes.Add(ui);
 
             // Set the input state appropriately

@@ -16,7 +16,7 @@ namespace DialogueEditor
         [DataMember]
         public string Text;
 
-        [DataMember]
+        // [DataMember]
         public ConversationNode Parent;
 
         public abstract void RemoveSelfFromTree();
@@ -41,9 +41,19 @@ namespace DialogueEditor
 
         public override void RemoveSelfFromTree()
         {
+            // This action is no longer the parents resulting action
             if (Parent != null)
             {
                 (Parent as ConversationOption).Action = null;
+            }
+
+            // This action is no longer the parent of any children options
+            if (Options != null)
+            {
+                for (int i = 0; i < Options.Count; i++)
+                {
+                    Options[i].Parent = null;
+                }
             }
         }
     }
@@ -59,15 +69,27 @@ namespace DialogueEditor
 
         public void SetAction(ConversationAction newAction)
         {
+            if (this.Action != null)
+            {
+                this.Action.Parent = null;
+            }
+
             this.Action = newAction;
             newAction.Parent = this;
         }
 
         public override void RemoveSelfFromTree()
         {
+            // This option is no longer part of the parent actions possible options
             if (Parent != null)
             {
                 (Parent as ConversationAction).Options.Remove(this);
+            }
+
+            // This option is no longer the parent to its child action
+            if (Action != null)
+            {
+                Action.Parent = null;
             }
         }
     }

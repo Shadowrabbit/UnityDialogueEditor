@@ -102,6 +102,11 @@ namespace DialogueEditor
             end = target;
         }
 
+        public static Color Colour(float r, float g, float b)
+        {
+            return new Color(r / 255f, g / 255f, b / 255f, 1);
+        }
+
         public static void RemoveChildFromNode(ConversationNode parent, ConversationNode child)
         {
 
