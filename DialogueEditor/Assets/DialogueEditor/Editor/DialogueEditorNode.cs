@@ -262,6 +262,9 @@ namespace DialogueEditor
         public delegate void CreateActionEvent(UIOptionNode node);
         public static CreateActionEvent OnCreateAction;
 
+        public delegate void ConnectToActionEvent(UIOptionNode node);
+        public static ConnectToActionEvent OnConnectToAction;
+
         public static int Width { get { return 200; } }
         public static int Height { get { return 50; } }
 
@@ -365,7 +368,7 @@ namespace DialogueEditor
 
         private void ConnectToAction()
         {
-
+            OnConnectToAction?.Invoke(this);
         }
 
         private void DeleteThisNode()

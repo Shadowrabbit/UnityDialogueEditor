@@ -10,11 +10,11 @@ namespace DialogueEditor
 
         public enum eInputState
         {
-            Regular             =   0,
-            PlacingOption,
-            ConnectingOption,
-            PlacingAction,
-            ConnectingAction,
+            Regular                     = 0,
+            PlacingOption               = 1,
+            ConnectingOptionToAction    = 2,
+            PlacingAction               = 3,
+            ConnectingActionToOption    = 4,
         }
 
         // Consts
@@ -125,7 +125,7 @@ namespace DialogueEditor
                     ConversationAction action = node as ConversationAction;
                     if (action.Options != null)
                         for (int j = 0; j < action.Options.Count; j++)
-                            action.Options[j].Parent = action;
+                            action.Options[j].Parents.Add(action);
                 }
                 else
                 {
@@ -138,7 +138,7 @@ namespace DialogueEditor
                     // 2
                     ConversationOption option = node as ConversationOption;
                     if (option.Action != null)
-                        option.Action.Parent = option;
+                        option.Action.Parents.Add(option);
                 }
             }
 
@@ -164,6 +164,7 @@ namespace DialogueEditor
             UINode.OnUINodeDeleted += DeleteUINode;
             UIActionNode.OnCreateOption += CreateNewOption;
             UIOptionNode.OnCreateAction += CreateNewAction;
+            UIOptionNode.OnConnectToAction += ConnectOptionToAction;
         }
 
         private void InitGUIStyles()
@@ -179,6 +180,7 @@ namespace DialogueEditor
             UINode.OnUINodeDeleted -= DeleteUINode;
             UIActionNode.OnCreateOption -= CreateNewOption;
             UIOptionNode.OnCreateAction -= CreateNewAction;
+            UIOptionNode.OnConnectToAction -= ConnectOptionToAction;
         }
 
 
@@ -290,6 +292,25 @@ namespace DialogueEditor
             for (int i = 0; i < uiNodes.Count; i++)
             {
                 uiNodes[i].DrawConnections();
+            }
+
+            if (m_inputState == eInputState.ConnectingOptionToAction)
+            {
+                Vector2 start, end;
+                start = new Vector2(m_currentConnectingNode.rect.x + UIOptionNode.Width / 2,
+                    m_currentConnectingNode.rect.y + UIOptionNode.Height / 2);
+                end = Event.current.mousePosition;
+
+                Vector2 toOption = (start - end).normalized;
+                Vector2 toAction = (end - start).normalized;
+
+                Handles.DrawBezier(
+                    start, end,
+                    start + toAction * 50f,
+                    end + toOption * 50f,
+                    Color.blue, null, 5f);
+
+                Repaint();
             }
         }
 
@@ -435,7 +456,34 @@ namespace DialogueEditor
                     }
                     break;
 
-                case eInputState.ConnectingOption:
+                case eInputState.ConnectingOptionToAction:
+
+                    // Left click
+                    if (e.type == EventType.MouseDown && e.button == 0)
+                    {
+                        for (int i = 0; i < uiNodes.Count; i++)
+                        {
+                            if (uiNodes[i] == m_currentConnectingNode)
+                                continue;
+
+                            if (!(uiNodes[i] is UIActionNode))
+                                continue;
+
+                            if (uiNodes[i].rect.Contains(e.mousePosition))
+                            {
+                                (m_currentConnectingNode as UIOptionNode).OptionNode.SetAction(
+                                    (uiNodes[i] as UIActionNode).ConversationNode);
+                                break;
+                            }
+                        }
+                        m_inputState = eInputState.Regular;
+                    }
+
+                    // Esc
+                    if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Escape)
+                    {
+                        m_inputState = eInputState.Regular;
+                    }
                     break;
 
                 case eInputState.PlacingAction:
@@ -451,7 +499,7 @@ namespace DialogueEditor
                     }
                     break;
 
-                case eInputState.ConnectingAction:
+                case eInputState.ConnectingActionToOption:
                     break;
             }
 
@@ -569,6 +617,18 @@ namespace DialogueEditor
             // Set the input state appropriately
             m_inputState = eInputState.PlacingAction;
             m_currentPlacingNode = ui;
+        }
+
+
+        /* -- Connecting Nodes -- */
+
+        public void ConnectOptionToAction(UIOptionNode option)
+        {
+            // The option if what we are connecting
+            m_currentConnectingNode = option;
+
+            // Set the input state appropriately
+            m_inputState = eInputState.ConnectingOptionToAction;
         }
 
 

@@ -35,10 +35,45 @@ namespace DialogueEditor
                 ConversationOption option = node as ConversationOption;
                 if (option.Action != null)
                 {
-                    nodes.Add(option.Action);
-                    AddChildrenToList(option.Action, ref nodes);
+                    // Two options can be pointing to the same action. 
+                    // Ensure that the list of nodes does not already contain this action
+                    ConversationAction existingAction;
+                    if (!Contains(nodes, option.Action, out existingAction)) 
+                    {
+                        
+                        nodes.Add(option.Action);
+                        AddChildrenToList(option.Action, ref nodes);
+                    }
+                    // If it does, ensure the option points to the correct action
+                    else
+                    {
+                        option.Action = existingAction;
+                    }
                 }
             }
+        }
+
+        public static bool Contains(List<ConversationNode> nodes, ConversationAction action, out ConversationAction duplicate)
+        {
+            ConversationAction loopAction;
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if (nodes[i] is ConversationAction)
+                {
+                    loopAction = nodes[i] as ConversationAction;
+
+                    if (loopAction.Text == action.Text &&
+                        loopAction.EditorInfo.xPos == action.EditorInfo.xPos &&
+                        loopAction.EditorInfo.yPos == action.EditorInfo.yPos)
+                    {
+                        duplicate = loopAction;
+                        return true;
+                    }
+                        
+                }
+            }
+            duplicate = null;
+            return false;
         }
 
         public static bool IsPointerNearConnection(List<UINode> uiNodes)
