@@ -25,8 +25,20 @@ namespace DialogueEditor
                 {
                     for (int i = 0; i < action.Options.Count; i++)
                     {
-                        nodes.Add(action.Options[i]);
-                        AddChildrenToList(action.Options[i], ref nodes);
+                        // Two actions can be pointing at the same option. 
+                        // Ensure that the list of nodes does not already contain this option
+                        ConversationOption existingOption;
+                        if (!ContainsOption(nodes, action.Options[i], out existingOption))
+                        {
+                            nodes.Add(action.Options[i]);
+                            AddChildrenToList(action.Options[i], ref nodes);
+                        }
+                        // If it does, ensure this action points to the already-existing option 
+                        // and we don't need to add it to the list
+                        else
+                        {
+                            action.Options[i] = existingOption;
+                        }
                     }
                 }
             }
@@ -38,13 +50,14 @@ namespace DialogueEditor
                     // Two options can be pointing to the same action. 
                     // Ensure that the list of nodes does not already contain this action
                     ConversationAction existingAction;
-                    if (!Contains(nodes, option.Action, out existingAction)) 
+                    if (!ContainsAction(nodes, option.Action, out existingAction)) 
                     {
                         
                         nodes.Add(option.Action);
                         AddChildrenToList(option.Action, ref nodes);
                     }
                     // If it does, ensure the option points to the correct action
+                    // and we don't need to add it to the list
                     else
                     {
                         option.Action = existingAction;
@@ -53,7 +66,7 @@ namespace DialogueEditor
             }
         }
 
-        public static bool Contains(List<ConversationNode> nodes, ConversationAction action, out ConversationAction duplicate)
+        public static bool ContainsAction(List<ConversationNode> nodes, ConversationAction action, out ConversationAction duplicate)
         {
             ConversationAction loopAction;
             for (int i = 0; i < nodes.Count; i++)
@@ -70,6 +83,29 @@ namespace DialogueEditor
                         return true;
                     }
                         
+                }
+            }
+            duplicate = null;
+            return false;
+        }
+
+        public static bool ContainsOption(List<ConversationNode> nodes, ConversationOption option, out ConversationOption duplicate)
+        {
+            ConversationOption loopAction;
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if (nodes[i] is ConversationOption)
+                {
+                    loopAction = nodes[i] as ConversationOption;
+
+                    if (loopAction.Text == option.Text &&
+                        loopAction.EditorInfo.xPos == option.EditorInfo.xPos &&
+                        loopAction.EditorInfo.yPos == option.EditorInfo.yPos)
+                    {
+                        duplicate = loopAction;
+                        return true;
+                    }
+
                 }
             }
             duplicate = null;

@@ -42,7 +42,11 @@ namespace DialogueEditor
 
         public void AddOption(ConversationOption newOption)
         {
-            if (Options == null) { Options = new List<ConversationOption>(); }
+            if (Options == null)
+                Options = new List<ConversationOption>();
+
+            if (Options.Contains(newOption))
+                return;
 
             newOption.Parents.Add(this);
             Options.Add(newOption);

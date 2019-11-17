@@ -164,7 +164,8 @@ namespace DialogueEditor
             UINode.OnUINodeDeleted += DeleteUINode;
             UIActionNode.OnCreateOption += CreateNewOption;
             UIOptionNode.OnCreateAction += CreateNewAction;
-            UIOptionNode.OnConnectToAction += ConnectOptionToAction;
+            UIActionNode.OnConnectToOption += ConnectActionToOption;
+            UIOptionNode.OnConnectToAction += ConnectOptionToAction;          
         }
 
         private void InitGUIStyles()
@@ -180,6 +181,7 @@ namespace DialogueEditor
             UINode.OnUINodeDeleted -= DeleteUINode;
             UIActionNode.OnCreateOption -= CreateNewOption;
             UIOptionNode.OnCreateAction -= CreateNewAction;
+            UIActionNode.OnConnectToOption -= ConnectActionToOption;
             UIOptionNode.OnConnectToAction -= ConnectOptionToAction;
         }
 
@@ -294,7 +296,8 @@ namespace DialogueEditor
                 uiNodes[i].DrawConnections();
             }
 
-            if (m_inputState == eInputState.ConnectingOptionToAction)
+            if (m_inputState == eInputState.ConnectingOptionToAction || 
+                m_inputState == eInputState.ConnectingActionToOption)
             {
                 Vector2 start, end;
                 start = new Vector2(m_currentConnectingNode.rect.x + UIOptionNode.Width / 2,
@@ -308,7 +311,7 @@ namespace DialogueEditor
                     start, end,
                     start + toAction * 50f,
                     end + toOption * 50f,
-                    Color.blue, null, 5f);
+                    Color.black, null, 5f);
 
                 Repaint();
             }
@@ -500,6 +503,33 @@ namespace DialogueEditor
                     break;
 
                 case eInputState.ConnectingActionToOption:
+
+                    // Left click
+                    if (e.type == EventType.MouseDown && e.button == 0)
+                    {
+                        for (int i = 0; i < uiNodes.Count; i++)
+                        {
+                            if (uiNodes[i] == m_currentConnectingNode)
+                                continue;
+
+                            if (!(uiNodes[i] is UIOptionNode))
+                                continue;
+
+                            if (uiNodes[i].rect.Contains(e.mousePosition))
+                            {
+                                (m_currentConnectingNode as UIActionNode).ConversationNode.AddOption(
+                                    (uiNodes[i] as UIOptionNode).OptionNode);
+                                break;
+                            }
+                        }
+                        m_inputState = eInputState.Regular;
+                    }
+
+                    // Esc
+                    if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Escape)
+                    {
+                        m_inputState = eInputState.Regular;
+                    }
                     break;
             }
 
@@ -629,6 +659,15 @@ namespace DialogueEditor
 
             // Set the input state appropriately
             m_inputState = eInputState.ConnectingOptionToAction;
+        }
+
+        public void ConnectActionToOption(UIActionNode action)
+        {
+            // The option if what we are connecting
+            m_currentConnectingNode = action;
+
+            // Set the input state appropriately
+            m_inputState = eInputState.ConnectingActionToOption;
         }
 
 
