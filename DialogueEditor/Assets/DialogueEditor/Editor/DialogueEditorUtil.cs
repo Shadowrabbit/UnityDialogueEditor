@@ -6,66 +6,6 @@ namespace DialogueEditor
 {
     public static class DialogueEditorUtil
     {
-        public static List<ConversationNode> GetAllNodes(ConversationAction root)
-        {
-            List<ConversationNode> nodes = new List<ConversationNode>();
-            nodes.Add(root);
-
-            AddChildrenToList(root, ref nodes);
-
-            return nodes;
-        }
-
-        private static void AddChildrenToList(ConversationNode node, ref List<ConversationNode> nodes)
-        {
-            if (node is ConversationAction)
-            {
-                ConversationAction action = node as ConversationAction;
-                if (action.Options != null)
-                {
-                    for (int i = 0; i < action.Options.Count; i++)
-                    {
-                        // Two actions can be pointing at the same option. 
-                        // Ensure that the list of nodes does not already contain this option
-                        ConversationOption existingOption;
-                        if (!ContainsOption(nodes, action.Options[i], out existingOption))
-                        {
-                            nodes.Add(action.Options[i]);
-                            AddChildrenToList(action.Options[i], ref nodes);
-                        }
-                        // If it does, ensure this action points to the already-existing option 
-                        // and we don't need to add it to the list
-                        else
-                        {
-                            action.Options[i] = existingOption;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                ConversationOption option = node as ConversationOption;
-                if (option.Action != null)
-                {
-                    // Two options can be pointing to the same action. 
-                    // Ensure that the list of nodes does not already contain this action
-                    ConversationAction existingAction;
-                    if (!ContainsAction(nodes, option.Action, out existingAction)) 
-                    {
-                        
-                        nodes.Add(option.Action);
-                        AddChildrenToList(option.Action, ref nodes);
-                    }
-                    // If it does, ensure the option points to the correct action
-                    // and we don't need to add it to the list
-                    else
-                    {
-                        option.Action = existingAction;
-                    }
-                }
-            }
-        }
-
         public static bool ContainsAction(List<ConversationNode> nodes, ConversationAction action, out ConversationAction duplicate)
         {
             ConversationAction loopAction;

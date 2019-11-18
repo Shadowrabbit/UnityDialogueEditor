@@ -93,7 +93,10 @@ namespace DialogueEditor
             uiNodes.Clear();
 
             // Deseralize the asset to get the conversation root
-            ConversationRoot = CurrentAsset.GetDeserialized();
+            Conversation conversation = CurrentAsset.GetDeserialized();
+            if (conversation == null)
+                conversation = new Conversation();
+            ConversationRoot = conversation.GetRootNode();
 
             // If it's null, create a root
             if (ConversationRoot == null)
@@ -101,10 +104,43 @@ namespace DialogueEditor
                 ConversationRoot = new ConversationAction();
                 ConversationRoot.EditorInfo.xPos = (Screen.width / 2) - (UIActionNode.Width / 2);
                 ConversationRoot.EditorInfo.yPos = 0;
+                ConversationRoot.EditorInfo.isRoot = true;
+                conversation.Actions.Add(ConversationRoot);
             }
 
             // Get a list of every node in the conversation
-            List<ConversationNode> allNodes = DialogueEditorUtil.GetAllNodes(ConversationRoot);
+            List<ConversationNode> allNodes = new List<ConversationNode>();
+            for (int i = 0; i < conversation.Actions.Count; i++)
+                allNodes.Add(conversation.Actions[i]);
+            for (int i = 0; i < conversation.Options.Count; i++)
+                allNodes.Add(conversation.Options[i]);
+
+            // For every node: 
+            // Find the children and parents by UID
+            for (int i = 0; i < allNodes.Count; i++)
+            {
+                allNodes[i].parents = new List<ConversationNode>();
+                for (int j = 0; j < allNodes[i].parentUIDs.Count; j++)
+                {
+                    allNodes[i].parents.Add(conversation.GetNodeByUID(allNodes[i].parentUIDs[j]));
+                }
+
+                if (allNodes[i] is ConversationAction)
+                {
+                    int count = (allNodes[i] as ConversationAction).OptionUIDs.Count;
+                    (allNodes[i] as ConversationAction).Options = new List<ConversationOption>();
+                    for (int j = 0; j < count; j++)
+                    {
+                        (allNodes[i] as ConversationAction).Options.Add(
+                            conversation.GetOptionByUID((allNodes[i] as ConversationAction).OptionUIDs[j]));
+                    }
+                }
+                else if (allNodes[i] is ConversationOption)
+                {
+                    (allNodes[i] as ConversationOption).Action = 
+                        conversation.GetActionByUID((allNodes[i] as ConversationOption).ActionUID);
+                }
+            }
 
             // For every node: 
             // 1: Create a corresponding UI Node to represent it, and add it to the list
@@ -125,7 +161,7 @@ namespace DialogueEditor
                     ConversationAction action = node as ConversationAction;
                     if (action.Options != null)
                         for (int j = 0; j < action.Options.Count; j++)
-                            action.Options[j].Parents.Add(action);
+                            action.Options[j].parents.Add(action);
                 }
                 else
                 {
@@ -138,10 +174,9 @@ namespace DialogueEditor
                     // 2
                     ConversationOption option = node as ConversationOption;
                     if (option.Action != null)
-                        option.Action.Parents.Add(option);
+                        option.Action.parents.Add(option);
                 }
             }
-
 
             Repaint();
         }
@@ -741,7 +776,35 @@ namespace DialogueEditor
         private void Save()
         {
             if (CurrentAsset != null)
-                CurrentAsset.Serialize(ConversationRoot);
+            {
+                Conversation conversation = new Conversation();
+
+                // Give each node a uid
+                for (int i = 0; i < uiNodes.Count; i++)
+                {
+                    uiNodes[i].Info.UID = i + 1;
+                }
+
+                // Now that each node has a UID:
+                // - Register the UIDs of their parents/children
+                // - Add it to the conversation
+                for (int i = 0; i < uiNodes.Count; i++)
+                {
+                    uiNodes[i].Info.RegisterUIDs();
+
+                    if (uiNodes[i] is UIActionNode)
+                    {
+                        conversation.Actions.Add((uiNodes[i] as UIActionNode).ConversationNode);
+                    }
+                    else if (uiNodes[i] is UIOptionNode)
+                    {
+                        conversation.Options.Add((uiNodes[i] as UIOptionNode).OptionNode);
+                    }
+                }
+
+                // Serialize
+                CurrentAsset.Serialize(conversation);
+            }
         }
     }
 }
