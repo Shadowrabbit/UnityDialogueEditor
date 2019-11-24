@@ -9,6 +9,8 @@ namespace DialogueEditor
     [DataContract]
     public class Conversation
     {
+        public const int INVALID_UID = -1;
+
         public Conversation()
         {
             Actions = new List<ConversationAction>();
@@ -153,12 +155,16 @@ namespace DialogueEditor
 
         public override void RegisterUIDs()
         {
+            if (parentUIDs != null)
+                parents.Clear();
             parentUIDs = new List<int>();
             for (int i = 0; i < parents.Count; i++)
             {
                 parentUIDs.Add(parents[i].UID);
             }
 
+            if (OptionUIDs != null)
+                OptionUIDs.Clear();
             OptionUIDs = new List<int>();
             if (Options != null)
             {
@@ -215,12 +221,15 @@ namespace DialogueEditor
 
         public override void RegisterUIDs()
         {
+            if (parentUIDs != null)
+                parentUIDs.Clear();
             parentUIDs = new List<int>();
             for (int i = 0; i < parents.Count; i++)
             {
                 parentUIDs.Add(parents[i].UID);
             }
 
+            ActionUID = Conversation.INVALID_UID;
             if (Action != null)
                 ActionUID = Action.UID;
         }

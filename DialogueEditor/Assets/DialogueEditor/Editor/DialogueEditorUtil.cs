@@ -52,20 +52,67 @@ namespace DialogueEditor
             return false;
         }
 
-        public static bool IsPointerNearConnection(List<UINode> uiNodes)
+        public static bool IsPointerNearConnection(List<UINode> uiNodes, Vector2 mousePos, 
+            out ConversationNode par, out ConversationNode child)
         {
-            return false;
+            par = null;
+            child = null;
+            UIActionNode action;
+            UIOptionNode option;
+            Vector2 start, end;           
+            float minDistance = float.MaxValue;
+            const float MIN_DIST = 6;
 
             for (int i = 0; i < uiNodes.Count; i++)
             {
                 if (uiNodes[i] is UIActionNode)
                 {
+                    action = uiNodes[i] as UIActionNode;
 
+                    if (action.ConversationNode.Options != null)
+                    {
+                        for (int j = 0; j < action.ConversationNode.Options.Count; j++)
+                        {
+                            GetConnectionDrawInfo(action.rect, action.ConversationNode.Options[j], out start, out end);
+
+                            float distance = MinimumDistanceBetweenPointAndLine(start, end, mousePos);
+                            if (distance < minDistance)
+                            {
+                                minDistance = distance;
+                                par = action.ConversationNode;
+                                child = action.ConversationNode.Options[j];
+                            }
+                        }
+                    }
                 }
                 else if (uiNodes[i] is UIOptionNode)
                 {
+                    option = uiNodes[i] as UIOptionNode;
 
+                    if (option.OptionNode.Action != null)
+                    {
+                        GetConnectionDrawInfo(option.rect, option.OptionNode.Action, out start, out end);
+
+                        float distance = MinimumDistanceBetweenPointAndLine(start, end, mousePos);
+                        if (distance < minDistance)
+                        {
+                            minDistance = distance;
+                            par = option.OptionNode;
+                            child = option.OptionNode.Action;
+                        }
+                    }
                 }
+            }
+
+            if (minDistance < MIN_DIST)
+            {
+                return true;
+            }
+            else
+            {
+                par = null;
+                child = null;
+                return false;
             }
         }
 

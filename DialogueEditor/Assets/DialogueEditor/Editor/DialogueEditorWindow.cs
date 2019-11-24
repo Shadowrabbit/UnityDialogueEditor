@@ -7,7 +7,6 @@ namespace DialogueEditor
 {
     public class DialogueEditorWindow : EditorWindow
     {
-
         public enum eInputState
         {
             Regular                     = 0,
@@ -49,6 +48,7 @@ namespace DialogueEditor
         private eInputState m_inputState;
         private UINode m_currentPlacingNode = null;
         private UINode m_currentConnectingNode = null;
+        ConversationNode m_connectionDeleteParent, m_connectionDeleteChild;
 
         // Cleanup
         bool placeholder_toggle_bool;
@@ -578,6 +578,7 @@ namespace DialogueEditor
             switch (e.type)
             {
                 case EventType.MouseDown:
+                    // Left click
                     if (e.button == 0)
                     {
                         if (panelRect.Contains(e.mousePosition))
@@ -591,6 +592,16 @@ namespace DialogueEditor
                             {
                                 UnselectNode();
                             }
+                        }
+                    }
+                    // Right click
+                    else if (e.button == 1)
+                    {
+                        if (DialogueEditorUtil.IsPointerNearConnection(uiNodes, e.mousePosition, out m_connectionDeleteParent, out m_connectionDeleteChild))
+                        {
+                            GenericMenu rightClickMenu = new GenericMenu();
+                            rightClickMenu.AddItem(new GUIContent("Delete this connection"), false, DeleteConnection);
+                            rightClickMenu.ShowAsContext();
                         }
                     }
                     break;
@@ -718,6 +729,31 @@ namespace DialogueEditor
             node = null;
         }
 
+        /* -- Deleting connection -- */
+
+        public void DeleteConnection()
+        {
+            if (m_connectionDeleteParent != null && m_connectionDeleteChild != null)
+            {
+                // Remove parent relationship
+                m_connectionDeleteChild.parents.Remove(m_connectionDeleteParent);
+
+                // Remove child relationship
+                if (m_connectionDeleteParent is ConversationAction)
+                {
+                    (m_connectionDeleteParent as ConversationAction).Options.Remove(
+                        (m_connectionDeleteChild as ConversationOption));
+                }
+                else
+                {
+                    (m_connectionDeleteParent as ConversationOption).Action = null;
+                }
+            }
+
+            // m_ConnectionDeleteA, m_connectionDeleteB
+            m_connectionDeleteParent = null;
+            m_connectionDeleteChild = null;
+        }
 
 
 
