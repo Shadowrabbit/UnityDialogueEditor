@@ -6,6 +6,12 @@ using System.Runtime.Serialization.Json;
 
 namespace DialogueEditor
 {
+    public enum eNodeType
+    {
+        Dialogue,
+        Action
+    }
+
     [DataContract]
     public class Conversation
     {

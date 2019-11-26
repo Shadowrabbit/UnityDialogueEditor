@@ -14,22 +14,39 @@ namespace DialogueEditor
         public delegate void UINodeDeletedEvent(UINode node);
         public static UINodeDeletedEvent OnUINodeDeleted;
 
+        // Consts
+        protected const int TEXT_BORDER = 5;
+        protected const int TITLE_HEIGHT = 25;
+        protected const int TEXT_BOX_HEIGHT = 35;
+
         // Members
         public Rect rect;
-        public string title;
         public bool isDragged;
         public bool isSelected;
-
+        protected string title;
         protected GUIStyle currentBoxStyle;
+
+        // Static
+        private static GUIStyle titleStyle;
 
         // Properties
         public ConversationNode Info { get; protected set; }
 
 
-        // Constructor and creation logic
+        //---------------------------------
+        // Constructor 
+        //---------------------------------
+
         public UINode(ConversationNode infoNode, Vector2 pos)
         {
             Info = infoNode;
+
+            if (titleStyle == null)
+            {
+                titleStyle = new GUIStyle();
+                titleStyle.alignment = TextAnchor.MiddleCenter;
+                titleStyle.fontStyle = FontStyle.Bold;
+            }
         }
 
         protected void CreateRect(Vector2 pos, float wid, float hei)
@@ -49,16 +66,45 @@ namespace DialogueEditor
             Info.EditorInfo.yPos = centeredPos.y;
         }
 
+
+
+
+        //---------------------------------
+        // Drawing
+        //---------------------------------
+
+        public void Draw()
+        {
+            // Box
+            GUI.Box(rect, title, currentBoxStyle);
+
+            OnDraw();
+        }
+
+        protected void DrawTitle(string text)
+        {
+            // Internals 
+            Rect internalText = new Rect(rect.x, rect.y, rect.width, TITLE_HEIGHT);
+            GUI.Label(internalText, text, titleStyle);
+        }
+
+        protected void DrawInternalText(string text)
+        {
+            Rect internalText = new Rect(rect.x + TEXT_BORDER, rect.y + TITLE_HEIGHT, rect.width - TEXT_BORDER * 2, TEXT_BOX_HEIGHT);
+            GUI.Box(internalText, text, EditorStyles.textArea);
+        }
+
+
+
+        //---------------------------------
+        // Interactions / Events
+        //---------------------------------
+
         public void Drag(Vector2 moveDelta)
         {
             rect.position += moveDelta;
             Info.EditorInfo.xPos = rect.x;
             Info.EditorInfo.yPos = rect.y;
-        }
-
-        public void Draw()
-        {
-            OnDraw();
         }
 
         public void SetSelected(bool selected)
@@ -67,7 +113,6 @@ namespace DialogueEditor
             {
                 isDragged = true;
                 isSelected = true;
-                DialogueEditorWindow.NodeClickedOnThisUpdate = true;
             }
             else
             {
@@ -84,8 +129,9 @@ namespace DialogueEditor
                 case EventType.MouseDown:
                     if (e.button == 0)
                     {
-                        if (rect.Contains(e.mousePosition) && !isSelected)
+                        if (rect.Contains(e.mousePosition))
                         {
+                            DialogueEditorWindow.NodeClickedOnThisUpdate = true;
                             OnUINodeSelected?.Invoke(this, true);
                         }
 
@@ -114,7 +160,13 @@ namespace DialogueEditor
             return false;
         }
 
+
+
+
+        //---------------------------------
         // Abstract methods
+        //---------------------------------
+
         public abstract void OnDraw();
         public abstract void DrawConnections();
         protected abstract void ProcessContextMenu();
@@ -129,22 +181,30 @@ namespace DialogueEditor
 
     public class UIActionNode : UINode
     {
+        // Events
         public delegate void CreateOptionEvent(UIActionNode node);
         public static CreateOptionEvent OnCreateOption;
 
         public delegate void ConnectToOptionEvent(UIActionNode node);
         public static ConnectToOptionEvent OnConnectToOption;
 
+        // Static properties
         public static int Width { get { return 200; } }
-        public static int Height { get { return 100; } }
+        public static int Height { get { return 75; } }
 
+        // Properties
         public ConversationAction ConversationNode { get { return Info as ConversationAction; } }
 
+        // Static styles
         protected static GUIStyle defaultNodeStyle;
         protected static GUIStyle selectedNodeStyle;
 
-        public UIActionNode(ConversationNode infoNode, Vector2 pos)
-            : base(infoNode, pos)
+
+        //---------------------------------
+        // Constructor
+        //---------------------------------
+
+        public UIActionNode(ConversationNode infoNode, Vector2 pos) : base(infoNode, pos)
         {
             if (defaultNodeStyle == null)
             {
@@ -152,7 +212,7 @@ namespace DialogueEditor
                 Texture2D t2d = new Texture2D(Width, Height);
                 for (int x = 0; x < Width - 1; x++)
                     for (int y = 0; y < Height - 1; y++)
-                        t2d.SetPixel(x, y, DialogueEditorUtil.Colour(173, 25, 15));
+                        t2d.SetPixel(x, y, DialogueEditorUtil.Colour(163, 77, 77));
                 t2d.Apply();
                 defaultNodeStyle.normal.background = t2d;
             }
@@ -162,7 +222,7 @@ namespace DialogueEditor
                 Texture2D t2d = new Texture2D(Width, Height);
                 for (int x = 0; x < Width - 1; x++)
                     for (int y = 0; y < Height - 1; y++)
-                        t2d.SetPixel(x, y, DialogueEditorUtil.Colour(217, 36, 20));
+                        t2d.SetPixel(x, y, DialogueEditorUtil.Colour(196, 92, 92));
                 t2d.Apply();
                 selectedNodeStyle.normal.background = t2d;
             }
@@ -172,28 +232,16 @@ namespace DialogueEditor
             CreateRect(pos, Width, Height);
         }
 
+
+
+        //---------------------------------
+        // Drawing
+        //---------------------------------
+
         public override void OnDraw()
         {
-            // Box
-            GUI.Box(rect, title, currentBoxStyle);
-
-            // Internals 
-            Rect internalText = new Rect(base.rect.x, base.rect.y, base.rect.width, 25);
-
-            // Title
-            GUIStyle titleStyle = new GUIStyle();
-            titleStyle.alignment = TextAnchor.MiddleCenter;
-            titleStyle.fontStyle = FontStyle.Bold;
-        
-            GUI.Label(internalText, "Action node", titleStyle);
-            internalText.y += 25;
-
-            // Properties
-            int border = 5;
-            internalText.x += border;
-            internalText.width -= border * 2;
-
-            GUI.Box(internalText, ConversationNode.Text);
+            DrawTitle("Action node.");
+            DrawInternalText(ConversationNode.Text);
         }
 
         public override void DrawConnections()
@@ -218,6 +266,13 @@ namespace DialogueEditor
 
         }
 
+
+
+
+        //---------------------------------
+        // Interactions
+        //---------------------------------
+
         protected override void OnSetSelected(bool selected)
         {
             if (selected)
@@ -225,6 +280,13 @@ namespace DialogueEditor
             else
                 currentBoxStyle = defaultNodeStyle;
         }
+
+
+
+
+        //---------------------------------
+        // Right clicked
+        //---------------------------------
 
         protected override void ProcessContextMenu()
         {
@@ -262,22 +324,30 @@ namespace DialogueEditor
 
     public class UIOptionNode : UINode
     {
+        // Events
         public delegate void CreateActionEvent(UIOptionNode node);
         public static CreateActionEvent OnCreateAction;
 
         public delegate void ConnectToActionEvent(UIOptionNode node);
         public static ConnectToActionEvent OnConnectToAction;
 
+        // Static properties
         public static int Width { get { return 200; } }
-        public static int Height { get { return 50; } }
+        public static int Height { get { return 75; } }
 
+        // Properties
         public ConversationOption OptionNode { get { return Info as ConversationOption; } }
 
+        // Static styles
         protected static GUIStyle defaultNodeStyle;
         protected static GUIStyle selectedNodeStyle;
 
-        public UIOptionNode(ConversationNode infoNode, Vector2 pos)
-            : base(infoNode, pos)
+
+        //---------------------------------
+        // Constructor 
+        //---------------------------------
+
+        public UIOptionNode(ConversationNode infoNode, Vector2 pos) : base(infoNode, pos)
         {
             if (defaultNodeStyle == null)
             {
@@ -285,7 +355,7 @@ namespace DialogueEditor
                 Texture2D t2d = new Texture2D(Width, Height);
                 for (int x = 0; x < Width - 1; x++)
                     for (int y = 0; y < Height - 1; y++)
-                        t2d.SetPixel(x, y, DialogueEditorUtil.Colour(20, 138, 254));
+                        t2d.SetPixel(x, y, DialogueEditorUtil.Colour(113, 150, 150));
                 t2d.Apply();
                 defaultNodeStyle.normal.background = t2d;
             }
@@ -295,7 +365,7 @@ namespace DialogueEditor
                 Texture2D t2d = new Texture2D(Width, Height);
                 for (int x = 0; x < Width - 1; x++)
                     for (int y = 0; y < Height - 1; y++)
-                        t2d.SetPixel(x, y, DialogueEditorUtil.Colour(0, 188, 254));
+                        t2d.SetPixel(x, y, DialogueEditorUtil.Colour(136, 184, 184));
                 t2d.Apply();
                 selectedNodeStyle.normal.background = t2d;
             }
@@ -305,28 +375,17 @@ namespace DialogueEditor
             CreateRect(pos, Width, Height);
         }
 
+
+
+
+        //---------------------------------
+        // Drawing
+        //---------------------------------
+
         public override void OnDraw()
         {
-            // Box
-            GUI.Box(rect, title, currentBoxStyle);
-
-            // Internal rect
-            Rect internalRect = new Rect(base.rect.x, base.rect.y, base.rect.width, 25);
-
-            // Title
-            GUIStyle titleStyle = new GUIStyle();
-            titleStyle.alignment = TextAnchor.MiddleCenter;
-            titleStyle.fontStyle = FontStyle.Bold;
-
-            GUI.Label(internalRect, "Option node", titleStyle);
-            internalRect.y += 25;
-
-            // Properties
-            int border = 5;
-            internalRect.x += border;
-            internalRect.width -= border * 2;
-
-            GUI.Box(internalRect, OptionNode.Text);
+            DrawTitle("Option node.");
+            DrawInternalText(OptionNode.Text);
         }
 
         public override void DrawConnections()
@@ -347,6 +406,13 @@ namespace DialogueEditor
             }
         }
 
+
+
+
+        //---------------------------------
+        // Interactions
+        //---------------------------------
+
         protected override void OnSetSelected(bool selected)
         {
             if (selected)
@@ -354,6 +420,13 @@ namespace DialogueEditor
             else
                 currentBoxStyle = defaultNodeStyle;
         }
+
+
+
+
+        //---------------------------------
+        // Right clicked
+        //---------------------------------
 
         protected override void ProcessContextMenu()
         {

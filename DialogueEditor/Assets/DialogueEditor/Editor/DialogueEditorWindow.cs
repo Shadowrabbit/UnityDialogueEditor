@@ -20,17 +20,18 @@ namespace DialogueEditor
         public const float TOOLBAR_HEIGHT = 17;
         public const float PANEL_WIDTH = 200;
 
-        // Static
+        // Static properties
         public static bool NodeClickedOnThisUpdate { get; set; }
-
         private static UINode CurrentlySelectedNode { get; set; }
 
-        // The NPCDialogue scriptable object that is currently being viewed/edited
-        private NPCConversation CurrentAsset;
-        private ConversationAction ConversationRoot;
+        // Private variables:     
+        private NPCConversation CurrentAsset;           // The Conversation scriptable object that is currently being viewed/edited
+        private ConversationAction ConversationRoot;    // The root node of the conversation
+        private List<UINode> uiNodes;                   // List of all UI nodes
 
-        // List of all nodes and connections currently being drawn in editor window
-        private List<UINode> uiNodes;
+        // Selected asset logic (See: Update)
+        private NPCConversation currentlySelectedAsset;
+        private ScriptableObject newlySelectedAsset;
 
         // Right-hand display pannel vars
         private Rect panelRect;
@@ -48,10 +49,7 @@ namespace DialogueEditor
         private eInputState m_inputState;
         private UINode m_currentPlacingNode = null;
         private UINode m_currentConnectingNode = null;
-        ConversationNode m_connectionDeleteParent, m_connectionDeleteChild;
-
-        // Cleanup
-        bool placeholder_toggle_bool;
+        private ConversationNode m_connectionDeleteParent, m_connectionDeleteChild;
 
 
 
@@ -71,6 +69,8 @@ namespace DialogueEditor
         {
             NPCConversation conversation = EditorUtility.InstanceIDToObject(assetInstanceID) as NPCConversation;
 
+            Debug.Log("e");
+
             if (conversation != null)
             {
                 DialogueEditorWindow window = ShowWindow();
@@ -85,14 +85,15 @@ namespace DialogueEditor
 
 
         //--------------------------------------
-        // New NPCDialogue asset selected
+        // New conversation asset selected
         //--------------------------------------
 
         public void OnNewAssetSelected()
         {
+            // Clear all current UI Nodes
             uiNodes.Clear();
 
-            // Deseralize the asset to get the conversation root
+            // Deseralize the asset and get the conversation root
             Conversation conversation = CurrentAsset.GetDeserialized();
             if (conversation == null)
                 conversation = new Conversation();
@@ -185,7 +186,7 @@ namespace DialogueEditor
 
 
         //--------------------------------------
-        // OnEnable, OnDisable
+        // OnEnable, OnDisable, LostFocus
         //--------------------------------------
 
         private void OnEnable()
@@ -218,8 +219,15 @@ namespace DialogueEditor
             UIOptionNode.OnCreateAction -= CreateNewAction;
             UIActionNode.OnConnectToOption -= ConnectActionToOption;
             UIOptionNode.OnConnectToAction -= ConnectOptionToAction;
+
+            Debug.Log("Disable");
         }
 
+        protected void OnLostFocus()
+        {
+            Log("Saving conversation. Reason: Window lost focus.");
+            Save();
+        }
 
 
 
@@ -227,24 +235,33 @@ namespace DialogueEditor
         // Update
         //--------------------------------------
 
-        NPCConversation _cachedSelectedAsset;
-        ScriptableObject _newlySelectedAsset;    
-
         private void Update()
         {
-            _newlySelectedAsset = EditorUtility.InstanceIDToObject(Selection.activeInstanceID) as ScriptableObject;
-            if (_newlySelectedAsset != null)
-            {
-                if (_newlySelectedAsset is NPCConversation)
-                {
-                    _cachedSelectedAsset = _newlySelectedAsset as NPCConversation;
+            // Get asset the user is selecting
+            newlySelectedAsset = EditorUtility.InstanceIDToObject(Selection.activeInstanceID) as ScriptableObject;
 
-                    if (_cachedSelectedAsset != CurrentAsset)
+            // If it's not null
+            if (newlySelectedAsset != null)
+            {
+                // If it's a different asset and our current asset isn't null, save our current asset
+                if (currentlySelectedAsset != null && currentlySelectedAsset != newlySelectedAsset)
+                {
+                    Log("Saving conversation. Reason: Conversation asset de-selected");
+                    Save();
+                }
+
+                // If its a conversation scriptable, load new asset
+                if (newlySelectedAsset is NPCConversation)
+                {
+                    currentlySelectedAsset = newlySelectedAsset as NPCConversation;
+
+                    if (currentlySelectedAsset != CurrentAsset)
                     {
-                        CurrentAsset = _cachedSelectedAsset;
+                        CurrentAsset = currentlySelectedAsset;
                         OnNewAssetSelected();
                     }                      
                 }
+                // Else clear current asset
                 else
                 {
                     CurrentAsset = null;
@@ -254,6 +271,7 @@ namespace DialogueEditor
             else
             {
                 CurrentAsset = null;
+                currentlySelectedAsset = null;
                 Repaint();
             }
 
@@ -308,6 +326,7 @@ namespace DialogueEditor
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Save", EditorStyles.toolbarButton))
             {
+                Log("Saving conversation. Reason: User clicked save.");
                 Save();
             }
             GUILayout.EndHorizontal();
@@ -407,6 +426,7 @@ namespace DialogueEditor
                 Rect propertyRect = new Rect(padding, 0, panelRect.width - padding * 2, 20);
                 int smallGap = 20;
                 int bigGap = 30;
+                int textBoxHeight = 100;
 
                 // Action node info
                 if (CurrentlySelectedNode is UIActionNode)
@@ -414,13 +434,12 @@ namespace DialogueEditor
                     ConversationAction node = (CurrentlySelectedNode.Info as ConversationAction);
 
                     // Title
-                    EditorGUI.LabelField(propertyRect, "Action Node", panelTitleStyle);
+                    EditorGUI.TextArea(propertyRect, "Action Node", panelTitleStyle);
                     propertyRect.y += bigGap;
 
                     // Action text
-                    int textBoxHeight = 100;
                     propertyRect.height += textBoxHeight;
-                    node.Text = EditorGUI.TextField(propertyRect, node.Text);
+                    node.Text = GUI.TextArea(propertyRect, node.Text);
                     propertyRect.height -= textBoxHeight;
                     propertyRect.y += bigGap + textBoxHeight;
                 }
@@ -431,16 +450,15 @@ namespace DialogueEditor
                     ConversationOption node = CurrentlySelectedNode.Info as ConversationOption;
 
                     // Title
-                    EditorGUI.LabelField(propertyRect, "Option Node", panelTitleStyle);
+                    EditorGUI.TextArea(propertyRect, "Option Node", panelTitleStyle);
                     propertyRect.y += bigGap;
 
                     // Option text Value
                     string valueTitle = "Chat option";
                     EditorGUI.LabelField(propertyRect, valueTitle, panelPropertyStyle);
                     propertyRect.y += smallGap;
-                    int textBoxHeight = 100;
                     propertyRect.height += textBoxHeight;
-                    node.Text = EditorGUI.TextField(propertyRect, node.Text);
+                    node.Text = GUI.TextArea(propertyRect, node.Text);
                     propertyRect.height -= textBoxHeight;
                     propertyRect.y += bigGap + textBoxHeight;
                 }
@@ -757,6 +775,7 @@ namespace DialogueEditor
 
 
 
+
         //--------------------------------------
         // Util
         //--------------------------------------
@@ -795,6 +814,18 @@ namespace DialogueEditor
             }
             return false;
         }
+
+        private void Log(string str)
+        {
+            Debug.Log("[DialogueEditor]: " + str);
+        }
+
+
+
+
+        //--------------------------------------
+        // User / Save functionality
+        //--------------------------------------
 
         public void Recenter()
         {
