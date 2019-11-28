@@ -69,8 +69,6 @@ namespace DialogueEditor
         {
             NPCConversation conversation = EditorUtility.InstanceIDToObject(assetInstanceID) as NPCConversation;
 
-            Debug.Log("e");
-
             if (conversation != null)
             {
                 DialogueEditorWindow window = ShowWindow();
@@ -219,8 +217,6 @@ namespace DialogueEditor
             UIOptionNode.OnCreateAction -= CreateNewAction;
             UIActionNode.OnConnectToOption -= ConnectActionToOption;
             UIOptionNode.OnConnectToAction -= ConnectOptionToAction;
-
-            Debug.Log("Disable");
         }
 
         protected void OnLostFocus()
