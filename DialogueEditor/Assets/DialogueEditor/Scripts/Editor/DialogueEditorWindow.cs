@@ -88,6 +88,8 @@ namespace DialogueEditor
 
         public void OnNewAssetSelected()
         {
+            Log("Loading new asset: " + CurrentAsset.name);
+
             // Clear all current UI Nodes
             uiNodes.Clear();
 
@@ -320,11 +322,6 @@ namespace DialogueEditor
                 Recenter();
             }
             GUILayout.FlexibleSpace();
-            if (GUILayout.Button("Save", EditorStyles.toolbarButton))
-            {
-                Log("Saving conversation. Reason: User clicked save.");
-                Save();
-            }
             GUILayout.EndHorizontal();
         }
 
@@ -813,7 +810,9 @@ namespace DialogueEditor
 
         private void Log(string str)
         {
+#if DIALOGUE_DEBUG
             Debug.Log("[DialogueEditor]: " + str);
+#endif
         }
 
 
@@ -867,6 +866,11 @@ namespace DialogueEditor
 
                 // Serialize
                 CurrentAsset.Serialize(conversation);
+
+                // Null / clear everything. We aren't pointing to it anymore. 
+                CurrentAsset = null;
+                while (uiNodes.Count != 0)
+                    uiNodes.RemoveAt(0);
             }
         }
     }

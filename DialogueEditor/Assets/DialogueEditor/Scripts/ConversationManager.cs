@@ -20,6 +20,9 @@ namespace DialogueEditor
         [Header("Assets")]
         public UIConversationButton ButtonPrefab;
 
+        private Conversation m_currentConversation;
+        private List<UIConversationButton> m_options;
+
         private void Awake()
         {
             // Destroy myself if I am not the singleton
@@ -48,9 +51,6 @@ namespace DialogueEditor
         // Conversation
         //--------------------------------------
 
-        private Conversation m_currentConversation;
-        private List<UIConversationButton> m_options;
-
         public void StartConversation(NPCConversation conversation)
         {
             BasePanel.gameObject.SetActive(true);
@@ -68,6 +68,8 @@ namespace DialogueEditor
             }
 
             DialogueTextMesh.text = action.Text;
+
+            ClearOptions();
 
             if (action.OptionUIDs == null || action.OptionUIDs.Count == 0)
             {
@@ -89,11 +91,7 @@ namespace DialogueEditor
         public void OptionSelected(ConversationOption option)
         {
             // Clear all current options
-            while (m_options.Count != 0)
-            {
-                GameObject.Destroy(m_options[0].gameObject);
-                m_options.RemoveAt(0);
-            }
+            ClearOptions();
 
             if (option == null)
             {
@@ -111,6 +109,16 @@ namespace DialogueEditor
         private void EndConversation()
         {
             BasePanel.gameObject.SetActive(false);
+        }
+
+        private void ClearOptions()
+        {
+            while (m_options.Count != 0)
+            {
+                GameObject.Destroy(m_options[0].gameObject);
+                m_options.RemoveAt(0);
+            }
+
         }
     }
 }

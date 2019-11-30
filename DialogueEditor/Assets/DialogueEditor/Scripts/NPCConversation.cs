@@ -248,7 +248,7 @@ namespace DialogueEditor
     // Scriptable and Serialization
     //--------------------------------------
 
-    [CreateAssetMenu(fileName = "NPC_Conversation", menuName = "NPC_Conversation/Conversation")]
+    [CreateAssetMenu(fileName = "NPC_Conversation", menuName = "DialogueEditor/Conversation")]
     [System.Serializable]
     public class NPCConversation : ScriptableObject
     {
