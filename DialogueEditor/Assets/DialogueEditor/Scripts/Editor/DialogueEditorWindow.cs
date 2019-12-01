@@ -19,6 +19,7 @@ namespace DialogueEditor
         // Consts
         public const float TOOLBAR_HEIGHT = 17;
         public const float PANEL_WIDTH = 200;
+        private const string WINDOW_NAME = "DIALOGUE_EDITOR_WINDOW";
 
         // Static properties
         public static bool NodeClickedOnThisUpdate { get; set; }
@@ -29,9 +30,9 @@ namespace DialogueEditor
         private ConversationAction ConversationRoot;    // The root node of the conversation
         private List<UINode> uiNodes;                   // List of all UI nodes
 
-        // Selected asset logic (See: Update)
+        // Selected asset logic
         private NPCConversation currentlySelectedAsset;
-        private ScriptableObject newlySelectedAsset;
+        private Object newlySelectedAsset;
 
         // Right-hand display pannel vars
         private Rect panelRect;
@@ -72,8 +73,7 @@ namespace DialogueEditor
             if (conversation != null)
             {
                 DialogueEditorWindow window = ShowWindow();
-                window.CurrentAsset = conversation;
-                window.OnNewAssetSelected();
+                window.LoadNewAsset(conversation);
                 return true;
             }
             return false;
@@ -83,11 +83,12 @@ namespace DialogueEditor
 
 
         //--------------------------------------
-        // New conversation asset selected
+        // Load New Asset
         //--------------------------------------
 
-        public void OnNewAssetSelected()
+        public void LoadNewAsset(NPCConversation asset)
         {
+            CurrentAsset = asset;
             Log("Loading new asset: " + CurrentAsset.name);
 
             // Clear all current UI Nodes
@@ -201,7 +202,9 @@ namespace DialogueEditor
             UIActionNode.OnCreateOption += CreateNewOption;
             UIOptionNode.OnCreateAction += CreateNewAction;
             UIActionNode.OnConnectToOption += ConnectActionToOption;
-            UIOptionNode.OnConnectToAction += ConnectOptionToAction;          
+            UIOptionNode.OnConnectToAction += ConnectOptionToAction;
+
+            this.name = WINDOW_NAME;
         }
 
         private void InitGUIStyles()
@@ -219,24 +222,33 @@ namespace DialogueEditor
             UIOptionNode.OnCreateAction -= CreateNewAction;
             UIActionNode.OnConnectToOption -= ConnectActionToOption;
             UIOptionNode.OnConnectToAction -= ConnectOptionToAction;
+
+            Debug.Log("Disable");
         }
 
         protected void OnLostFocus()
         {
-            Log("Saving conversation. Reason: Window lost focus.");
+            //if (EditorWindow.focusedWindow == null)
+            //{
+            //    Log("Saving conversation. Reason: Window lost focus. Currently focused window: " + EditorWindow.focusedWindow.name);
+            //    Save();
+            //}
+            //if (!(EditorWindow.focusedWindow is DialogueEditorWindow))
+            //{
+
+            //}
+        }
+
+        protected void OnDestroy()
+        {
+            Log("Saving conversation. Reason: Window closed.");
             Save();
         }
 
-
-
-        //--------------------------------------
-        // Update
-        //--------------------------------------
-
-        private void Update()
+        protected void OnSelectionChange()
         {
             // Get asset the user is selecting
-            newlySelectedAsset = EditorUtility.InstanceIDToObject(Selection.activeInstanceID) as ScriptableObject;
+            newlySelectedAsset = Selection.activeObject;
 
             // If it's not null
             if (newlySelectedAsset != null)
@@ -246,6 +258,7 @@ namespace DialogueEditor
                 {
                     Log("Saving conversation. Reason: Conversation asset de-selected");
                     Save();
+                    currentlySelectedAsset = null;
                 }
 
                 // If its a conversation scriptable, load new asset
@@ -255,9 +268,8 @@ namespace DialogueEditor
 
                     if (currentlySelectedAsset != CurrentAsset)
                     {
-                        CurrentAsset = currentlySelectedAsset;
-                        OnNewAssetSelected();
-                    }                      
+                        LoadNewAsset(currentlySelectedAsset);
+                    }
                 }
                 // Else clear current asset
                 else
@@ -272,7 +284,16 @@ namespace DialogueEditor
                 currentlySelectedAsset = null;
                 Repaint();
             }
+        }
 
+
+
+        //--------------------------------------
+        // Update
+        //--------------------------------------
+
+        private void Update()
+        {
             switch (m_inputState)
             {
                 case eInputState.PlacingOption:
@@ -410,16 +431,13 @@ namespace DialogueEditor
                 panelTitleStyle.alignment = TextAnchor.MiddleCenter;
                 panelTitleStyle.fontStyle = FontStyle.Bold;
 
-                // GUIStyle for property title
-                panelPropertyStyle = new GUIStyle();
-                panelPropertyStyle.fontStyle = FontStyle.Bold;
-
                 // Rect for elements
                 int padding = 12;
                 Rect propertyRect = new Rect(padding, 0, panelRect.width - padding * 2, 20);
                 int smallGap = 20;
                 int bigGap = 30;
-                int textBoxHeight = 100;
+                int titleGap = 15;
+                int textBoxHeight = 75;
 
                 // Action node info
                 if (CurrentlySelectedNode is UIActionNode)
@@ -431,10 +449,19 @@ namespace DialogueEditor
                     propertyRect.y += bigGap;
 
                     // Action text
+                    EditorGUI.LabelField(propertyRect, "Dialogue text:", EditorStyles.boldLabel);
+                    propertyRect.y += titleGap;
+
                     propertyRect.height += textBoxHeight;
                     node.Text = GUI.TextArea(propertyRect, node.Text);
                     propertyRect.height -= textBoxHeight;
                     propertyRect.y += bigGap + textBoxHeight;
+
+                    // Action Audio
+                    propertyRect.y += smallGap;
+                    EditorGUI.LabelField(propertyRect, "Audio: ", EditorStyles.boldLabel);
+                    propertyRect.y += titleGap;
+                    node.Audio = (AudioClip)EditorGUI.ObjectField(propertyRect, node.Audio, typeof(AudioClip), false);
                 }
 
                 // Option node info
@@ -447,14 +474,19 @@ namespace DialogueEditor
                     propertyRect.y += bigGap;
 
                     // Option text Value
-                    string valueTitle = "Chat option";
-                    EditorGUI.LabelField(propertyRect, valueTitle, panelPropertyStyle);
-                    propertyRect.y += smallGap;
+                    EditorGUI.LabelField(propertyRect, "Option text:", EditorStyles.boldLabel);
+                    propertyRect.y += titleGap;
+
                     propertyRect.height += textBoxHeight;
                     node.Text = GUI.TextArea(propertyRect, node.Text);
                     propertyRect.height -= textBoxHeight;
                     propertyRect.y += bigGap + textBoxHeight;
                 }
+            }
+            else
+            {
+                EditorGUI.TextArea(new Rect(0, 0, 0, 0), "Dialogue: " + CurrentAsset.name);
+                Repaint();
             }
 
             GUILayout.EndArea();
@@ -794,6 +826,7 @@ namespace DialogueEditor
         {
             if (CurrentlySelectedNode != null)
                 CurrentlySelectedNode.SetSelected(false);
+            CurrentlySelectedNode = null;
         }
 
         private bool IsANodeSelected()
@@ -810,7 +843,7 @@ namespace DialogueEditor
 
         private void Log(string str)
         {
-#if DIALOGUE_DEBUG
+#if DIALOGUE_DEBUG || true
             Debug.Log("[DialogueEditor]: " + str);
 #endif
         }
@@ -842,9 +875,11 @@ namespace DialogueEditor
                 Conversation conversation = new Conversation();
 
                 // Give each node a uid
+                // Prepare each node for serialization
                 for (int i = 0; i < uiNodes.Count; i++)
                 {
                     uiNodes[i].Info.UID = i + 1;
+                    uiNodes[i].Info.PrepareForSerialization();
                 }
 
                 // Now that each node has a UID:
@@ -871,6 +906,7 @@ namespace DialogueEditor
                 CurrentAsset = null;
                 while (uiNodes.Count != 0)
                     uiNodes.RemoveAt(0);
+                CurrentlySelectedNode = null;
             }
         }
     }

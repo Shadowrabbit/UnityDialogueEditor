@@ -10,7 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 83189876d4d389f43b7dd2e925aa112e, type: 3}
-  m_Name: BlacksmithConversation
+  m_Name: NPC_Conversation
   m_EditorClassIdentifier: 
-  json: '{"Actions":[{"EditorInfo":{"isRoot":true,"xPos":675,"yPos":47},"Text":"Hello,
-    traveler. How are you doing today?","UID":1,"parentUIDs":[],"OptionUIDs":[2]}],"Options":[{"EditorInfo":{"isRoot":false,"xPos":527,"yPos":161.5},"Text":null,"UID":2,"parentUIDs":[1,1,1,1,1,1,1],"ActionUID":-1}]}'
+  json: 

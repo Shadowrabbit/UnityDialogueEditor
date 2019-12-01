@@ -112,6 +112,8 @@ namespace DialogueEditor
      
         public abstract void RemoveSelfFromTree();
         public abstract void RegisterUIDs();
+        public abstract void PrepareForSerialization();
+        public abstract void Deserialize();
     }
 
     [DataContract]
@@ -127,9 +129,13 @@ namespace DialogueEditor
         /// The selectable options of this Action.
         /// </summary>
         public List<ConversationOption> Options;
+        [DataMember] public List<int> OptionUIDs;
 
-        [DataMember]
-        public List<int> OptionUIDs;
+        /// <summary>
+        /// The Audio Clip acompanying this Action.
+        /// </summary>
+        public AudioClip Audio;
+        [DataMember] public string AudioGUID;
 
         public void AddOption(ConversationOption newOption)
         {
@@ -178,6 +184,27 @@ namespace DialogueEditor
                 {
                     OptionUIDs.Add(Options[i].UID);
                 }
+            }
+        }
+
+        public override void PrepareForSerialization()
+        {
+            string guid;
+            long li;
+            if (Audio != null)
+            {
+                if (UnityEditor.AssetDatabase.TryGetGUIDAndLocalFileIdentifier(Audio, out guid, out li))
+                    AudioGUID = guid;
+            }
+
+        }
+
+        public override void Deserialize()
+        {
+            if (AudioGUID != null && AudioGUID != "")
+            {
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(AudioGUID);
+                Audio = (AudioClip)UnityEditor.AssetDatabase.LoadAssetAtPath(path, typeof(AudioClip));
             }
         }
     }
@@ -239,6 +266,16 @@ namespace DialogueEditor
             if (Action != null)
                 ActionUID = Action.UID;
         }
+
+        public override void PrepareForSerialization()
+        {
+
+        }
+
+        public override void Deserialize()
+        {
+
+        }
     }
 
 
@@ -273,12 +310,22 @@ namespace DialogueEditor
             if (json == null || json == "")
                 return null;
 
-            Conversation deserialized = new Conversation();
+            Conversation conversation = new Conversation();
             System.IO.MemoryStream ms = new System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(json));
-            DataContractJsonSerializer ser = new DataContractJsonSerializer(deserialized.GetType());
-            deserialized = ser.ReadObject(ms) as Conversation;
+            DataContractJsonSerializer ser = new DataContractJsonSerializer(conversation.GetType());
+            conversation = ser.ReadObject(ms) as Conversation;
             ms.Close();
-            return deserialized;
+            // Deserialize the indivudual nodes
+            {
+                if (conversation.Actions != null)
+                    for (int i = 0; i < conversation.Actions.Count; i++)
+                        conversation.Actions[i].Deserialize();
+
+                if (conversation.Options != null)
+                    for (int i = 0; i < conversation.Options.Count; i++)
+                        conversation.Options[i].Deserialize();
+            }
+            return conversation;
         }
     }
 }

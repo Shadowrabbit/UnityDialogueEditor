@@ -19,6 +19,7 @@ namespace DialogueEditor
         protected const int TITLE_HEIGHT = 18;
         protected const int TITLE_GAP = 4;
         protected const int TEXT_BOX_HEIGHT = 40;
+        protected const int LINE_WIDTH = 3;
 
         // Members
         public Rect rect;
@@ -256,7 +257,7 @@ namespace DialogueEditor
 
                     Vector2 toStart = (start - end).normalized;
                     Vector2 toEnd = (end - start).normalized;
-                    Handles.DrawBezier(start, end, start + toStart, end + toEnd, DefaultColor, null, 2);
+                    Handles.DrawBezier(start, end, start + toStart, end + toEnd, DefaultColor, null, LINE_WIDTH);
                 }
             }
 
@@ -333,8 +334,8 @@ namespace DialogueEditor
 
         // Properties
         public ConversationOption OptionNode { get { return Info as ConversationOption; } }
-        public override Color DefaultColor { get { return DialogueEditorUtil.Colour(0, 179, 134); } }
-        public override Color SelectedColor { get { return DialogueEditorUtil.Colour(0, 219, 164); } }
+        public override Color DefaultColor { get { return DialogueEditorUtil.Colour(0, 158, 118); } }
+        public override Color SelectedColor { get { return DialogueEditorUtil.Colour(0, 179, 134); } }
 
         // Static styles
         protected static GUIStyle defaultNodeStyle;
@@ -385,7 +386,7 @@ namespace DialogueEditor
 
                 Vector2 toStart = (start - end).normalized;
                 Vector2 toEnd = (end - start).normalized;
-                Handles.DrawBezier(start, end, start + toStart, end + toEnd, DefaultColor, null, 2);
+                Handles.DrawBezier(start, end, start + toStart, end + toEnd, DefaultColor, null, LINE_WIDTH);
             }
         }
 
