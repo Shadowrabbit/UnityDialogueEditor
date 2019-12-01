@@ -16,8 +16,9 @@ namespace DialogueEditor
 
         // Consts
         protected const int TEXT_BORDER = 5;
-        protected const int TITLE_HEIGHT = 25;
-        protected const int TEXT_BOX_HEIGHT = 35;
+        protected const int TITLE_HEIGHT = 18;
+        protected const int TITLE_GAP = 4;
+        protected const int TEXT_BOX_HEIGHT = 40;
 
         // Members
         public Rect rect;
@@ -31,6 +32,8 @@ namespace DialogueEditor
 
         // Properties
         public ConversationNode Info { get; protected set; }
+        public abstract Color DefaultColor { get; }
+        public abstract Color SelectedColor { get; }
 
 
         //---------------------------------
@@ -46,6 +49,7 @@ namespace DialogueEditor
                 titleStyle = new GUIStyle();
                 titleStyle.alignment = TextAnchor.MiddleCenter;
                 titleStyle.fontStyle = FontStyle.Bold;
+                titleStyle.normal.textColor = Color.white;
             }
         }
 
@@ -90,8 +94,13 @@ namespace DialogueEditor
 
         protected void DrawInternalText(string text)
         {
-            Rect internalText = new Rect(rect.x + TEXT_BORDER, rect.y + TITLE_HEIGHT, rect.width - TEXT_BORDER * 2, TEXT_BOX_HEIGHT);
-            GUI.Box(internalText, text, EditorStyles.textArea);
+            Rect internalText = new Rect(rect.x + TEXT_BORDER, rect.y + TITLE_HEIGHT + TITLE_GAP, rect.width - TEXT_BORDER * 2, TEXT_BOX_HEIGHT);
+            GUIStyle textStyle = new GUIStyle();
+            textStyle.normal.textColor = Color.white;
+            textStyle.wordWrap = true;
+            textStyle.stretchHeight = false;
+            textStyle.clipping = TextClipping.Clip;
+            GUI.Box(internalText, text, textStyle);
         }
 
 
@@ -194,6 +203,8 @@ namespace DialogueEditor
 
         // Properties
         public ConversationAction ConversationNode { get { return Info as ConversationAction; } }
+        public override Color DefaultColor { get { return DialogueEditorUtil.Colour(189, 0, 0); } }
+        public override Color SelectedColor { get { return DialogueEditorUtil.Colour(255, 0, 0); } }
 
         // Static styles
         protected static GUIStyle defaultNodeStyle;
@@ -209,22 +220,12 @@ namespace DialogueEditor
             if (defaultNodeStyle == null)
             {
                 defaultNodeStyle = new GUIStyle();
-                Texture2D t2d = new Texture2D(Width, Height);
-                for (int x = 0; x < Width - 1; x++)
-                    for (int y = 0; y < Height - 1; y++)
-                        t2d.SetPixel(x, y, DialogueEditorUtil.Colour(163, 77, 77));
-                t2d.Apply();
-                defaultNodeStyle.normal.background = t2d;
+                defaultNodeStyle.normal.background = DialogueEditorUtil.MakeTexture(Width, Height, DefaultColor);
             }
             if (selectedNodeStyle == null)
             {
                 selectedNodeStyle = new GUIStyle();
-                Texture2D t2d = new Texture2D(Width, Height);
-                for (int x = 0; x < Width - 1; x++)
-                    for (int y = 0; y < Height - 1; y++)
-                        t2d.SetPixel(x, y, DialogueEditorUtil.Colour(196, 92, 92));
-                t2d.Apply();
-                selectedNodeStyle.normal.background = t2d;
+                selectedNodeStyle.normal.background = DialogueEditorUtil.MakeTexture(Width, Height, SelectedColor);
             }
 
             currentBoxStyle = defaultNodeStyle;
@@ -253,14 +254,9 @@ namespace DialogueEditor
                 {
                     DialogueEditorUtil.GetConnectionDrawInfo(rect, ConversationNode.Options[i], out start, out end);
 
-                    Vector2 toOption = (start - end).normalized;
-                    Vector2 toAction = (end - start).normalized;
-
-                    Handles.DrawBezier(
-                        start, end,
-                        start + toAction * 50f,
-                        end + toOption * 50f,
-                        Color.red, null, 5f);
+                    Vector2 toStart = (start - end).normalized;
+                    Vector2 toEnd = (end - start).normalized;
+                    Handles.DrawBezier(start, end, start + toStart, end + toEnd, DefaultColor, null, 2);
                 }
             }
 
@@ -337,6 +333,8 @@ namespace DialogueEditor
 
         // Properties
         public ConversationOption OptionNode { get { return Info as ConversationOption; } }
+        public override Color DefaultColor { get { return DialogueEditorUtil.Colour(0, 179, 134); } }
+        public override Color SelectedColor { get { return DialogueEditorUtil.Colour(0, 219, 164); } }
 
         // Static styles
         protected static GUIStyle defaultNodeStyle;
@@ -352,22 +350,12 @@ namespace DialogueEditor
             if (defaultNodeStyle == null)
             {
                 defaultNodeStyle = new GUIStyle();
-                Texture2D t2d = new Texture2D(Width, Height);
-                for (int x = 0; x < Width - 1; x++)
-                    for (int y = 0; y < Height - 1; y++)
-                        t2d.SetPixel(x, y, DialogueEditorUtil.Colour(113, 150, 150));
-                t2d.Apply();
-                defaultNodeStyle.normal.background = t2d;
+                defaultNodeStyle.normal.background = DialogueEditorUtil.MakeTexture(Width, Height, DefaultColor);
             }
             if (selectedNodeStyle == null)
             {
                 selectedNodeStyle = new GUIStyle();
-                Texture2D t2d = new Texture2D(Width, Height);
-                for (int x = 0; x < Width - 1; x++)
-                    for (int y = 0; y < Height - 1; y++)
-                        t2d.SetPixel(x, y, DialogueEditorUtil.Colour(136, 184, 184));
-                t2d.Apply();
-                selectedNodeStyle.normal.background = t2d;
+                selectedNodeStyle.normal.background = DialogueEditorUtil.MakeTexture(Width, Height, SelectedColor);
             }
 
             currentBoxStyle = defaultNodeStyle;
@@ -395,14 +383,9 @@ namespace DialogueEditor
                 Vector2 start, end;
                 DialogueEditorUtil.GetConnectionDrawInfo(rect, OptionNode.Action, out start, out end);
 
-                Vector2 toOption = (start - end).normalized;
-                Vector2 toAction = (end - start).normalized;
-
-                Handles.DrawBezier(
-                    start, end,
-                    start + toAction * 50f,
-                    end + toOption * 50f,
-                    Color.blue, null, 5f);
+                Vector2 toStart = (start - end).normalized;
+                Vector2 toEnd = (end - start).normalized;
+                Handles.DrawBezier(start, end, start + toStart, end + toEnd, DefaultColor, null, 2);
             }
         }
 

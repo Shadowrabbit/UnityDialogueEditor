@@ -535,7 +535,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1053625773}
-  - component: {fileID: 1053625772}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -543,19 +542,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1053625772
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1053625771}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c39a4e8219a0d448a32897c549329a1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  conversation: {fileID: 11400000, guid: 8cd0cf66193033d458dfa056e359b300, type: 2}
 --- !u!4 &1053625773
 Transform:
   m_ObjectHideFlags: 0
@@ -653,7 +639,7 @@ MonoBehaviour:
         m_MethodName: StartConversation
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 11400000, guid: a12e2457928bd5349b24021a0668b741,
+          m_ObjectArgument: {fileID: 11400000, guid: 8cd0cf66193033d458dfa056e359b300,
             type: 2}
           m_ObjectArgumentAssemblyTypeName: DialogueEditor.NPCConversation, Assembly-CSharp
           m_IntArgument: 0

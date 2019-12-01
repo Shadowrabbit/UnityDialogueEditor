@@ -6,52 +6,6 @@ namespace DialogueEditor
 {
     public static class DialogueEditorUtil
     {
-        public static bool ContainsAction(List<ConversationNode> nodes, ConversationAction action, out ConversationAction duplicate)
-        {
-            ConversationAction loopAction;
-            for (int i = 0; i < nodes.Count; i++)
-            {
-                if (nodes[i] is ConversationAction)
-                {
-                    loopAction = nodes[i] as ConversationAction;
-
-                    if (loopAction.Text == action.Text &&
-                        loopAction.EditorInfo.xPos == action.EditorInfo.xPos &&
-                        loopAction.EditorInfo.yPos == action.EditorInfo.yPos)
-                    {
-                        duplicate = loopAction;
-                        return true;
-                    }
-                        
-                }
-            }
-            duplicate = null;
-            return false;
-        }
-
-        public static bool ContainsOption(List<ConversationNode> nodes, ConversationOption option, out ConversationOption duplicate)
-        {
-            ConversationOption loopAction;
-            for (int i = 0; i < nodes.Count; i++)
-            {
-                if (nodes[i] is ConversationOption)
-                {
-                    loopAction = nodes[i] as ConversationOption;
-
-                    if (loopAction.Text == option.Text &&
-                        loopAction.EditorInfo.xPos == option.EditorInfo.xPos &&
-                        loopAction.EditorInfo.yPos == option.EditorInfo.yPos)
-                    {
-                        duplicate = loopAction;
-                        return true;
-                    }
-
-                }
-            }
-            duplicate = null;
-            return false;
-        }
-
         public static bool IsPointerNearConnection(List<UINode> uiNodes, Vector2 mousePos, 
             out ConversationNode par, out ConversationNode child)
         {
@@ -170,9 +124,25 @@ namespace DialogueEditor
             return new Color(r / 255f, g / 255f, b / 255f, a / 255f);
         }
 
-        public static void RemoveChildFromNode(ConversationNode parent, ConversationNode child)
+        public static Texture2D MakeTexture(int width, int height, Color col)
         {
-
+            Texture2D t2d = new Texture2D(width, height);
+            for (int x = 0; x < width - 1; x++)
+            {
+                for (int y = 0; y < height - 1; y++)
+                {
+                    if (y < 55)
+                    {
+                        t2d.SetPixel(x, y, Color.black);
+                    }
+                    else
+                    {
+                        t2d.SetPixel(x, y, col);                       
+                    }                  
+                }
+            }
+            t2d.Apply();
+            return t2d;
         }
     }
 }
