@@ -242,7 +242,10 @@ namespace DialogueEditor
 
         public override void OnDraw()
         {
-            DrawTitle("Action node.");
+            if (DialogueEditorWindow.ConversationRoot == ConversationNode)
+                DrawTitle("<Root> NPC Dialogue node.");
+            else
+                DrawTitle("NPC Dialogue node.");
             DrawInternalText(ConversationNode.Text);
         }
 

@@ -27,7 +27,7 @@ namespace DialogueEditor
 
         // Private variables:     
         private NPCConversation CurrentAsset;           // The Conversation scriptable object that is currently being viewed/edited
-        private ConversationAction ConversationRoot;    // The root node of the conversation
+        public static ConversationAction ConversationRoot { get; private set; }    // The root node of the conversation
         private List<UINode> uiNodes;                   // List of all UI nodes
 
         // Selected asset logic
@@ -187,7 +187,8 @@ namespace DialogueEditor
 
 
         //--------------------------------------
-        // OnEnable, OnDisable, LostFocus
+        // OnEnable, OnDisable, OnFocus, LostFocus, 
+        // Destroy, SelectionChange, ReloadScripts
         //--------------------------------------
 
         private void OnEnable()
@@ -216,27 +217,47 @@ namespace DialogueEditor
 
         private void OnDisable()
         {
+            Log("Saving. Reason: Disable.");
+            Save();
+
             UINode.OnUINodeSelected -= SelectNode;
             UINode.OnUINodeDeleted -= DeleteUINode;
             UIActionNode.OnCreateOption -= CreateNewOption;
             UIOptionNode.OnCreateAction -= CreateNewAction;
             UIActionNode.OnConnectToOption -= ConnectActionToOption;
             UIOptionNode.OnConnectToAction -= ConnectOptionToAction;
+        }
 
-            Debug.Log("Disable");
+        protected void OnFocus()
+        {
+            // Get asset the user is selecting
+            newlySelectedAsset = Selection.activeObject;
+
+            // If it's not null
+            if (newlySelectedAsset != null)
+            {
+                // If its a conversation scriptable, load new asset
+                if (newlySelectedAsset is NPCConversation)
+                {
+                    currentlySelectedAsset = newlySelectedAsset as NPCConversation;
+
+                    if (currentlySelectedAsset != CurrentAsset)
+                    {
+                        LoadNewAsset(currentlySelectedAsset);
+                    }
+                }
+            }
         }
 
         protected void OnLostFocus()
         {
-            //if (EditorWindow.focusedWindow == null)
-            //{
-            //    Log("Saving conversation. Reason: Window lost focus. Currently focused window: " + EditorWindow.focusedWindow.name);
-            //    Save();
-            //}
-            //if (!(EditorWindow.focusedWindow is DialogueEditorWindow))
-            //{
+            bool keepOnWindow = EditorWindow.focusedWindow != null && EditorWindow.focusedWindow.titleContent.text.Equals("Dialogue Editor");
 
-            //}
+            if (CurrentAsset != null && !keepOnWindow)
+            {
+                Log("Saving conversation. Reason: Window Lost Focus.");
+                Save();
+            }
         }
 
         protected void OnDestroy()
@@ -256,7 +277,7 @@ namespace DialogueEditor
                 // If it's a different asset and our current asset isn't null, save our current asset
                 if (currentlySelectedAsset != null && currentlySelectedAsset != newlySelectedAsset)
                 {
-                    Log("Saving conversation. Reason: Conversation asset de-selected");
+                    Log("Saving conversation. Reason: Different asset selected");
                     Save();
                     currentlySelectedAsset = null;
                 }
@@ -280,10 +301,23 @@ namespace DialogueEditor
             }
             else
             {
+                Log("Saving conversation. Reason: Conversation asset de-selected");
+                Save();
+
                 CurrentAsset = null;
                 currentlySelectedAsset = null;
                 Repaint();
             }
+        }
+
+        [UnityEditor.Callbacks.DidReloadScripts]
+        private static void OnScriptsReloaded()
+        {
+            // Clear our reffrence to the CurrentAsset on script reload in order to prevent 
+            // save detection overwriting the object with an empty conversation (save triggerred 
+            // with no uiNodes present in window due to recompile). 
+            Log("Scripts reloaded. Clearing current asset.");
+            ShowWindow().CurrentAsset = null;
         }
 
 
@@ -302,7 +336,6 @@ namespace DialogueEditor
                     break;
             }
         }
-
 
 
 
@@ -343,6 +376,10 @@ namespace DialogueEditor
                 Recenter();
             }
             GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Save", EditorStyles.toolbarButton))
+            {
+                Save(true);
+            }
             GUILayout.EndHorizontal();
         }
 
@@ -410,11 +447,16 @@ namespace DialogueEditor
             Handles.EndGUI();
         }
 
+        private Vector2 panelVerticalScroll;
+
         private void DrawPanel()
         {
             // Create rect, begin area
             panelRect = new Rect(position.width - PANEL_WIDTH, TOOLBAR_HEIGHT, PANEL_WIDTH, position.height - TOOLBAR_HEIGHT);
+
             GUILayout.BeginArea(panelRect, panelStyle);
+            panelVerticalScroll = GUILayout.BeginScrollView(panelVerticalScroll, GUILayout.Width(panelRect.width), GUILayout.Height(panelRect.height));
+            GUILayout.BeginVertical();
 
             // Draw info of selected node
             if (CurrentlySelectedNode != null)
@@ -445,7 +487,7 @@ namespace DialogueEditor
                     ConversationAction node = (CurrentlySelectedNode.Info as ConversationAction);
 
                     // Title
-                    EditorGUI.TextArea(propertyRect, "Action Node", panelTitleStyle);
+                    EditorGUI.TextArea(propertyRect, "NPC Dialogue Node", panelTitleStyle);
                     propertyRect.y += bigGap;
 
                     // Action text
@@ -485,10 +527,16 @@ namespace DialogueEditor
             }
             else
             {
-                EditorGUI.TextArea(new Rect(0, 0, 0, 0), "Dialogue: " + CurrentAsset.name);
+                EditorGUI.TextArea(new Rect(12, 0, panelRect.width - 12 * 2, 20), "Dialogue: " + CurrentAsset.name, panelTitleStyle);
                 Repaint();
             }
 
+            // "Hack" for scroll-bar
+            GUILayout.Label("");
+            GUILayout.Space(250);
+
+            GUILayout.EndVertical();
+            GUILayout.EndScrollView();
             GUILayout.EndArea();
         }
 
@@ -764,6 +812,12 @@ namespace DialogueEditor
 
         public void DeleteUINode(UINode node)
         {
+            if (ConversationRoot == node.Info)
+            {
+                Log("Cannot delete root node.");
+                return;
+            }
+
             // Delete tree/internal objects
             node.Info.RemoveSelfFromTree();
 
@@ -841,7 +895,7 @@ namespace DialogueEditor
             return false;
         }
 
-        private void Log(string str)
+        private static void Log(string str)
         {
 #if DIALOGUE_DEBUG || true
             Debug.Log("[DialogueEditor]: " + str);
@@ -868,7 +922,7 @@ namespace DialogueEditor
             }
         }
 
-        private void Save()
+        private void Save(bool manual = false)
         {
             if (CurrentAsset != null)
             {
@@ -903,10 +957,13 @@ namespace DialogueEditor
                 CurrentAsset.Serialize(conversation);
 
                 // Null / clear everything. We aren't pointing to it anymore. 
-                CurrentAsset = null;
-                while (uiNodes.Count != 0)
-                    uiNodes.RemoveAt(0);
-                CurrentlySelectedNode = null;
+                if (!manual)
+                {
+                    CurrentAsset = null;
+                    while (uiNodes.Count != 0)
+                        uiNodes.RemoveAt(0);
+                    CurrentlySelectedNode = null;
+                }
             }
         }
     }
