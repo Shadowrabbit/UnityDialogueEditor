@@ -93,9 +93,9 @@ namespace DialogueEditor
             GUI.Label(internalText, text, titleStyle);
         }
 
-        protected void DrawInternalText(string text)
+        protected void DrawInternalText(string text, float leftOffset = 0)
         {
-            Rect internalText = new Rect(rect.x + TEXT_BORDER, rect.y + TITLE_HEIGHT + TITLE_GAP, rect.width - TEXT_BORDER * 2, TEXT_BOX_HEIGHT);
+            Rect internalText = new Rect(rect.x + TEXT_BORDER + leftOffset, rect.y + TITLE_HEIGHT + TITLE_GAP, rect.width - TEXT_BORDER * 2 - leftOffset, TEXT_BOX_HEIGHT);
             GUIStyle textStyle = new GUIStyle();
             textStyle.normal.textColor = Color.white;
             textStyle.wordWrap = true;
@@ -143,9 +143,10 @@ namespace DialogueEditor
                         {
                             DialogueEditorWindow.NodeClickedOnThisUpdate = true;
                             OnUINodeSelected?.Invoke(this, true);
+                            e.Use();
                         }
 
-                        GUI.changed = true;
+                        GUI.changed = true;                     
                     }
                     else if (e.button == 1 && rect.Contains(e.mousePosition))
                     {
@@ -242,11 +243,20 @@ namespace DialogueEditor
 
         public override void OnDraw()
         {
+            const float SPRITE_SZ = 50;
+
             if (DialogueEditorWindow.ConversationRoot == ConversationNode)
                 DrawTitle("<Root> NPC Dialogue node.");
             else
                 DrawTitle("NPC Dialogue node.");
-            DrawInternalText(ConversationNode.Text);
+
+            // Icon
+            Rect internalText = new Rect(rect.x + TEXT_BORDER * 0.5f, rect.y + TITLE_HEIGHT + TITLE_GAP, SPRITE_SZ, SPRITE_SZ);
+            if (ConversationNode.Icon != null)
+                GUI.DrawTexture(internalText, ConversationNode.Icon.texture, ScaleMode.ScaleToFit); 
+
+            // Text
+            DrawInternalText(ConversationNode.Text, SPRITE_SZ);
         }
 
         public override void DrawConnections()
@@ -333,7 +343,7 @@ namespace DialogueEditor
 
         // Static properties
         public static int Width { get { return 200; } }
-        public static int Height { get { return 75; } }
+        public static int Height { get { return 60; } }
 
         // Properties
         public ConversationOption OptionNode { get { return Info as ConversationOption; } }

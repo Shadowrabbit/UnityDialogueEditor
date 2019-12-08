@@ -131,13 +131,13 @@ namespace DialogueEditor
             {
                 for (int y = 0; y < height - 1; y++)
                 {
-                    if (y < 55)
+                    if (y > height - 20)
                     {
-                        t2d.SetPixel(x, y, Color.black);
+                        t2d.SetPixel(x, y, col);
                     }
                     else
                     {
-                        t2d.SetPixel(x, y, col);                       
+                        t2d.SetPixel(x, y, Color.black);
                     }                  
                 }
             }

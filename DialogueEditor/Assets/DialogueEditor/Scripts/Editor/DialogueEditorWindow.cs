@@ -39,6 +39,7 @@ namespace DialogueEditor
         private GUIStyle panelStyle;
         private GUIStyle panelTitleStyle;
         private GUIStyle panelPropertyStyle;
+        private GUIStyle resizerStyle;
         private UINode m_cachedSelectedNode;
 
         // Dragging information
@@ -213,6 +214,15 @@ namespace DialogueEditor
             // Panel style
             panelStyle = new GUIStyle();
             panelStyle.normal.background = EditorGUIUtility.Load("builtin skins/lightskin/images/backgroundwithinnershadow.png") as Texture2D;
+
+            // Panel title style
+            panelTitleStyle = new GUIStyle();
+            panelTitleStyle.alignment = TextAnchor.MiddleCenter;
+            panelTitleStyle.fontStyle = FontStyle.Bold;
+
+            // Resizer style
+            resizerStyle = new GUIStyle();
+            resizerStyle.normal.background = EditorGUIUtility.Load("icons/d_AvatarBlendBackground.png") as Texture2D;
         }
 
         private void OnDisable()
@@ -451,105 +461,49 @@ namespace DialogueEditor
 
         private void DrawPanel()
         {
-            // Create rect, begin area
             panelRect = new Rect(position.width - PANEL_WIDTH, TOOLBAR_HEIGHT, PANEL_WIDTH, position.height - TOOLBAR_HEIGHT);
-
             GUILayout.BeginArea(panelRect, panelStyle);
-            panelVerticalScroll = GUILayout.BeginScrollView(panelVerticalScroll, GUILayout.Width(panelRect.width), GUILayout.Height(panelRect.height));
             GUILayout.BeginVertical();
+            panelVerticalScroll = GUILayout.BeginScrollView(panelVerticalScroll);
 
-            // Draw info of selected node
+            GUILayout.Label("Dialogue Editor.", panelTitleStyle);
+
             if (CurrentlySelectedNode != null)
             {
-                // Clear focus upon switching focus to another node.
-                if (CurrentlySelectedNode != m_cachedSelectedNode)
-                {
-                    GUI.FocusControl("");
-                }
-                m_cachedSelectedNode = CurrentlySelectedNode;
+                GUILayout.Space(10);
 
-                // GUIStyle for box title
-                panelTitleStyle = new GUIStyle();
-                panelTitleStyle.alignment = TextAnchor.MiddleCenter;
-                panelTitleStyle.fontStyle = FontStyle.Bold;
-
-                // Rect for elements
-                int padding = 12;
-                Rect propertyRect = new Rect(padding, 0, panelRect.width - padding * 2, 20);
-                int smallGap = 20;
-                int bigGap = 30;
-                int titleGap = 15;
-                int textBoxHeight = 75;
-
-                // Action node info
                 if (CurrentlySelectedNode is UIActionNode)
                 {
+                    GUILayout.Label("NPC Dialogue Node.", panelTitleStyle);
                     ConversationAction node = (CurrentlySelectedNode.Info as ConversationAction);
 
-                    // Title
-                    EditorGUI.TextArea(propertyRect, "NPC Dialogue Node", panelTitleStyle);
-                    propertyRect.y += bigGap;
+                    GUILayout.Label("Dialogue", EditorStyles.boldLabel);
+                    node.Text = GUILayout.TextArea(node.Text);
 
-                    // Action text
-                    EditorGUI.LabelField(propertyRect, "Dialogue text:", EditorStyles.boldLabel);
-                    propertyRect.y += titleGap;
+                    GUILayout.Label("Icon", EditorStyles.boldLabel);
+                    node.Icon = (Sprite)EditorGUILayout.ObjectField(node.Icon, typeof(Sprite), false);
 
-                    propertyRect.height += textBoxHeight;
-                    node.Text = GUI.TextArea(propertyRect, node.Text);
-                    propertyRect.height -= textBoxHeight;
-                    propertyRect.y += bigGap + textBoxHeight;
-
-                    // Action Audio
-                    propertyRect.y += smallGap;
-                    EditorGUI.LabelField(propertyRect, "Audio: ", EditorStyles.boldLabel);
-                    propertyRect.y += titleGap;
-                    node.Audio = (AudioClip)EditorGUI.ObjectField(propertyRect, node.Audio, typeof(AudioClip), false);
+                    GUILayout.Label("Audio", EditorStyles.boldLabel);
+                    node.Audio = (AudioClip)EditorGUILayout.ObjectField(node.Audio, typeof(AudioClip), false);
                 }
-
-                // Option node info
                 else if (CurrentlySelectedNode is UIOptionNode)
                 {
-                    ConversationOption node = CurrentlySelectedNode.Info as ConversationOption;
+                    GUILayout.Label("Option Node.", panelTitleStyle);
+                    ConversationOption node = (CurrentlySelectedNode.Info as ConversationOption);
 
-                    // Title
-                    EditorGUI.TextArea(propertyRect, "Option Node", panelTitleStyle);
-                    propertyRect.y += bigGap;
-
-                    // Option text Value
-                    EditorGUI.LabelField(propertyRect, "Option text:", EditorStyles.boldLabel);
-                    propertyRect.y += titleGap;
-
-                    propertyRect.height += textBoxHeight;
-                    node.Text = GUI.TextArea(propertyRect, node.Text);
-                    propertyRect.height -= textBoxHeight;
-                    propertyRect.y += bigGap + textBoxHeight;
+                    GUILayout.Label("Option text:", EditorStyles.boldLabel);
+                    node.Text = GUILayout.TextArea(node.Text);
                 }
             }
-            else
-            {
-                EditorGUI.TextArea(new Rect(12, 0, panelRect.width - 12 * 2, 20), "Dialogue: " + CurrentAsset.name, panelTitleStyle);
-                Repaint();
-            }
 
-            // "Hack" for scroll-bar
-            GUILayout.Label("");
-            GUILayout.Space(250);
-
-            GUILayout.EndVertical();
             GUILayout.EndScrollView();
+            GUILayout.EndVertical();
             GUILayout.EndArea();
         }
 
         private void DrawResizer()
         {
-
-            GUIStyle resizerStyle;
-            Rect resizer;
-            resizerStyle = new GUIStyle();
-            resizerStyle.normal.background = EditorGUIUtility.Load("icons/d_AvatarBlendBackground.png") as Texture2D;
-
-            resizer = new Rect(position.width - PANEL_WIDTH - 2, 0, 5, (position.height) - TOOLBAR_HEIGHT);
-
+            Rect resizer;  resizer = new Rect(position.width - PANEL_WIDTH - 2, 0, 5, (position.height) - TOOLBAR_HEIGHT);
             GUILayout.BeginArea(new Rect(resizer.position, new Vector2(2, position.height)), resizerStyle);
             GUILayout.EndArea();
         }
@@ -692,6 +646,7 @@ namespace DialogueEditor
                         {
                             GenericMenu rightClickMenu = new GenericMenu();
                             rightClickMenu.AddItem(new GUIContent("Delete this connection"), false, DeleteConnection);
+                            rightClickMenu.ShowAsContext();
                             rightClickMenu.ShowAsContext();
                         }
                     }

@@ -132,6 +132,12 @@ namespace DialogueEditor
         [DataMember] public List<int> OptionUIDs;
 
         /// <summary>
+        /// The NPC Icon
+        /// </summary>
+        public Sprite Icon;
+        [DataMember] public string IconGUID;
+
+        /// <summary>
         /// The Audio Clip acompanying this Action.
         /// </summary>
         public AudioClip Audio;
@@ -191,20 +197,32 @@ namespace DialogueEditor
         {
             string guid;
             long li;
+
             if (Audio != null)
             {
                 if (UnityEditor.AssetDatabase.TryGetGUIDAndLocalFileIdentifier(Audio, out guid, out li))
                     AudioGUID = guid;
             }
 
+            if (Icon != null)
+            {
+                if (UnityEditor.AssetDatabase.TryGetGUIDAndLocalFileIdentifier(Icon, out guid, out li))
+                    IconGUID = guid;
+            }
         }
 
         public override void Deserialize()
         {
-            if (AudioGUID != null && AudioGUID != "")
+            if (!string.IsNullOrEmpty(AudioGUID))
             {
                 string path = UnityEditor.AssetDatabase.GUIDToAssetPath(AudioGUID);
                 Audio = (AudioClip)UnityEditor.AssetDatabase.LoadAssetAtPath(path, typeof(AudioClip));
+            }
+
+            if (!string.IsNullOrEmpty(IconGUID))
+            {
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(IconGUID);
+                Icon = (Sprite)UnityEditor.AssetDatabase.LoadAssetAtPath(path, typeof(Sprite));
             }
         }
     }
