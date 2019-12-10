@@ -132,14 +132,14 @@ namespace DialogueEditor
             OnSetSelected(selected);
         }
 
-        public bool ProcessEvents(Event e)
+        public bool ProcessEvents(Event e, bool inPanel)
         {
             switch (e.type)
             {
                 case EventType.MouseDown:
                     if (e.button == 0)
                     {
-                        if (rect.Contains(e.mousePosition))
+                        if (rect.Contains(e.mousePosition) && !inPanel)
                         {
                             DialogueEditorWindow.NodeClickedOnThisUpdate = true;
                             OnUINodeSelected?.Invoke(this, true);
@@ -343,7 +343,7 @@ namespace DialogueEditor
 
         // Static properties
         public static int Width { get { return 200; } }
-        public static int Height { get { return 60; } }
+        public static int Height { get { return 50; } }
 
         // Properties
         public ConversationOption OptionNode { get { return Info as ConversationOption; } }

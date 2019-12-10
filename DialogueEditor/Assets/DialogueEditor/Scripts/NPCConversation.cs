@@ -12,6 +12,16 @@ namespace DialogueEditor
         Action
     }
 
+    //[System.Serializable]
+    //public class SimpleEvent : UnityEngine.Events.UnityEvent { };
+
+    //[System.Serializable]
+    //public class SimpleEventHolder : ScriptableObject
+    //{
+    //    [SerializeField]
+    //    public SimpleEvent Event = new SimpleEvent();
+    //}
+
     [DataContract]
     public class Conversation
     {
@@ -109,6 +119,8 @@ namespace DialogueEditor
 
         [DataMember]
         public List<int> parentUIDs;
+
+        // public SimpleEventHolder EventHolder;
      
         public abstract void RemoveSelfFromTree();
         public abstract void RegisterUIDs();

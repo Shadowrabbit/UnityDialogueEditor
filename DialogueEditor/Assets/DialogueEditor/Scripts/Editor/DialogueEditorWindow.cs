@@ -485,6 +485,19 @@ namespace DialogueEditor
 
                     GUILayout.Label("Audio", EditorStyles.boldLabel);
                     node.Audio = (AudioClip)EditorGUILayout.ObjectField(node.Audio, typeof(AudioClip), false);
+
+                    // Events
+                    //{
+                    //    GUILayout.Label("Function call:", EditorStyles.boldLabel);
+                    //    if (node.EventHolder == null)
+                    //        node.EventHolder = ScriptableObject.CreateInstance<SimpleEventHolder>();
+                    //    if (node.EventHolder.Event == null)
+                    //        node.EventHolder.Event = new SimpleEvent();
+                    //    SerializedObject o = new SerializedObject(node.EventHolder);
+                    //    SerializedProperty p = o.FindProperty("Event");
+                    //    EditorGUILayout.PropertyField(p); // PropertyField(p);
+                    //    o.ApplyModifiedProperties();
+                    //}
                 }
                 else if (CurrentlySelectedNode is UIOptionNode)
                 {
@@ -522,7 +535,8 @@ namespace DialogueEditor
             switch (m_inputState)
             {
                 case eInputState.Regular:
-                    ProcessNodeEvents(e);
+                    bool inPanel = panelRect.Contains(e.mousePosition);
+                    ProcessNodeEvents(e, inPanel);
                     ProcessEvents(e);
                     break;
 
@@ -536,6 +550,7 @@ namespace DialogueEditor
                         SelectNode(m_currentPlacingNode, true);
                         m_inputState = eInputState.Regular;
                         Repaint();
+                        e.Use();
                     }
                     break;
 
@@ -560,6 +575,7 @@ namespace DialogueEditor
                             }
                         }
                         m_inputState = eInputState.Regular;
+                        e.Use();
                     }
 
                     // Esc
@@ -579,6 +595,7 @@ namespace DialogueEditor
                         SelectNode(m_currentPlacingNode, true);
                         m_inputState = eInputState.Regular;
                         Repaint();
+                        e.Use();
                     }
                     break;
 
@@ -603,6 +620,7 @@ namespace DialogueEditor
                             }
                         }
                         m_inputState = eInputState.Regular;
+                        e.Use();
                     }
 
                     // Esc
@@ -661,7 +679,7 @@ namespace DialogueEditor
             }
         }
 
-        private void ProcessNodeEvents(Event e)
+        private void ProcessNodeEvents(Event e, bool inPanel)
         {
             if (uiNodes != null)
             {
@@ -669,7 +687,7 @@ namespace DialogueEditor
 
                 for (int i = 0; i < uiNodes.Count; i++)
                 {
-                    bool guiChanged = uiNodes[i].ProcessEvents(e);
+                    bool guiChanged = uiNodes[i].ProcessEvents(e, inPanel);
                     if (guiChanged)
                         GUI.changed = true;
                 }
