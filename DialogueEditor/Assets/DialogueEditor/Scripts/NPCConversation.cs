@@ -12,15 +12,16 @@ namespace DialogueEditor
         Action
     }
 
-    //[System.Serializable]
-    //public class SimpleEvent : UnityEngine.Events.UnityEvent { };
+    public class SimpleEvent : ScriptableObject
+    {
+        public UnityEngine.Events.UnityEvent Event;
+    }
 
-    //[System.Serializable]
-    //public class SimpleEventHolder : ScriptableObject
-    //{
-    //    [SerializeField]
-    //    public SimpleEvent Event = new SimpleEvent();
-    //}
+    public class SimpleEventEditor : UnityEditor.EditorWindow
+    {
+        private UnityEditor.SerializedObject serializedObject;
+        private SimpleEvent Event;
+    }
 
     [DataContract]
     public class Conversation
@@ -52,11 +53,11 @@ namespace DialogueEditor
         public ConversationNode GetNodeByUID(int uid)
         {
             for (int i = 0; i < Actions.Count; i++)
-                if (Actions[i].UID == uid)
+                if (Actions[i].ID == uid)
                     return Actions[i];
 
             for (int i = 0; i < Options.Count; i++)
-                if (Options[i].UID == uid)
+                if (Options[i].ID == uid)
                     return Options[i];
 
             return null;
@@ -65,7 +66,7 @@ namespace DialogueEditor
         public ConversationAction GetActionByUID(int uid)
         {
             for (int i = 0; i < Actions.Count; i++)
-                if (Actions[i].UID == uid)
+                if (Actions[i].ID == uid)
                     return Actions[i];
 
             return null;
@@ -74,7 +75,7 @@ namespace DialogueEditor
         public ConversationOption GetOptionByUID(int uid)
         {
             for (int i = 0; i < Options.Count; i++)
-                if (Options[i].UID == uid)
+                if (Options[i].ID == uid)
                     return Options[i];
 
             return null;
@@ -113,14 +114,14 @@ namespace DialogueEditor
         public string Text;
 
         [DataMember]
-        public int UID; // Starts at 1
+        public int ID;
 
         public List<ConversationNode> parents;
 
         [DataMember]
         public List<int> parentUIDs;
 
-        // public SimpleEventHolder EventHolder;
+        public SimpleEvent EventHolder;
      
         public abstract void RemoveSelfFromTree();
         public abstract void RegisterUIDs();
@@ -186,11 +187,11 @@ namespace DialogueEditor
         public override void RegisterUIDs()
         {
             if (parentUIDs != null)
-                parents.Clear();
+                parentUIDs.Clear();
             parentUIDs = new List<int>();
             for (int i = 0; i < parents.Count; i++)
             {
-                parentUIDs.Add(parents[i].UID);
+                parentUIDs.Add(parents[i].ID);
             }
 
             if (OptionUIDs != null)
@@ -200,7 +201,7 @@ namespace DialogueEditor
             {
                 for (int i = 0; i < Options.Count; i++)
                 {
-                    OptionUIDs.Add(Options[i].UID);
+                    OptionUIDs.Add(Options[i].ID);
                 }
             }
         }
@@ -289,12 +290,12 @@ namespace DialogueEditor
             parentUIDs = new List<int>();
             for (int i = 0; i < parents.Count; i++)
             {
-                parentUIDs.Add(parents[i].UID);
+                parentUIDs.Add(parents[i].ID);
             }
 
             ActionUID = Conversation.INVALID_UID;
             if (Action != null)
-                ActionUID = Action.UID;
+                ActionUID = Action.ID;
         }
 
         public override void PrepareForSerialization()
@@ -308,7 +309,14 @@ namespace DialogueEditor
         }
     }
 
-
+    [System.Serializable]
+    public class NodeEventHolder : ScriptableObject
+    {
+        [SerializeField]
+        public int NodeID;
+        [SerializeField]
+        public UnityEngine.Events.UnityEvent Event;
+    }
 
 
     //--------------------------------------
@@ -321,6 +329,33 @@ namespace DialogueEditor
     {
         [SerializeField]
         public string json;
+
+        [SerializeField]
+        [HideInInspector]
+        public List<NodeEventHolder> Events = new List<NodeEventHolder>();
+
+        [HideInInspector]
+        public UnityEngine.Events.UnityEvent Event;
+
+        [SerializeField]
+        [HideInInspector]
+        public int CurrentIDCounter = 1;
+
+        public NodeEventHolder GetEventHolderForID(int id)
+        {
+            if (Events == null)
+                Events = new List<NodeEventHolder>();
+
+            for (int i = 0; i < Events.Count; i++)
+                if (Events[i].NodeID == id)
+                    return Events[i];
+
+            NodeEventHolder h = ScriptableObject.CreateInstance<NodeEventHolder>();
+            h.NodeID = id;
+            h.Event = new UnityEngine.Events.UnityEvent();
+            Events.Add(h);
+            return h;
+        }
 
         public void Serialize(Conversation conversation)
         {
@@ -355,6 +390,9 @@ namespace DialogueEditor
                     for (int i = 0; i < conversation.Options.Count; i++)
                         conversation.Options[i].Deserialize();
             }
+            // Clear our dummy event
+            Event = new UnityEngine.Events.UnityEvent();
+
             return conversation;
         }
     }

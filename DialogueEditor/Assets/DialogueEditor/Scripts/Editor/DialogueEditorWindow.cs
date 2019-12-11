@@ -18,7 +18,7 @@ namespace DialogueEditor
 
         // Consts
         public const float TOOLBAR_HEIGHT = 17;
-        public const float PANEL_WIDTH = 200;
+        public const float PANEL_WIDTH = 250;
         private const string WINDOW_NAME = "DIALOGUE_EDITOR_WINDOW";
 
         // Static properties
@@ -122,6 +122,12 @@ namespace DialogueEditor
             // Find the children and parents by UID
             for (int i = 0; i < allNodes.Count; i++)
             {
+                // Remove duplicate parent UIDs
+                HashSet<int> noDupes = new HashSet<int>(allNodes[i].parentUIDs);
+                allNodes[i].parentUIDs.Clear();
+                foreach (int j in noDupes)
+                    allNodes[i].parentUIDs.Add(j);          
+
                 allNodes[i].parents = new List<ConversationNode>();
                 for (int j = 0; j < allNodes[i].parentUIDs.Count; j++)
                 {
@@ -470,12 +476,16 @@ namespace DialogueEditor
 
             if (CurrentlySelectedNode != null)
             {
+                bool differentNodeSelected = (m_cachedSelectedNode != CurrentlySelectedNode);
+                m_cachedSelectedNode = CurrentlySelectedNode;
+
                 GUILayout.Space(10);
 
                 if (CurrentlySelectedNode is UIActionNode)
                 {
-                    GUILayout.Label("NPC Dialogue Node.", panelTitleStyle);
                     ConversationAction node = (CurrentlySelectedNode.Info as ConversationAction);
+                    GUILayout.Label("[" + node.ID + "] NPC Dialogue Node.", panelTitleStyle);
+                    
 
                     GUILayout.Label("Dialogue", EditorStyles.boldLabel);
                     node.Text = GUILayout.TextArea(node.Text);
@@ -487,22 +497,39 @@ namespace DialogueEditor
                     node.Audio = (AudioClip)EditorGUILayout.ObjectField(node.Audio, typeof(AudioClip), false);
 
                     // Events
-                    //{
-                    //    GUILayout.Label("Function call:", EditorStyles.boldLabel);
-                    //    if (node.EventHolder == null)
-                    //        node.EventHolder = ScriptableObject.CreateInstance<SimpleEventHolder>();
-                    //    if (node.EventHolder.Event == null)
-                    //        node.EventHolder.Event = new SimpleEvent();
-                    //    SerializedObject o = new SerializedObject(node.EventHolder);
-                    //    SerializedProperty p = o.FindProperty("Event");
-                    //    EditorGUILayout.PropertyField(p); // PropertyField(p);
-                    //    o.ApplyModifiedProperties();
-                    //}
+                    {
+                        NodeEventHolder NodeEvent = CurrentAsset.GetEventHolderForID(node.ID);
+                        if (differentNodeSelected)
+                        {
+                            CurrentAsset.Event = NodeEvent.Event;
+                        }
+
+                        // Load the object and property of the node
+                        SerializedObject o = new SerializedObject(NodeEvent);
+                        SerializedProperty p = o.FindProperty("Event");
+
+                        // Load the dummy event
+                        SerializedObject o2 = new SerializedObject(CurrentAsset);
+                        SerializedProperty p2 = o2.FindProperty("Event");
+
+                        // Draw dummy event
+                        GUILayout.Label("Events:", EditorStyles.boldLabel);
+                        EditorGUILayout.PropertyField(p2);
+
+                        // Apply changes to dummy
+                        o2.ApplyModifiedProperties();
+
+                        // Copy dummy changes onto the nodes event
+                        p = p2;
+                        o.ApplyModifiedProperties();
+
+                    }
                 }
                 else if (CurrentlySelectedNode is UIOptionNode)
                 {
-                    GUILayout.Label("Option Node.", panelTitleStyle);
                     ConversationOption node = (CurrentlySelectedNode.Info as ConversationOption);
+                    GUILayout.Label("[" + node.ID + "] Option Node.", panelTitleStyle);
+                    
 
                     GUILayout.Label("Option text:", EditorStyles.boldLabel);
                     node.Text = GUILayout.TextArea(node.Text);
@@ -722,6 +749,7 @@ namespace DialogueEditor
         {
             // Create new option, the argument action is the options parent
             ConversationOption newOption = new ConversationOption();
+            newOption.ID = CurrentAsset.CurrentIDCounter++;
 
             // Add the option to the actions' list of options
             actionUI.ConversationNode.AddOption(newOption);       
@@ -743,6 +771,7 @@ namespace DialogueEditor
         {
             // Create new action, the argument option is the actions parent
             ConversationAction newAction = new ConversationAction();
+            newAction.ID = CurrentAsset.CurrentIDCounter++;
 
             // Set this new action as the options child
             option.OptionNode.SetAction(newAction);
@@ -905,7 +934,7 @@ namespace DialogueEditor
                 // Prepare each node for serialization
                 for (int i = 0; i < uiNodes.Count; i++)
                 {
-                    uiNodes[i].Info.UID = i + 1;
+                    uiNodes[i].Info.ID = i + 1;
                     uiNodes[i].Info.PrepareForSerialization();
                 }
 
