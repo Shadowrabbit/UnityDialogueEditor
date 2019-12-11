@@ -32,7 +32,7 @@ namespace DialogueEditor
 
         // Selected asset logic
         private NPCConversation currentlySelectedAsset;
-        private Object newlySelectedAsset;
+        private Transform newlySelectedAsset;
 
         // Right-hand display pannel vars
         private Rect panelRect;
@@ -96,7 +96,7 @@ namespace DialogueEditor
             uiNodes.Clear();
 
             // Deseralize the asset and get the conversation root
-            Conversation conversation = CurrentAsset.GetDeserialized();
+            Conversation conversation = CurrentAsset.Dejsonify();
             if (conversation == null)
                 conversation = new Conversation();
             ConversationRoot = conversation.GetRootNode();
@@ -247,15 +247,15 @@ namespace DialogueEditor
         protected void OnFocus()
         {
             // Get asset the user is selecting
-            newlySelectedAsset = Selection.activeObject;
+            newlySelectedAsset = Selection.activeTransform;
 
             // If it's not null
             if (newlySelectedAsset != null)
             {
                 // If its a conversation scriptable, load new asset
-                if (newlySelectedAsset is NPCConversation)
+                if (newlySelectedAsset.GetComponent<NPCConversation>() != null)
                 {
-                    currentlySelectedAsset = newlySelectedAsset as NPCConversation;
+                    currentlySelectedAsset = newlySelectedAsset.GetComponent<NPCConversation>();
 
                     if (currentlySelectedAsset != CurrentAsset)
                     {
@@ -285,7 +285,7 @@ namespace DialogueEditor
         protected void OnSelectionChange()
         {
             // Get asset the user is selecting
-            newlySelectedAsset = Selection.activeObject;
+            newlySelectedAsset = Selection.activeTransform;
 
             // If it's not null
             if (newlySelectedAsset != null)
@@ -299,16 +299,11 @@ namespace DialogueEditor
                 }
 
                 // If its a conversation scriptable, load new asset
-                if (newlySelectedAsset is NPCConversation)
+                currentlySelectedAsset = newlySelectedAsset.GetComponent<NPCConversation>();
+                if (currentlySelectedAsset != null && currentlySelectedAsset != CurrentAsset)
                 {
-                    currentlySelectedAsset = newlySelectedAsset as NPCConversation;
-
-                    if (currentlySelectedAsset != CurrentAsset)
-                    {
-                        LoadNewAsset(currentlySelectedAsset);
-                    }
+                    LoadNewAsset(currentlySelectedAsset);
                 }
-                // Else clear current asset
                 else
                 {
                     CurrentAsset = null;
@@ -504,25 +499,27 @@ namespace DialogueEditor
                             CurrentAsset.Event = NodeEvent.Event;
                         }
 
-                        // Load the object and property of the node
-                        SerializedObject o = new SerializedObject(NodeEvent);
-                        SerializedProperty p = o.FindProperty("Event");
+                        if (NodeEvent != null && NodeEvent.Event != null)
+                        {
+                            // Load the object and property of the node
+                            SerializedObject o = new SerializedObject(NodeEvent);
+                            SerializedProperty p = o.FindProperty("Event");
 
-                        // Load the dummy event
-                        SerializedObject o2 = new SerializedObject(CurrentAsset);
-                        SerializedProperty p2 = o2.FindProperty("Event");
+                            // Load the dummy event
+                            SerializedObject o2 = new SerializedObject(CurrentAsset);
+                            SerializedProperty p2 = o2.FindProperty("Event");
 
-                        // Draw dummy event
-                        GUILayout.Label("Events:", EditorStyles.boldLabel);
-                        EditorGUILayout.PropertyField(p2);
+                            // Draw dummy event
+                            GUILayout.Label("Events:", EditorStyles.boldLabel);
+                            EditorGUILayout.PropertyField(p2);
 
-                        // Apply changes to dummy
-                        o2.ApplyModifiedProperties();
+                            // Apply changes to dummy
+                            o2.ApplyModifiedProperties();
 
-                        // Copy dummy changes onto the nodes event
-                        p = p2;
-                        o.ApplyModifiedProperties();
-
+                            // Copy dummy changes onto the nodes event
+                            p = p2;
+                            o.ApplyModifiedProperties();
+                        }
                     }
                 }
                 else if (CurrentlySelectedNode is UIOptionNode)
@@ -934,7 +931,6 @@ namespace DialogueEditor
                 // Prepare each node for serialization
                 for (int i = 0; i < uiNodes.Count; i++)
                 {
-                    uiNodes[i].Info.ID = i + 1;
                     uiNodes[i].Info.PrepareForSerialization();
                 }
 
@@ -956,7 +952,7 @@ namespace DialogueEditor
                 }
 
                 // Serialize
-                CurrentAsset.Serialize(conversation);
+                CurrentAsset.Jsonify(conversation);
 
                 // Null / clear everything. We aren't pointing to it anymore. 
                 if (!manual)

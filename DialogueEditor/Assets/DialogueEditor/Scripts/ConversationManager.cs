@@ -55,7 +55,7 @@ namespace DialogueEditor
         {
             BasePanel.gameObject.SetActive(true);
 
-            m_currentConversation = conversation.GetDeserialized();
+            m_currentConversation = conversation.Dejsonify();
             DoAction(m_currentConversation.GetRootNode());
         }
 

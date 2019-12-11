@@ -6,21 +6,75 @@ using System.Runtime.Serialization.Json;
 
 namespace DialogueEditor
 {
-    public enum eNodeType
+    [System.Serializable]
+    [DisallowMultipleComponent]
+    public class NPCConversation : MonoBehaviour
     {
-        Dialogue,
-        Action
-    }
+        [SerializeField]
+        private string json;
 
-    public class SimpleEvent : ScriptableObject
-    {
+        [SerializeField]
+        private List<NodeEventHolder> Events;
+
         public UnityEngine.Events.UnityEvent Event;
-    }
 
-    public class SimpleEventEditor : UnityEditor.EditorWindow
-    {
-        private UnityEditor.SerializedObject serializedObject;
-        private SimpleEvent Event;
+        [SerializeField]
+        public int CurrentIDCounter = 1;
+
+        public NodeEventHolder GetEventHolderForID(int id)
+        {
+            if (Events == null)
+                Events = new List<NodeEventHolder>();
+
+            for (int i = 0; i < Events.Count; i++)
+                if (Events[i].NodeID == id)
+                    return Events[i];
+
+            NodeEventHolder h = this.gameObject.AddComponent<NodeEventHolder>();
+            h.NodeID = id;
+            h.Event = new UnityEngine.Events.UnityEvent();
+            Events.Add(h);
+            return h;
+        }
+
+        public void Jsonify(Conversation conversation)
+        {
+            if (conversation == null || conversation.Options == null) { return; }
+
+            System.IO.MemoryStream ms = new System.IO.MemoryStream();
+
+            DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(Conversation));
+            ser.WriteObject(ms, conversation);
+            byte[] jsonData = ms.ToArray();
+            ms.Close();
+            json = System.Text.Encoding.UTF8.GetString(jsonData, 0, jsonData.Length);
+        }
+
+        public Conversation Dejsonify()
+        {
+            if (json == null || json == "")
+                return null;
+
+            Conversation conversation = new Conversation();
+            System.IO.MemoryStream ms = new System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(json));
+            DataContractJsonSerializer ser = new DataContractJsonSerializer(conversation.GetType());
+            conversation = ser.ReadObject(ms) as Conversation;
+            ms.Close();
+            // Deserialize the indivudual nodes
+            {
+                if (conversation.Actions != null)
+                    for (int i = 0; i < conversation.Actions.Count; i++)
+                        conversation.Actions[i].Deserialize();
+
+                if (conversation.Options != null)
+                    for (int i = 0; i < conversation.Options.Count; i++)
+                        conversation.Options[i].Deserialize();
+            }
+            // Clear our dummy event
+            Event = new UnityEngine.Events.UnityEvent();
+
+            return conversation;
+        }
     }
 
     [DataContract]
@@ -120,8 +174,6 @@ namespace DialogueEditor
 
         [DataMember]
         public List<int> parentUIDs;
-
-        public SimpleEvent EventHolder;
      
         public abstract void RemoveSelfFromTree();
         public abstract void RegisterUIDs();
@@ -306,94 +358,6 @@ namespace DialogueEditor
         public override void Deserialize()
         {
 
-        }
-    }
-
-    [System.Serializable]
-    public class NodeEventHolder : ScriptableObject
-    {
-        [SerializeField]
-        public int NodeID;
-        [SerializeField]
-        public UnityEngine.Events.UnityEvent Event;
-    }
-
-
-    //--------------------------------------
-    // Scriptable and Serialization
-    //--------------------------------------
-
-    [CreateAssetMenu(fileName = "NPC_Conversation", menuName = "DialogueEditor/Conversation")]
-    [System.Serializable]
-    public class NPCConversation : ScriptableObject
-    {
-        [SerializeField]
-        public string json;
-
-        [SerializeField]
-        [HideInInspector]
-        public List<NodeEventHolder> Events = new List<NodeEventHolder>();
-
-        [HideInInspector]
-        public UnityEngine.Events.UnityEvent Event;
-
-        [SerializeField]
-        [HideInInspector]
-        public int CurrentIDCounter = 1;
-
-        public NodeEventHolder GetEventHolderForID(int id)
-        {
-            if (Events == null)
-                Events = new List<NodeEventHolder>();
-
-            for (int i = 0; i < Events.Count; i++)
-                if (Events[i].NodeID == id)
-                    return Events[i];
-
-            NodeEventHolder h = ScriptableObject.CreateInstance<NodeEventHolder>();
-            h.NodeID = id;
-            h.Event = new UnityEngine.Events.UnityEvent();
-            Events.Add(h);
-            return h;
-        }
-
-        public void Serialize(Conversation conversation)
-        {
-            if (conversation == null || conversation.Options == null) { return; }
-
-            System.IO.MemoryStream ms = new System.IO.MemoryStream();
-
-            DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(Conversation));
-            ser.WriteObject(ms, conversation);
-            byte[] jsonData = ms.ToArray();
-            ms.Close();
-            json = System.Text.Encoding.UTF8.GetString(jsonData, 0, jsonData.Length);
-        }
-
-        public Conversation GetDeserialized()
-        {
-            if (json == null || json == "")
-                return null;
-
-            Conversation conversation = new Conversation();
-            System.IO.MemoryStream ms = new System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(json));
-            DataContractJsonSerializer ser = new DataContractJsonSerializer(conversation.GetType());
-            conversation = ser.ReadObject(ms) as Conversation;
-            ms.Close();
-            // Deserialize the indivudual nodes
-            {
-                if (conversation.Actions != null)
-                    for (int i = 0; i < conversation.Actions.Count; i++)
-                        conversation.Actions[i].Deserialize();
-
-                if (conversation.Options != null)
-                    for (int i = 0; i < conversation.Options.Count; i++)
-                        conversation.Options[i].Deserialize();
-            }
-            // Clear our dummy event
-            Event = new UnityEngine.Events.UnityEvent();
-
-            return conversation;
         }
     }
 }

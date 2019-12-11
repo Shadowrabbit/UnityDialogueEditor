@@ -219,12 +219,12 @@ namespace DialogueEditor
 
         public UIActionNode(ConversationNode infoNode, Vector2 pos) : base(infoNode, pos)
         {
-            if (defaultNodeStyle == null)
+            if (defaultNodeStyle == null || defaultNodeStyle.normal.background == null)
             {
                 defaultNodeStyle = new GUIStyle();
                 defaultNodeStyle.normal.background = DialogueEditorUtil.MakeTexture(Width, Height, DefaultColor);
             }
-            if (selectedNodeStyle == null)
+            if (selectedNodeStyle == null || selectedNodeStyle.normal.background == null)
             {
                 selectedNodeStyle = new GUIStyle();
                 selectedNodeStyle.normal.background = DialogueEditorUtil.MakeTexture(Width, Height, SelectedColor);
@@ -361,12 +361,12 @@ namespace DialogueEditor
 
         public UIOptionNode(ConversationNode infoNode, Vector2 pos) : base(infoNode, pos)
         {
-            if (defaultNodeStyle == null)
+            if (defaultNodeStyle == null || defaultNodeStyle.normal.background == null)
             {
                 defaultNodeStyle = new GUIStyle();
                 defaultNodeStyle.normal.background = DialogueEditorUtil.MakeTexture(Width, Height, DefaultColor);
             }
-            if (selectedNodeStyle == null)
+            if (selectedNodeStyle == null || selectedNodeStyle.normal.background == null)
             {
                 selectedNodeStyle = new GUIStyle();
                 selectedNodeStyle.normal.background = DialogueEditorUtil.MakeTexture(Width, Height, SelectedColor);
