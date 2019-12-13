@@ -14,11 +14,12 @@ namespace DialogueEditor
             ConnectingOptionToAction    = 2,
             PlacingAction               = 3,
             ConnectingActionToOption    = 4,
+            draggingPanel               = 5,
         }
 
         // Consts
         public const float TOOLBAR_HEIGHT = 17;
-        public const float PANEL_WIDTH = 250;
+        public const float START_PANEL_WIDTH = 250;
         private const string WINDOW_NAME = "DIALOGUE_EDITOR_WINDOW";
 
         // Static properties
@@ -35,10 +36,12 @@ namespace DialogueEditor
         private Transform newlySelectedAsset;
 
         // Right-hand display pannel vars
+        private float panelWidth;
         private Rect panelRect;
         private GUIStyle panelStyle;
         private GUIStyle panelTitleStyle;
         private GUIStyle panelPropertyStyle;
+        private Rect panelResizerRect;
         private GUIStyle resizerStyle;
         private UINode m_cachedSelectedNode;
 
@@ -213,6 +216,7 @@ namespace DialogueEditor
             UIOptionNode.OnConnectToAction += ConnectOptionToAction;
 
             this.name = WINDOW_NAME;
+            panelWidth = START_PANEL_WIDTH;
         }
 
         private void InitGUIStyles()
@@ -229,6 +233,7 @@ namespace DialogueEditor
             // Resizer style
             resizerStyle = new GUIStyle();
             resizerStyle.normal.background = EditorGUIUtility.Load("icons/d_AvatarBlendBackground.png") as Texture2D;
+
         }
 
         private void OnDisable()
@@ -462,7 +467,7 @@ namespace DialogueEditor
 
         private void DrawPanel()
         {
-            panelRect = new Rect(position.width - PANEL_WIDTH, TOOLBAR_HEIGHT, PANEL_WIDTH, position.height - TOOLBAR_HEIGHT);
+            panelRect = new Rect(position.width - panelWidth, TOOLBAR_HEIGHT, panelWidth, position.height - TOOLBAR_HEIGHT);
             GUILayout.BeginArea(panelRect, panelStyle);
             GUILayout.BeginVertical();
             panelVerticalScroll = GUILayout.BeginScrollView(panelVerticalScroll);
@@ -540,8 +545,12 @@ namespace DialogueEditor
 
         private void DrawResizer()
         {
-            Rect resizer;  resizer = new Rect(position.width - PANEL_WIDTH - 2, 0, 5, (position.height) - TOOLBAR_HEIGHT);
-            GUILayout.BeginArea(new Rect(resizer.position, new Vector2(2, position.height)), resizerStyle);
+            panelResizerRect = new Rect(
+                position.width - panelWidth - 2,
+                0,
+                5,
+                (position.height) - TOOLBAR_HEIGHT);
+            GUILayout.BeginArea(new Rect(panelResizerRect.position, new Vector2(2, position.height)), resizerStyle);
             GUILayout.EndArea();
         }
 
@@ -562,6 +571,19 @@ namespace DialogueEditor
                     bool inPanel = panelRect.Contains(e.mousePosition);
                     ProcessNodeEvents(e, inPanel);
                     ProcessEvents(e);
+                    break;
+
+                case eInputState.draggingPanel:
+                    panelWidth = (position.width - e.mousePosition.x);
+                    if (panelWidth < 100)
+                        panelWidth = 100;
+
+                    if (e.type == EventType.MouseUp && e.button == 0)
+                    {
+                        m_inputState = eInputState.Regular;
+                        e.Use();
+                    }
+                    Repaint();
                     break;
 
                 case eInputState.PlacingOption:
@@ -665,12 +687,22 @@ namespace DialogueEditor
             switch (e.type)
             {
                 case EventType.MouseDown:
+                    const float resizerPadding = 5;
+
                     // Left click
                     if (e.button == 0)
                     {
                         if (panelRect.Contains(e.mousePosition))
                         {
                             clickInBox = true;
+                        }
+                        else if (e.mousePosition.x > panelResizerRect.x - resizerPadding && 
+                            e.mousePosition.x < panelResizerRect.x + panelResizerRect.width + resizerPadding && 
+                            e.mousePosition.y > panelResizerRect.y &&
+                            panelResizerRect.y < panelResizerRect.y + panelResizerRect.height)
+                        {
+                            clickInBox = true;
+                            m_inputState = eInputState.draggingPanel;
                         }
                         else
                         {
@@ -913,7 +945,7 @@ namespace DialogueEditor
             if (ConversationRoot == null) { return; }
 
             // Calc delta to move head to (middle, 0) and then apply this to all nodes
-            Vector2 target = new Vector2((position.width / 2) - (UIActionNode.Width / 2) - (PANEL_WIDTH / 2), TOOLBAR_HEIGHT);
+            Vector2 target = new Vector2((position.width / 2) - (UIActionNode.Width / 2) - (panelWidth / 2), TOOLBAR_HEIGHT);
             Vector2 delta = target - new Vector2(ConversationRoot.EditorInfo.xPos, ConversationRoot.EditorInfo.yPos);
             for (int i = 0; i < uiNodes.Count; i++)
             {
