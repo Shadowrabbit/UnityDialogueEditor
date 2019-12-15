@@ -17,6 +17,6 @@ public class QuestManager : MonoBehaviour
 
     public void BeginQuest(int i)
     {
-
+        Debug.Log("Quest started: " + i);
     }
 }

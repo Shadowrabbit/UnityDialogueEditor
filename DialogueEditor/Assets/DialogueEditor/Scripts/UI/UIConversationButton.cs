@@ -20,7 +20,7 @@ namespace DialogueEditor
             TextMesh.text = "End.";
         }
 
-        public void OnButtonPressed()
+        public void OnOptionSelected()
         {
             ConversationManager.Instance.OptionSelected(m_option);
         }

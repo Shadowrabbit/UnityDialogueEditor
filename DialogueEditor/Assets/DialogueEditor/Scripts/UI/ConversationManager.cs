@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace DialogueEditor
 {
@@ -7,19 +9,24 @@ namespace DialogueEditor
     {
         public static ConversationManager Instance { get; private set; }
 
-        [Header("Options")]
+        [Header("User-facing Options")]
         public bool PersistThrougoutScenes;
 
-        [Header("UI")]
-        public RectTransform BasePanel;
-        public TMPro.TextMeshProUGUI DialogueTextMesh;
+        [Header("Base")]
+        public RectTransform DialoguePanel;
+        public RectTransform OptionsPanel;
 
-        [Header("Transforms")]
-        public Transform OptionsPanel;
+        [Header("Dialogue UI")]
+        public Image NpcIcon;
+        public TMPro.TextMeshProUGUI DialogueText;
 
-        [Header("Assets")]
+        [Header("Components")]
+        public AudioSource AudioPlayer;
+
+        [Header("Prefabs")]
         public UIConversationButton ButtonPrefab;
 
+        private NPCConversation m_currentConversationData;
         private Conversation m_currentConversation;
         private List<UIConversationButton> m_options;
 
@@ -41,7 +48,7 @@ namespace DialogueEditor
 
         private void Start()
         {
-            BasePanel.gameObject.SetActive(false);
+            TurnOffUI();
             m_options = new List<UIConversationButton>();
         }
 
@@ -53,9 +60,11 @@ namespace DialogueEditor
 
         public void StartConversation(NPCConversation conversation)
         {
-            BasePanel.gameObject.SetActive(true);
+            TurnOnUI();
 
+            m_currentConversationData = conversation;
             m_currentConversation = conversation.Dejsonify();
+
             DoAction(m_currentConversation.GetRootNode());
         }
 
@@ -63,14 +72,30 @@ namespace DialogueEditor
         {
             if (action == null)
             {
-                EndConversation();
+                TurnOffUI();
                 return;
             }
 
-            DialogueTextMesh.text = action.Text;
-
+            // Clear current options
             ClearOptions();
 
+            // Set text, icon
+            NpcIcon.sprite = action.Icon;
+            DialogueText.text = action.Text;
+
+            // Call the event
+            UnityEvent actionEvent = m_currentConversationData.GetEventHolderForID(action.ID).Event;
+            if (actionEvent != null)
+                actionEvent.Invoke();
+
+            // Play the audio
+            if (action.Audio != null)
+            {
+                AudioPlayer.clip = action.Audio;
+                AudioPlayer.Play();
+            }
+
+            // Display new options
             if (action.OptionUIDs == null || action.OptionUIDs.Count == 0)
             {
                 UIConversationButton option = GameObject.Instantiate(ButtonPrefab, OptionsPanel);
@@ -95,20 +120,27 @@ namespace DialogueEditor
 
             if (option == null)
             {
-                EndConversation();
+                TurnOffUI();
                 return;
             }
 
             ConversationAction nextAction = m_currentConversation.GetActionByUID(option.ActionUID);
             if (nextAction == null)
-                EndConversation();
+                TurnOffUI();
             else
                 DoAction(nextAction);
         }
 
-        private void EndConversation()
+        private void TurnOnUI()
         {
-            BasePanel.gameObject.SetActive(false);
+            DialoguePanel.gameObject.SetActive(true);
+            OptionsPanel.gameObject.SetActive(true);
+        }
+
+        private void TurnOffUI()
+        {
+            DialoguePanel.gameObject.SetActive(false);
+            OptionsPanel.gameObject.SetActive(false);
         }
 
         private void ClearOptions()
