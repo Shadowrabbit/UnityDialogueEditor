@@ -99,7 +99,7 @@ namespace DialogueEditor
             uiNodes.Clear();
 
             // Deseralize the asset and get the conversation root
-            Conversation conversation = CurrentAsset.Dejsonify();
+            Conversation conversation = CurrentAsset.Deserialize();
             if (conversation == null)
                 conversation = new Conversation();
             ConversationRoot = conversation.GetRootNode();
@@ -391,6 +391,10 @@ namespace DialogueEditor
             {
                 Recenter();
             }
+            if (GUILayout.Button("Reset panel", EditorStyles.toolbarButton))
+            {
+                ResetPanelSize();
+            }
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Save", EditorStyles.toolbarButton))
             {
@@ -474,19 +478,18 @@ namespace DialogueEditor
 
             GUILayout.Label("Dialogue Editor.", panelTitleStyle);
 
+            GUILayout.Space(10);
+
             if (CurrentlySelectedNode != null)
             {
                 bool differentNodeSelected = (m_cachedSelectedNode != CurrentlySelectedNode);
                 m_cachedSelectedNode = CurrentlySelectedNode;
-
-                GUILayout.Space(10);
 
                 if (CurrentlySelectedNode is UIActionNode)
                 {
                     ConversationAction node = (CurrentlySelectedNode.Info as ConversationAction);
                     GUILayout.Label("[" + node.ID + "] NPC Dialogue Node.", panelTitleStyle);
                     
-
                     GUILayout.Label("Dialogue", EditorStyles.boldLabel);
                     node.Text = GUILayout.TextArea(node.Text);
 
@@ -495,6 +498,9 @@ namespace DialogueEditor
 
                     GUILayout.Label("Audio", EditorStyles.boldLabel);
                     node.Audio = (AudioClip)EditorGUILayout.ObjectField(node.Audio, typeof(AudioClip), false);
+
+                    GUILayout.Label("Font", EditorStyles.boldLabel);
+                    node.Font = (Font)EditorGUILayout.ObjectField(node.Font, typeof(Font), false);
 
                     // Events
                     {
@@ -535,7 +541,20 @@ namespace DialogueEditor
 
                     GUILayout.Label("Option text:", EditorStyles.boldLabel);
                     node.Text = GUILayout.TextArea(node.Text);
+
+                    GUILayout.Label("Font", EditorStyles.boldLabel);
+                    node.Font = (Font)EditorGUILayout.ObjectField(node.Font, typeof(Font), false);
                 }
+            }
+            else
+            {
+                GUILayout.Label("Conversation options.", panelTitleStyle);
+
+                GUILayout.Label("Main Icon:", EditorStyles.boldLabel);
+                CurrentAsset.DefaultSprite = (Sprite)EditorGUILayout.ObjectField(CurrentAsset.DefaultSprite, typeof(Sprite), false);
+
+                GUILayout.Label("Main font:", EditorStyles.boldLabel);
+                CurrentAsset.DefaultFont = (Font)EditorGUILayout.ObjectField(CurrentAsset.DefaultFont, typeof(Font), false);
             }
 
             GUILayout.EndScrollView();
@@ -568,7 +587,7 @@ namespace DialogueEditor
             switch (m_inputState)
             {
                 case eInputState.Regular:
-                    bool inPanel = panelRect.Contains(e.mousePosition);
+                    bool inPanel = panelRect.Contains(e.mousePosition) || e.mousePosition.y < TOOLBAR_HEIGHT;
                     ProcessNodeEvents(e, inPanel);
                     ProcessEvents(e);
                     break;
@@ -704,12 +723,13 @@ namespace DialogueEditor
                             clickInBox = true;
                             m_inputState = eInputState.draggingPanel;
                         }
-                        else
+                        else if (e.mousePosition.y > TOOLBAR_HEIGHT)
                         {
                             clickInBox = false;
                             if (!DialogueEditorWindow.NodeClickedOnThisUpdate)
                             {
                                 UnselectNode();
+                                e.Use();
                             }
                         }
                     }
@@ -780,6 +800,9 @@ namespace DialogueEditor
             ConversationOption newOption = new ConversationOption();
             newOption.ID = CurrentAsset.CurrentIDCounter++;
 
+            // Give the action it's default values
+            newOption.Font = CurrentAsset.DefaultFont;
+
             // Add the option to the actions' list of options
             actionUI.ConversationNode.AddOption(newOption);       
 
@@ -801,6 +824,10 @@ namespace DialogueEditor
             // Create new action, the argument option is the actions parent
             ConversationAction newAction = new ConversationAction();
             newAction.ID = CurrentAsset.CurrentIDCounter++;
+
+            // Give the action it's default values
+            newAction.Icon = CurrentAsset.DefaultSprite;
+            newAction.Font = CurrentAsset.DefaultFont;
 
             // Set this new action as the options child
             option.OptionNode.SetAction(newAction);
@@ -940,7 +967,7 @@ namespace DialogueEditor
         // User / Save functionality
         //--------------------------------------
 
-        public void Recenter()
+        private void Recenter()
         {
             if (ConversationRoot == null) { return; }
 
@@ -951,6 +978,11 @@ namespace DialogueEditor
             {
                 uiNodes[i].Drag(delta);
             }
+        }
+
+        private void ResetPanelSize()
+        {
+            panelWidth = START_PANEL_WIDTH;
         }
 
         private void Save(bool manual = false)
@@ -984,7 +1016,7 @@ namespace DialogueEditor
                 }
 
                 // Serialize
-                CurrentAsset.Jsonify(conversation);
+                CurrentAsset.Serialize(conversation);
 
                 // Null / clear everything. We aren't pointing to it anymore. 
                 if (!manual)

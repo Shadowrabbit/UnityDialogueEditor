@@ -203,6 +203,9 @@ GameObject:
   - component: {fileID: 173183776}
   - component: {fileID: 173183775}
   - component: {fileID: 173183774}
+  - component: {fileID: 173183783}
+  - component: {fileID: 173183782}
+  - component: {fileID: 173183781}
   m_Layer: 0
   m_Name: WizardConversation
   m_TagString: Untagged
@@ -378,22 +381,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83189876d4d389f43b7dd2e925aa112e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  json: '{"Actions":[{"EditorInfo":{"isRoot":true,"xPos":306,"yPos":34},"ID":0,"Text":"Hello,
-    brave adventurer. I have a quest for you, if you''re interested?","parentUIDs":[],"AudioGUID":"4d5b9d7dcedebba40b0ad09de63d7f44","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","OptionUIDs":[1,2,10,17]},{"EditorInfo":{"isRoot":false,"xPos":-14,"yPos":397.5},"ID":3,"Text":"Hmmpf.
-    Very well, then.","parentUIDs":[1,7,1,7],"AudioGUID":null,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","OptionUIDs":[]},{"EditorInfo":{"isRoot":false,"xPos":210,"yPos":208.5},"ID":12,"Text":"You
-    will be sent on an epic adventure to slay a beastly dragon...","parentUIDs":[2,2],"AudioGUID":"41bc911285d99f54fa483915d8b738e4","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","OptionUIDs":[13,7]},{"EditorInfo":{"isRoot":false,"xPos":435,"yPos":391.5},"ID":14,"Text":"Excellent.
+  json: '{"Actions":[{"EditorInfo":{"isRoot":true,"xPos":-295,"yPos":195},"FontGUID":null,"ID":0,"Text":"Hello,
+    brave adventurer. I have a quest for you, if you''re interested?","parentUIDs":[],"AudioGUID":"4d5b9d7dcedebba40b0ad09de63d7f44","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","OptionUIDs":[1,2,10,17]},{"EditorInfo":{"isRoot":false,"xPos":-615,"yPos":559.5},"FontGUID":null,"ID":3,"Text":"Hmmpf.
+    Very well, then.","parentUIDs":[1,7,1,7],"AudioGUID":null,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","OptionUIDs":[]},{"EditorInfo":{"isRoot":false,"xPos":-396,"yPos":361.5},"FontGUID":null,"ID":12,"Text":"You
+    will be sent on an epic adventure to slay a beastly dragon...","parentUIDs":[2,2],"AudioGUID":"41bc911285d99f54fa483915d8b738e4","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","OptionUIDs":[13,7]},{"EditorInfo":{"isRoot":false,"xPos":-166,"yPos":553.5},"FontGUID":null,"ID":14,"Text":"Excellent.
     I''ve updated your Quest Log. Go and speak to Mason in the guild hall, he will
-    tell you everything you need to know.","parentUIDs":[13,10,10,13],"AudioGUID":"3073b3e1a330ab54a9b9221970f8f0a5","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","OptionUIDs":[]},{"EditorInfo":{"isRoot":false,"xPos":752,"yPos":200.5},"ID":18,"Text":"What
-    are you after, adventurer?","parentUIDs":[17,17],"AudioGUID":null,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","OptionUIDs":[20,22]},{"EditorInfo":{"isRoot":false,"xPos":653,"yPos":390.5},"ID":21,"Text":"I
-    have a vast array of spells! Check if you''re interested in any of...","parentUIDs":[20,20],"AudioGUID":null,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","OptionUIDs":[]},{"EditorInfo":{"isRoot":false,"xPos":885,"yPos":391.5},"ID":23,"Text":"Goodbye.","parentUIDs":[22,22],"AudioGUID":null,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","OptionUIDs":[]}],"Options":[{"EditorInfo":{"isRoot":false,"xPos":-13,"yPos":132},"ID":1,"Text":"A
-    quest? No, thanks.","parentUIDs":[0,0],"ActionUID":3},{"EditorInfo":{"isRoot":false,"xPos":210,"yPos":130},"ID":2,"Text":"Tell
-    me more...","parentUIDs":[0,0],"ActionUID":12},{"EditorInfo":{"isRoot":false,"xPos":93,"yPos":307},"ID":7,"Text":"Doesn''t
-    sound like a quest for me!","parentUIDs":[12,12],"ActionUID":3},{"EditorInfo":{"isRoot":false,"xPos":437,"yPos":130},"ID":10,"Text":"A
-    quest? I accept!","parentUIDs":[0,0],"ActionUID":14},{"EditorInfo":{"isRoot":false,"xPos":314,"yPos":306},"ID":13,"Text":"I''ll
-    take on this quest!","parentUIDs":[12,12],"ActionUID":14},{"EditorInfo":{"isRoot":false,"xPos":766,"yPos":132},"ID":17,"Text":"Actually...
-    I''m here for something else.","parentUIDs":[0,0],"ActionUID":18},{"EditorInfo":{"isRoot":false,"xPos":666,"yPos":302},"ID":20,"Text":"I
-    want to learn some new magic spells!","parentUIDs":[18,18],"ActionUID":21},{"EditorInfo":{"isRoot":false,"xPos":886,"yPos":302},"ID":22,"Text":"Actually,
-    I changed my mind. Bye.","parentUIDs":[18,18],"ActionUID":23}]}'
+    tell you everything you need to know.","parentUIDs":[13,10,10,13],"AudioGUID":"3073b3e1a330ab54a9b9221970f8f0a5","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","OptionUIDs":[25]},{"EditorInfo":{"isRoot":false,"xPos":151,"yPos":362.5},"FontGUID":null,"ID":18,"Text":"What
+    are you after, adventurer?","parentUIDs":[17,17],"AudioGUID":null,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","OptionUIDs":[20,22]},{"EditorInfo":{"isRoot":false,"xPos":52,"yPos":552.5},"FontGUID":null,"ID":21,"Text":"I
+    have a vast array of spells! Check if you''re interested in any of...","parentUIDs":[20,20],"AudioGUID":null,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","OptionUIDs":[29]},{"EditorInfo":{"isRoot":false,"xPos":284,"yPos":553.5},"FontGUID":null,"ID":23,"Text":"Goodbye.","parentUIDs":[22,22],"AudioGUID":null,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","OptionUIDs":[]},{"EditorInfo":{"isRoot":false,"xPos":-180,"yPos":745.5},"FontGUID":"4dbf04fc8133de74386bef5053d6b452","ID":26,"Text":"Test
+    Test (event with 3)","parentUIDs":[25,25],"AudioGUID":null,"IconGUID":"f71c0dc03d067a342aa16a51674f6507","OptionUIDs":[]},{"EditorInfo":{"isRoot":false,"xPos":85,"yPos":771.5},"FontGUID":null,"ID":30,"Text":"Test","parentUIDs":[29,29],"AudioGUID":null,"IconGUID":"f71c0dc03d067a342aa16a51674f6507","OptionUIDs":[]}],"Options":[{"EditorInfo":{"isRoot":false,"xPos":-614,"yPos":294},"FontGUID":null,"ID":1,"Text":"A
+    quest? No, thanks.","parentUIDs":[0,0],"ActionUID":3},{"EditorInfo":{"isRoot":false,"xPos":-391,"yPos":292},"FontGUID":null,"ID":2,"Text":"Tell
+    me more...","parentUIDs":[0,0],"ActionUID":12},{"EditorInfo":{"isRoot":false,"xPos":-508,"yPos":469},"FontGUID":null,"ID":7,"Text":"Doesn''t
+    sound like a quest for me!","parentUIDs":[12,12],"ActionUID":3},{"EditorInfo":{"isRoot":false,"xPos":-165,"yPos":292},"FontGUID":null,"ID":10,"Text":"A
+    quest? I accept!","parentUIDs":[0,0],"ActionUID":14},{"EditorInfo":{"isRoot":false,"xPos":-288,"yPos":468},"FontGUID":null,"ID":13,"Text":"I''ll
+    take on this quest!","parentUIDs":[12,12],"ActionUID":14},{"EditorInfo":{"isRoot":false,"xPos":165,"yPos":294},"FontGUID":null,"ID":17,"Text":"Actually...
+    I''m here for something else.","parentUIDs":[0,0],"ActionUID":18},{"EditorInfo":{"isRoot":false,"xPos":65,"yPos":464},"FontGUID":null,"ID":20,"Text":"I
+    want to learn some new magic spells!","parentUIDs":[18,18],"ActionUID":21},{"EditorInfo":{"isRoot":false,"xPos":285,"yPos":464},"FontGUID":null,"ID":22,"Text":"Actually,
+    I changed my mind. Bye.","parentUIDs":[18,18],"ActionUID":23},{"EditorInfo":{"isRoot":false,"xPos":-175,"yPos":666},"FontGUID":"4dbf04fc8133de74386bef5053d6b452","ID":25,"Text":"Test","parentUIDs":[14,14],"ActionUID":26},{"EditorInfo":{"isRoot":false,"xPos":87,"yPos":668},"FontGUID":"4dbf04fc8133de74386bef5053d6b452","ID":29,"Text":"Test2","parentUIDs":[21,21],"ActionUID":30}]}'
+  CurrentIDCounter: 31
+  DefaultSprite: {fileID: 21300000, guid: f71c0dc03d067a342aa16a51674f6507, type: 3}
+  DefaultFont: {fileID: 0}
   Events:
   - {fileID: 173183771}
   - {fileID: 173183770}
@@ -407,23 +414,14 @@ MonoBehaviour:
   - {fileID: 173183776}
   - {fileID: 173183775}
   - {fileID: 173183774}
+  - {fileID: 173183783}
+  - {fileID: 173183782}
+  - {fileID: 173183781}
   Event:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1387261916}
-        m_MethodName: BeginQuest
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 12
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  CurrentIDCounter: 24
 --- !u!4 &173183773
 Transform:
   m_ObjectHideFlags: 0
@@ -573,6 +571,93 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+--- !u!114 &173183781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 173183766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NodeID: 30
+  Event:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+--- !u!114 &173183782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 173183766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NodeID: 28
+  Event:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+--- !u!114 &173183783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 173183766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NodeID: 26
+  Event:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 0}
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 0}
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &377933804 stripped

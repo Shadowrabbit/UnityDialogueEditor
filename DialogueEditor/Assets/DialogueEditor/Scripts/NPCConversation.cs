@@ -6,20 +6,28 @@ using System.Runtime.Serialization.Json;
 
 namespace DialogueEditor
 {
+    //--------------------------------------
+    // Conversation Monobehaviour (Serialized)
+    //--------------------------------------
+
     [System.Serializable]
     [DisallowMultipleComponent]
     public class NPCConversation : MonoBehaviour
     {
-        [SerializeField]
-        private string json;
+        // Serialized data
+        [SerializeField] private string json;
+        [SerializeField] public int CurrentIDCounter = 1;
+        [SerializeField] public Sprite DefaultSprite;
+        [SerializeField] public Font DefaultFont;
+        [SerializeField] private List<NodeEventHolder> Events;
 
-        [SerializeField]
-        private List<NodeEventHolder> Events;
-
+        // Runtime vars
         public UnityEngine.Events.UnityEvent Event;
 
-        [SerializeField]
-        public int CurrentIDCounter = 1;
+
+        //--------------------------------------
+        // Util
+        //--------------------------------------
 
         public NodeEventHolder GetEventHolderForID(int id)
         {
@@ -37,29 +45,23 @@ namespace DialogueEditor
             return h;
         }
 
-        public void Jsonify(Conversation conversation)
+
+
+
+        //--------------------------------------
+        // Serialize and Deserialize
+        //--------------------------------------
+
+        public void Serialize(Conversation conversation)
         {
-            if (conversation == null || conversation.Options == null) { return; }
-
-            System.IO.MemoryStream ms = new System.IO.MemoryStream();
-
-            DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(Conversation));
-            ser.WriteObject(ms, conversation);
-            byte[] jsonData = ms.ToArray();
-            ms.Close();
-            json = System.Text.Encoding.UTF8.GetString(jsonData, 0, jsonData.Length);
+            json = Jsonify(conversation);
         }
 
-        public Conversation Dejsonify()
+        public Conversation Deserialize()
         {
-            if (json == null || json == "")
-                return null;
+            // Dejsonify 
+            Conversation conversation = Dejsonify();
 
-            Conversation conversation = new Conversation();
-            System.IO.MemoryStream ms = new System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(json));
-            DataContractJsonSerializer ser = new DataContractJsonSerializer(conversation.GetType());
-            conversation = ser.ReadObject(ms) as Conversation;
-            ms.Close();
             // Deserialize the indivudual nodes
             {
                 if (conversation.Actions != null)
@@ -70,12 +72,54 @@ namespace DialogueEditor
                     for (int i = 0; i < conversation.Options.Count; i++)
                         conversation.Options[i].Deserialize();
             }
+
             // Clear our dummy event
             Event = new UnityEngine.Events.UnityEvent();
 
             return conversation;
         }
+
+
+
+        //--------------------------------------
+        // Serialize and Deserialize
+        //--------------------------------------
+
+        private string Jsonify(Conversation conversation)
+        {
+            if (conversation == null || conversation.Options == null) { return ""; }
+
+            System.IO.MemoryStream ms = new System.IO.MemoryStream();
+
+            DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(Conversation));
+            ser.WriteObject(ms, conversation);
+            byte[] jsonData = ms.ToArray();
+            ms.Close();
+            string toJson = System.Text.Encoding.UTF8.GetString(jsonData, 0, jsonData.Length);
+
+            return toJson;
+        }
+
+        private Conversation Dejsonify()
+        {
+            if (json == null || json == "")
+                return null;
+
+            Conversation conversation = new Conversation();
+            System.IO.MemoryStream ms = new System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(json));
+            DataContractJsonSerializer ser = new DataContractJsonSerializer(conversation.GetType());
+            conversation = ser.ReadObject(ms) as Conversation;
+            ms.Close();
+
+            return conversation;
+        }
     }
+
+
+
+    //--------------------------------------
+    // Conversation C# class (Deserialized)
+    //--------------------------------------
 
     [DataContract]
     public class Conversation
@@ -136,6 +180,12 @@ namespace DialogueEditor
         }
     }
 
+
+
+    //--------------------------------------
+    // Abstract Node class
+    //--------------------------------------
+
     [DataContract]
     public abstract class ConversationNode
     {
@@ -165,20 +215,45 @@ namespace DialogueEditor
         public EditorArgs EditorInfo;
 
         [DataMember]
-        public string Text;
-
-        [DataMember]
         public int ID;
 
-        public List<ConversationNode> parents;
+        [DataMember]
+        public string Text;
+
+        /// <summary>
+        /// Font to be used for the Text of this node
+        /// </summary>
+        public Font Font;
+        [DataMember] public string FontGUID;
 
         [DataMember]
         public List<int> parentUIDs;
-     
+
+        public List<ConversationNode> parents;
+
         public abstract void RemoveSelfFromTree();
         public abstract void RegisterUIDs();
-        public abstract void PrepareForSerialization();
-        public abstract void Deserialize();
+
+        public virtual void PrepareForSerialization()
+        {
+            string guid;
+            long li;
+
+            if (Font != null)
+            {
+                if (UnityEditor.AssetDatabase.TryGetGUIDAndLocalFileIdentifier(Font, out guid, out li))
+                    FontGUID = guid;
+            }
+        }
+
+        public virtual void Deserialize()
+        {
+            if (!string.IsNullOrEmpty(FontGUID))
+            {
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(FontGUID);
+                Font = (Font)UnityEditor.AssetDatabase.LoadAssetAtPath(path, typeof(Font));
+            }
+        }
     }
 
     [DataContract]
@@ -260,6 +335,8 @@ namespace DialogueEditor
 
         public override void PrepareForSerialization()
         {
+            base.PrepareForSerialization();
+
             string guid;
             long li;
 
@@ -278,6 +355,8 @@ namespace DialogueEditor
 
         public override void Deserialize()
         {
+            base.Deserialize();
+
             if (!string.IsNullOrEmpty(AudioGUID))
             {
                 string path = UnityEditor.AssetDatabase.GUIDToAssetPath(AudioGUID);
@@ -348,16 +427,6 @@ namespace DialogueEditor
             ActionUID = Conversation.INVALID_UID;
             if (Action != null)
                 ActionUID = Action.ID;
-        }
-
-        public override void PrepareForSerialization()
-        {
-
-        }
-
-        public override void Deserialize()
-        {
-
         }
     }
 }

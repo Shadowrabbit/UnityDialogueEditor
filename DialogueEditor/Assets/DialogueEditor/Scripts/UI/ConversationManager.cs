@@ -63,7 +63,7 @@ namespace DialogueEditor
             TurnOnUI();
 
             m_currentConversationData = conversation;
-            m_currentConversation = conversation.Dejsonify();
+            m_currentConversation = conversation.Deserialize();
 
             DoAction(m_currentConversation.GetRootNode());
         }
