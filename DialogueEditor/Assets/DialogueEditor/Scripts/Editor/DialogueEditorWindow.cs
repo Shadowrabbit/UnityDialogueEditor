@@ -11,7 +11,7 @@ namespace DialogueEditor
         {
             Regular                     = 0,
             PlacingOption               = 1,
-            ConnectingOptionToAction    = 2,
+            ConnectingNodeToAction    = 2,
             PlacingAction               = 3,
             ConnectingActionToOption    = 4,
             draggingPanel               = 5,
@@ -139,6 +139,7 @@ namespace DialogueEditor
 
                 if (allNodes[i] is ConversationAction)
                 {
+                    // Action options
                     int count = (allNodes[i] as ConversationAction).OptionUIDs.Count;
                     (allNodes[i] as ConversationAction).Options = new List<ConversationOption>();
                     for (int j = 0; j < count; j++)
@@ -146,6 +147,10 @@ namespace DialogueEditor
                         (allNodes[i] as ConversationAction).Options.Add(
                             conversation.GetOptionByUID((allNodes[i] as ConversationAction).OptionUIDs[j]));
                     }
+
+                    // Action following action
+                    (allNodes[i] as ConversationAction).Action = conversation.
+                        GetActionByUID((allNodes[i] as ConversationAction).ActionUID);
                 }
                 else if (allNodes[i] is ConversationOption)
                 {
@@ -174,6 +179,9 @@ namespace DialogueEditor
                     if (action.Options != null)
                         for (int j = 0; j < action.Options.Count; j++)
                             action.Options[j].parents.Add(action);
+
+                    if (action.Action != null)
+                        action.Action.parents.Add(action);
                 }
                 else
                 {
@@ -421,7 +429,7 @@ namespace DialogueEditor
                 uiNodes[i].DrawConnections();
             }
 
-            if (m_inputState == eInputState.ConnectingOptionToAction || 
+            if (m_inputState == eInputState.ConnectingNodeToAction || 
                 m_inputState == eInputState.ConnectingActionToOption)
             {
                 Vector2 start, end;
@@ -619,7 +627,7 @@ namespace DialogueEditor
                     }
                     break;
 
-                case eInputState.ConnectingOptionToAction:
+                case eInputState.ConnectingNodeToAction:
 
                     // Left click
                     if (e.type == EventType.MouseDown && e.button == 0)
@@ -634,9 +642,18 @@ namespace DialogueEditor
 
                             if (uiNodes[i].rect.Contains(e.mousePosition))
                             {
-                                (m_currentConnectingNode as UIOptionNode).OptionNode.SetAction(
-                                    (uiNodes[i] as UIActionNode).ConversationNode);
-                                break;
+                                if (m_currentConnectingNode is UIOptionNode)
+                                {
+                                    (m_currentConnectingNode as UIOptionNode).OptionNode.
+                                        SetAction((uiNodes[i] as UIActionNode).ConversationNode);
+                                    break;
+                                }
+                                else if (m_currentConnectingNode is UIActionNode)
+                                {
+                                    (m_currentConnectingNode as UIActionNode).ConversationNode.
+                                        SetAction((uiNodes[i] as UIActionNode).ConversationNode);
+                                    break;
+                                }
                             }
                         }
                         m_inputState = eInputState.Regular;
@@ -819,7 +836,7 @@ namespace DialogueEditor
         }
 
 
-        public void CreateNewAction(UIOptionNode option)
+        public void CreateNewAction(UINode node)
         {
             // Create new action, the argument option is the actions parent
             ConversationAction newAction = new ConversationAction();
@@ -830,7 +847,10 @@ namespace DialogueEditor
             newAction.Font = CurrentAsset.DefaultFont;
 
             // Set this new action as the options child
-            option.OptionNode.SetAction(newAction);
+            if (node is UIOptionNode)
+                (node as UIOptionNode).OptionNode.SetAction(newAction);
+            else if (node is UIActionNode)
+                (node as UIActionNode).ConversationNode.SetAction(newAction);
 
             // This new action doesn't have any children yet
             newAction.Options = null;
@@ -847,13 +867,13 @@ namespace DialogueEditor
 
         /* -- Connecting Nodes -- */
 
-        public void ConnectOptionToAction(UIOptionNode option)
+        public void ConnectOptionToAction(UINode option)
         {
             // The option if what we are connecting
             m_currentConnectingNode = option;
 
             // Set the input state appropriately
-            m_inputState = eInputState.ConnectingOptionToAction;
+            m_inputState = eInputState.ConnectingNodeToAction;
         }
 
         public void ConnectActionToOption(UIActionNode action)

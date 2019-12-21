@@ -68,7 +68,7 @@ namespace DialogueEditor
             DoAction(m_currentConversation.GetRootNode());
         }
 
-        private void DoAction(ConversationAction action)
+        public void DoAction(ConversationAction action)
         {
             if (action == null)
             {
@@ -96,13 +96,7 @@ namespace DialogueEditor
             }
 
             // Display new options
-            if (action.OptionUIDs == null || action.OptionUIDs.Count == 0)
-            {
-                UIConversationButton option = GameObject.Instantiate(ButtonPrefab, OptionsPanel);
-                option.SetAsEndConversation();
-                m_options.Add(option);
-            }
-            else
+            if (action.OptionUIDs != null && action.OptionUIDs.Count > 0)
             {
                 for (int i = 0; i < action.OptionUIDs.Count; i++)
                 {
@@ -110,6 +104,20 @@ namespace DialogueEditor
                     option.SetOption(m_currentConversation.GetOptionByUID(action.OptionUIDs[i]));
                     m_options.Add(option);
                 }
+            }
+            // Display "continue" button to go to the following dialogue
+            else if (action.ActionUID != Conversation.INVALID_UID)
+            {
+                UIConversationButton option = GameObject.Instantiate(ButtonPrefab, OptionsPanel);
+                option.SetAction(m_currentConversation.GetActionByUID(action.ActionUID));
+                m_options.Add(option);
+            }
+            // Display "end" button
+            else
+            {
+                UIConversationButton option = GameObject.Instantiate(ButtonPrefab, OptionsPanel);
+                option.SetAsEndConversation();
+                m_options.Add(option);
             }
         }
 

@@ -14,6 +14,13 @@ namespace DialogueEditor
         public delegate void UINodeDeletedEvent(UINode node);
         public static UINodeDeletedEvent OnUINodeDeleted;
 
+        public delegate void CreateActionEvent(UINode node);
+        public static CreateActionEvent OnCreateAction;
+
+        public delegate void ConnectToActionEvent(UINode node);
+        public static ConnectToActionEvent OnConnectToAction;
+
+
         // Consts
         protected const int TEXT_BORDER = 5;
         protected const int TITLE_HEIGHT = 18;
@@ -107,7 +114,7 @@ namespace DialogueEditor
 
 
         //---------------------------------
-        // Interactions / Events
+        // Interactions / Input Events
         //---------------------------------
 
         public void Drag(Vector2 moveDelta)
@@ -171,6 +178,27 @@ namespace DialogueEditor
             return false;
         }
 
+
+
+
+        //---------------------------------
+        // Inhereted, shared behaviour
+        //---------------------------------
+
+        protected void CreateAction()
+        {
+            OnCreateAction?.Invoke(this);
+        }
+
+        protected void ConnectToAction()
+        {
+            OnConnectToAction?.Invoke(this);
+        }
+
+        protected void DeleteThisNode()
+        {
+            OnUINodeDeleted?.Invoke(this);
+        }
 
 
 
@@ -273,6 +301,15 @@ namespace DialogueEditor
                     Handles.DrawBezier(start, end, start + toStart, end + toEnd, DefaultColor, null, LINE_WIDTH);
                 }
             }
+            else if (ConversationNode.Action != null)
+            {
+                Vector2 start, end;
+                DialogueEditorUtil.GetConnectionDrawInfo(rect, ConversationNode.Action, out start, out end);
+
+                Vector2 toStart = (start - end).normalized;
+                Vector2 toEnd = (end - start).normalized;
+                Handles.DrawBezier(start, end, start + toStart, end + toEnd, DefaultColor, null, LINE_WIDTH);
+            }
 
         }
 
@@ -303,6 +340,8 @@ namespace DialogueEditor
             GenericMenu rightClickMenu = new GenericMenu();
             rightClickMenu.AddItem(new GUIContent("Create New Option"), false, CreateNewOption);
             rightClickMenu.AddItem(new GUIContent("Connect to option"), false, ConnectToOption);
+            rightClickMenu.AddItem(new GUIContent("Create Action"), false, CreateAction);
+            rightClickMenu.AddItem(new GUIContent("Connect to action"), false, ConnectToAction);
             rightClickMenu.AddItem(new GUIContent("Delete this node"), false, DeleteThisNode);
             rightClickMenu.ShowAsContext();
         }
@@ -316,13 +355,6 @@ namespace DialogueEditor
         {
             OnConnectToOption?.Invoke(this);
         }
-
-        private void DeleteThisNode()
-        {
-            OnUINodeDeleted?.Invoke(this);
-        }
-
-
     }
 
 
@@ -334,13 +366,6 @@ namespace DialogueEditor
 
     public class UIOptionNode : UINode
     {
-        // Events
-        public delegate void CreateActionEvent(UIOptionNode node);
-        public static CreateActionEvent OnCreateAction;
-
-        public delegate void ConnectToActionEvent(UIOptionNode node);
-        public static ConnectToActionEvent OnConnectToAction;
-
         // Static properties
         public static int Width { get { return 200; } }
         public static int Height { get { return 50; } }
@@ -432,21 +457,6 @@ namespace DialogueEditor
             rightClickMenu.AddItem(new GUIContent("Connect to action"), false, ConnectToAction);
             rightClickMenu.AddItem(new GUIContent("Delete this node"), false, DeleteThisNode);
             rightClickMenu.ShowAsContext();
-        }
-
-        private void CreateAction()
-        {
-            OnCreateAction?.Invoke(this);
-        }
-
-        private void ConnectToAction()
-        {
-            OnConnectToAction?.Invoke(this);
-        }
-
-        private void DeleteThisNode()
-        {
-            OnUINodeDeleted?.Invoke(this);
         }
     }
 }

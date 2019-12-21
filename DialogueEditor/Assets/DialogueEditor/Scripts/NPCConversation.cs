@@ -62,15 +62,18 @@ namespace DialogueEditor
             // Dejsonify 
             Conversation conversation = Dejsonify();
 
-            // Deserialize the indivudual nodes
+            if (conversation != null)
             {
-                if (conversation.Actions != null)
-                    for (int i = 0; i < conversation.Actions.Count; i++)
-                        conversation.Actions[i].Deserialize();
+                // Deserialize the indivudual nodes
+                {
+                    if (conversation.Actions != null)
+                        for (int i = 0; i < conversation.Actions.Count; i++)
+                            conversation.Actions[i].Deserialize();
 
-                if (conversation.Options != null)
-                    for (int i = 0; i < conversation.Options.Count; i++)
-                        conversation.Options[i].Deserialize();
+                    if (conversation.Options != null)
+                        for (int i = 0; i < conversation.Options.Count; i++)
+                            conversation.Options[i].Deserialize();
+                }
             }
 
             // Clear our dummy event
@@ -263,6 +266,7 @@ namespace DialogueEditor
         {
             Options = new List<ConversationOption>();
             OptionUIDs = new List<int>();
+            ActionUID = Conversation.INVALID_UID;
         }
 
         /// <summary>
@@ -270,6 +274,12 @@ namespace DialogueEditor
         /// </summary>
         public List<ConversationOption> Options;
         [DataMember] public List<int> OptionUIDs;
+
+        /// <summary>
+        /// The Action this Action leads onto (if no options).
+        /// </summary>
+        public ConversationAction Action;
+        [DataMember] public int ActionUID;
 
         /// <summary>
         /// The NPC Icon
@@ -291,8 +301,38 @@ namespace DialogueEditor
             if (Options.Contains(newOption))
                 return;
 
+            // Delete the action I point to, if any
+            if (this.Action != null)
+            {
+                this.Action.parents.Remove(this);
+            }
+            this.Action = null;
+
             newOption.parents.Add(this);
             Options.Add(newOption);
+        }
+
+        public void SetAction(ConversationAction newAction)
+        {
+            // Remove myself as a parent from the action I was previously pointing to
+            if (this.Action != null)
+            {
+                this.Action.parents.Remove(this);
+            }
+
+            // Remove any options I may have
+            if (Options != null)
+            {
+                for (int i = 0; i < Options.Count; i++)
+                {
+                    // I am no longer the parents of these options
+                    Options[i].parents.Remove(this);
+                }
+                Options.Clear();
+            }
+
+            this.Action = newAction;
+            newAction.parents.Add(this);
         }
 
         public override void RemoveSelfFromTree()
@@ -331,6 +371,11 @@ namespace DialogueEditor
                     OptionUIDs.Add(Options[i].ID);
                 }
             }
+
+            if (Action != null)
+                ActionUID = Action.ID;
+            else
+                ActionUID = Conversation.INVALID_UID;
         }
 
         public override void PrepareForSerialization()
@@ -376,7 +421,7 @@ namespace DialogueEditor
     {
         public ConversationOption() : base()
         {
-
+            ActionUID = Conversation.INVALID_UID;
         }
 
         /// <summary>
