@@ -507,8 +507,8 @@ namespace DialogueEditor
                     GUILayout.Label("Audio", EditorStyles.boldLabel);
                     node.Audio = (AudioClip)EditorGUILayout.ObjectField(node.Audio, typeof(AudioClip), false);
 
-                    GUILayout.Label("Font", EditorStyles.boldLabel);
-                    node.Font = (Font)EditorGUILayout.ObjectField(node.Font, typeof(Font), false);
+                    GUILayout.Label("TMP Font", EditorStyles.boldLabel);
+                    node.TMPFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(node.TMPFont, typeof(TMPro.TMP_FontAsset), false);
 
                     // Events
                     {
@@ -550,8 +550,8 @@ namespace DialogueEditor
                     GUILayout.Label("Option text:", EditorStyles.boldLabel);
                     node.Text = GUILayout.TextArea(node.Text);
 
-                    GUILayout.Label("Font", EditorStyles.boldLabel);
-                    node.Font = (Font)EditorGUILayout.ObjectField(node.Font, typeof(Font), false);
+                    GUILayout.Label("TMP Font", EditorStyles.boldLabel);
+                    node.TMPFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(node.TMPFont, typeof(TMPro.TMP_FontAsset), false);
                 }
             }
             else
@@ -562,7 +562,7 @@ namespace DialogueEditor
                 CurrentAsset.DefaultSprite = (Sprite)EditorGUILayout.ObjectField(CurrentAsset.DefaultSprite, typeof(Sprite), false);
 
                 GUILayout.Label("Main font:", EditorStyles.boldLabel);
-                CurrentAsset.DefaultFont = (Font)EditorGUILayout.ObjectField(CurrentAsset.DefaultFont, typeof(Font), false);
+                CurrentAsset.DefaultFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(CurrentAsset.DefaultFont, typeof(TMPro.TMP_FontAsset), false);
             }
 
             GUILayout.EndScrollView();
@@ -818,7 +818,7 @@ namespace DialogueEditor
             newOption.ID = CurrentAsset.CurrentIDCounter++;
 
             // Give the action it's default values
-            newOption.Font = CurrentAsset.DefaultFont;
+            newOption.TMPFont = CurrentAsset.DefaultFont;
 
             // Add the option to the actions' list of options
             actionUI.ConversationNode.AddOption(newOption);       
@@ -844,7 +844,7 @@ namespace DialogueEditor
 
             // Give the action it's default values
             newAction.Icon = CurrentAsset.DefaultSprite;
-            newAction.Font = CurrentAsset.DefaultFont;
+            newAction.TMPFont = CurrentAsset.DefaultFont;
 
             // Set this new action as the options child
             if (node is UIOptionNode)

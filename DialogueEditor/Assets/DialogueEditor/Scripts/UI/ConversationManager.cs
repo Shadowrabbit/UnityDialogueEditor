@@ -82,6 +82,18 @@ namespace DialogueEditor
             // Set text, icon
             NpcIcon.sprite = action.Icon;
             DialogueText.text = action.Text;
+            if (action.TMPFont != null)
+            {
+                DialogueText.font = action.TMPFont;
+            }
+            else if (m_currentConversationData.DefaultFont != null)
+            {
+                DialogueText.font = m_currentConversationData.DefaultFont;
+            }
+            else
+            {
+                DialogueText.font = null;
+            }
 
             // Call the event
             UnityEvent actionEvent = m_currentConversationData.GetEventHolderForID(action.ID).Event;

@@ -18,7 +18,7 @@ namespace DialogueEditor
         [SerializeField] private string json;
         [SerializeField] public int CurrentIDCounter = 1;
         [SerializeField] public Sprite DefaultSprite;
-        [SerializeField] public Font DefaultFont;
+        [SerializeField] public TMPro.TMP_FontAsset DefaultFont;
         [SerializeField] private List<NodeEventHolder> Events;
 
         // Runtime vars
@@ -224,10 +224,10 @@ namespace DialogueEditor
         public string Text;
 
         /// <summary>
-        /// Font to be used for the Text of this node
+        /// TextMeshPro font 
         /// </summary>
-        public Font Font;
-        [DataMember] public string FontGUID;
+        public TMPro.TMP_FontAsset TMPFont;
+        [DataMember] public string TMPFontGUID;
 
         [DataMember]
         public List<int> parentUIDs;
@@ -242,19 +242,21 @@ namespace DialogueEditor
             string guid;
             long li;
 
-            if (Font != null)
+            if (TMPFont != null)
             {
-                if (UnityEditor.AssetDatabase.TryGetGUIDAndLocalFileIdentifier(Font, out guid, out li))
-                    FontGUID = guid;
+                if (UnityEditor.AssetDatabase.TryGetGUIDAndLocalFileIdentifier(TMPFont, out guid, out li))
+                    TMPFontGUID = guid;
             }
+            else
+                TMPFontGUID = "";
         }
 
         public virtual void Deserialize()
         {
-            if (!string.IsNullOrEmpty(FontGUID))
+            if (!string.IsNullOrEmpty(TMPFontGUID))
             {
-                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(FontGUID);
-                Font = (Font)UnityEditor.AssetDatabase.LoadAssetAtPath(path, typeof(Font));
+                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(TMPFontGUID);
+                TMPFont = (TMPro.TMP_FontAsset)UnityEditor.AssetDatabase.LoadAssetAtPath(path, typeof(TMPro.TMP_FontAsset));
             }
         }
     }
@@ -390,12 +392,16 @@ namespace DialogueEditor
                 if (UnityEditor.AssetDatabase.TryGetGUIDAndLocalFileIdentifier(Audio, out guid, out li))
                     AudioGUID = guid;
             }
+            else
+                AudioGUID = "";
 
             if (Icon != null)
             {
                 if (UnityEditor.AssetDatabase.TryGetGUIDAndLocalFileIdentifier(Icon, out guid, out li))
                     IconGUID = guid;
             }
+            else
+                IconGUID = "";
         }
 
         public override void Deserialize()
