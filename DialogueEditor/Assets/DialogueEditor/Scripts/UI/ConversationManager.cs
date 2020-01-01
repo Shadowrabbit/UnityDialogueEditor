@@ -10,7 +10,8 @@ namespace DialogueEditor
         public static ConversationManager Instance { get; private set; }
 
         [Header("User-facing Options")]
-        public bool PersistThrougoutScenes;
+        public bool ScrollText;
+        public float ScrollSpeed = 1;
 
         [Header("Base")]
         public RectTransform DialoguePanel;
@@ -30,6 +31,18 @@ namespace DialogueEditor
         private Conversation m_currentConversation;
         private List<UIConversationButton> m_options;
 
+        private string m_currentScrollText;
+        private string m_targetScrollText;
+        private bool m_scrollingText;
+        private float m_elapsedScrollTime;
+        private int m_scrollIndex;
+
+
+
+        //--------------------------------------
+        // Awake, Start, Destroy
+        //--------------------------------------
+
         private void Awake()
         {
             // Destroy myself if I am not the singleton
@@ -37,25 +50,66 @@ namespace DialogueEditor
             {
                 GameObject.Destroy(this.gameObject);
             }
-
             Instance = this;
 
-            if (PersistThrougoutScenes)
-            {
-                GameObject.DontDestroyOnLoad(this.gameObject);
-            }
+            m_options = new List<UIConversationButton>();
         }
 
         private void Start()
         {
             TurnOffUI();
-            m_options = new List<UIConversationButton>();
+        }
+
+        private void OnDestroy()
+        {
+            Instance = null;
         }
 
 
 
+
         //--------------------------------------
-        // Conversation
+        // Update
+        //--------------------------------------
+
+        private void Update()
+        {
+            if (m_scrollingText)
+            {
+                UpdateScrollingText();
+            }
+        }
+
+        private void UpdateScrollingText()
+        {
+            const float charactersPerSecond = 1500;
+            float timePerChar = (60.0f / charactersPerSecond);
+            timePerChar *= ScrollSpeed;
+
+            m_elapsedScrollTime += Time.deltaTime;
+
+            if (m_elapsedScrollTime > timePerChar)
+            {
+                m_elapsedScrollTime = 0f;
+
+                m_currentScrollText += m_targetScrollText[m_scrollIndex];
+                m_scrollIndex++;
+
+                DialogueText.text = m_currentScrollText;
+
+                // Finished?
+                if (m_scrollIndex >= m_targetScrollText.Length)
+                {
+                    m_scrollingText = false;
+                }
+            }
+        }
+
+
+
+
+        //--------------------------------------
+        // Start Conversation
         //--------------------------------------
 
         public void StartConversation(NPCConversation conversation)
@@ -68,6 +122,12 @@ namespace DialogueEditor
             DoAction(m_currentConversation.GetRootNode());
         }
 
+
+
+        //--------------------------------------
+        // Set action
+        //--------------------------------------
+
         public void DoAction(ConversationAction action)
         {
             if (action == null)
@@ -79,9 +139,8 @@ namespace DialogueEditor
             // Clear current options
             ClearOptions();
 
-            // Set text, icon
+            // Set sprite and font
             NpcIcon.sprite = action.Icon;
-            DialogueText.text = action.Text;
             if (action.TMPFont != null)
             {
                 DialogueText.font = action.TMPFont;
@@ -93,6 +152,21 @@ namespace DialogueEditor
             else
             {
                 DialogueText.font = null;
+            }
+
+            // Set text
+            if (ScrollText)
+            {
+                m_scrollingText = true;
+                m_currentScrollText = "";
+                DialogueText.text = "";
+                m_targetScrollText = action.Text;
+                m_elapsedScrollTime = 0f;
+                m_scrollIndex = 0;
+            }
+            else
+            {
+                DialogueText.text = action.Text;
             }
 
             // Call the event
@@ -151,6 +225,13 @@ namespace DialogueEditor
                 DoAction(nextAction);
         }
 
+
+
+
+        //--------------------------------------
+        // Util
+        //--------------------------------------
+
         private void TurnOnUI()
         {
             DialoguePanel.gameObject.SetActive(true);
@@ -170,7 +251,6 @@ namespace DialogueEditor
                 GameObject.Destroy(m_options[0].gameObject);
                 m_options.RemoveAt(0);
             }
-
         }
     }
 }

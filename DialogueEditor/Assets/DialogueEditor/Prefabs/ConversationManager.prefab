@@ -120,7 +120,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28fe614b88daf184a841493ff6bdcd86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PersistThrougoutScenes: 0
+  ScrollText: 1
+  ScrollSpeed: 1
   DialoguePanel: {fileID: 5422632363663010462}
   OptionsPanel: {fileID: 6594826665403983136}
   NpcIcon: {fileID: 2182047893451332456}

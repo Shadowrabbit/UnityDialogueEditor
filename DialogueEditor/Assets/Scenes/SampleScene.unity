@@ -347,36 +347,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &568623581
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 568623582}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &568623582
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 568623581}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &835770436
 GameObject:
   m_ObjectHideFlags: 0
@@ -574,7 +544,7 @@ GameObject:
   - component: {fileID: 1326382827}
   - component: {fileID: 1326382835}
   m_Layer: 0
-  m_Name: c
+  m_Name: conversation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -700,14 +670,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83189876d4d389f43b7dd2e925aa112e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  json: '{"Actions":[{"EditorInfo":{"isRoot":true,"xPos":465,"yPos":71},"FontGUID":null,"ID":0,"Text":"Conversation
-    root","parentUIDs":[],"ActionUID":-1,"AudioGUID":null,"IconGUID":null,"OptionUIDs":[1]},{"EditorInfo":{"isRoot":false,"xPos":461,"yPos":245.5},"FontGUID":null,"ID":2,"Text":"Wizard
-    Dialogue 1","parentUIDs":[1,1],"ActionUID":3,"AudioGUID":null,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","OptionUIDs":[]},{"EditorInfo":{"isRoot":false,"xPos":456,"yPos":344.5},"FontGUID":null,"ID":3,"Text":"Man
-    dialogue 1","parentUIDs":[2,2],"ActionUID":4,"AudioGUID":null,"IconGUID":"f71c0dc03d067a342aa16a51674f6507","OptionUIDs":[]},{"EditorInfo":{"isRoot":false,"xPos":449,"yPos":452.5},"FontGUID":null,"ID":4,"Text":"Wizard
-    dialogue two","parentUIDs":[3,3],"ActionUID":-1,"AudioGUID":null,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","OptionUIDs":[5,6]},{"EditorInfo":{"isRoot":false,"xPos":449,"yPos":784.5},"FontGUID":null,"ID":7,"Text":"Action
-    part 2","parentUIDs":[8,6,8],"ActionUID":-1,"AudioGUID":null,"IconGUID":"af5b0b703be9b424f8b755c3e701a1f9","OptionUIDs":[9]},{"EditorInfo":{"isRoot":false,"xPos":443,"yPos":654.5},"FontGUID":null,"ID":8,"Text":"Action
-    part 1","parentUIDs":[5,6,5,6],"ActionUID":7,"AudioGUID":null,"IconGUID":"af5b0b703be9b424f8b755c3e701a1f9","OptionUIDs":[]},{"EditorInfo":{"isRoot":false,"xPos":451,"yPos":1012.5},"FontGUID":null,"ID":10,"Text":"Fin.","parentUIDs":[9,9],"ActionUID":-1,"AudioGUID":null,"IconGUID":"0000000000000000f000000000000000","OptionUIDs":[]}],"Options":[{"EditorInfo":{"isRoot":false,"xPos":468,"yPos":172},"FontGUID":null,"ID":1,"Text":"Option
-    1","parentUIDs":[0,0],"ActionUID":2},{"EditorInfo":{"isRoot":false,"xPos":320,"yPos":557},"FontGUID":null,"ID":5,"Text":"111","parentUIDs":[4,4],"ActionUID":8},{"EditorInfo":{"isRoot":false,"xPos":585,"yPos":553},"FontGUID":null,"ID":6,"Text":"222","parentUIDs":[4,4],"ActionUID":8},{"EditorInfo":{"isRoot":false,"xPos":434,"yPos":910},"FontGUID":null,"ID":9,"Text":"End","parentUIDs":[7,7],"ActionUID":10}]}'
+  json: '{"Actions":[{"EditorInfo":{"isRoot":true,"xPos":470,"yPos":58},"ID":0,"TMPFontGUID":"","Text":"Conversation
+    root","parentUIDs":[],"ActionUID":-1,"AudioGUID":"","IconGUID":"","OptionUIDs":[1]},{"EditorInfo":{"isRoot":false,"xPos":466,"yPos":232.5},"ID":2,"TMPFontGUID":"","Text":"Wizard
+    Dialogue 1","parentUIDs":[1,1],"ActionUID":3,"AudioGUID":"","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","OptionUIDs":[]},{"EditorInfo":{"isRoot":false,"xPos":461,"yPos":331.5},"ID":3,"TMPFontGUID":"","Text":"Man
+    dialogue 1","parentUIDs":[2,2],"ActionUID":4,"AudioGUID":"","IconGUID":"f71c0dc03d067a342aa16a51674f6507","OptionUIDs":[]},{"EditorInfo":{"isRoot":false,"xPos":455,"yPos":428.5},"ID":4,"TMPFontGUID":"","Text":"Wizard
+    dialogue two","parentUIDs":[3,3],"ActionUID":-1,"AudioGUID":"","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","OptionUIDs":[5,6]},{"EditorInfo":{"isRoot":false,"xPos":454,"yPos":771.5},"ID":7,"TMPFontGUID":"","Text":"Action
+    part 2","parentUIDs":[8,6,8],"ActionUID":-1,"AudioGUID":"","IconGUID":"af5b0b703be9b424f8b755c3e701a1f9","OptionUIDs":[9]},{"EditorInfo":{"isRoot":false,"xPos":448,"yPos":641.5},"ID":8,"TMPFontGUID":"","Text":"Action
+    part 1","parentUIDs":[5,6,5,6],"ActionUID":7,"AudioGUID":"","IconGUID":"af5b0b703be9b424f8b755c3e701a1f9","OptionUIDs":[]},{"EditorInfo":{"isRoot":false,"xPos":456,"yPos":999.5},"ID":10,"TMPFontGUID":"","Text":"Fin.","parentUIDs":[9,9],"ActionUID":-1,"AudioGUID":"","IconGUID":"","OptionUIDs":[]}],"Options":[{"EditorInfo":{"isRoot":false,"xPos":473,"yPos":159},"ID":1,"TMPFontGUID":"","Text":"Option
+    1","parentUIDs":[0,0],"ActionUID":2},{"EditorInfo":{"isRoot":false,"xPos":325,"yPos":544},"ID":5,"TMPFontGUID":"","Text":"111","parentUIDs":[4,4],"ActionUID":8},{"EditorInfo":{"isRoot":false,"xPos":589,"yPos":540},"ID":6,"TMPFontGUID":"","Text":"222","parentUIDs":[4,4],"ActionUID":8},{"EditorInfo":{"isRoot":false,"xPos":439,"yPos":897},"ID":9,"TMPFontGUID":"","Text":"End","parentUIDs":[7,7],"ActionUID":10}]}'
   CurrentIDCounter: 11
   DefaultSprite: {fileID: 0}
   DefaultFont: {fileID: 0}
@@ -736,7 +706,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1326382835
 MonoBehaviour:
@@ -1048,12 +1018,12 @@ PrefabInstance:
     - target: {fileID: 557370262421264553, guid: d9fa78e8c3c4f2b4b8f7f77ca8426cca,
         type: 3}
       propertyPath: m_havePropertiesChanged
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 557370262421264553, guid: d9fa78e8c3c4f2b4b8f7f77ca8426cca,
         type: 3}
       propertyPath: m_isInputParsingRequired
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d9fa78e8c3c4f2b4b8f7f77ca8426cca, type: 3}
