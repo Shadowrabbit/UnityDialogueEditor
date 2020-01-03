@@ -11,7 +11,7 @@ namespace DialogueEditor
         {
             Regular                     = 0,
             PlacingOption               = 1,
-            ConnectingNodeToAction    = 2,
+            ConnectingNodeToAction      = 2,
             PlacingAction               = 3,
             ConnectingActionToOption    = 4,
             draggingPanel               = 5,
@@ -440,6 +440,7 @@ namespace DialogueEditor
                 Vector2 toOption = (start - end).normalized;
                 Vector2 toAction = (end - start).normalized;
 
+
                 Handles.DrawBezier(
                     start, end,
                     start + toAction * 50f,
@@ -650,6 +651,18 @@ namespace DialogueEditor
                                 }
                                 else if (m_currentConnectingNode is UIActionNode)
                                 {
+                                    UIActionNode connecting = m_currentConnectingNode as UIActionNode;
+                                    UIActionNode toBeChild = uiNodes[i] as UIActionNode;
+
+                                    // If a relationship between these actions already exists, swap it 
+                                    // around, as a 2way action<->action relationship cannot exist.
+                                    if (connecting.ConversationNode.parents.Contains(toBeChild.ConversationNode))
+                                    {
+                                        // Remove the relationship
+                                        connecting.ConversationNode.parents.Remove(toBeChild.ConversationNode);
+                                        toBeChild.ConversationNode.Action = null;
+                                    }
+
                                     (m_currentConnectingNode as UIActionNode).ConversationNode.
                                         SetAction((uiNodes[i] as UIActionNode).ConversationNode);
                                     break;

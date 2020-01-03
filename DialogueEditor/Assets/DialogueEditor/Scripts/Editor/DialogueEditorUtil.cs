@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 namespace DialogueEditor
 {
@@ -112,6 +113,129 @@ namespace DialogueEditor
 
             start = origin;
             end = target;
+        }
+
+        // Translated from C++ into UnityC#
+        // Original source: https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
+        public static bool DoLinesIntersect(Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3, out Vector2 point)
+        {
+            Vector2 s1 = new Vector2(p1.x - p0.x, p1.y - p0.y);
+            Vector2 s2 = new Vector2(p3.x - p2.x, p3.y - p2.y);
+
+            float s = (-s1.y * (p0.x - p2.x) + s1.x * (p0.y - p2.y)) / (-s2.x * s1.y + s1.x * s2.y);
+            float t = (s2.x * (p0.y - p2.y) - s2.y * (p0.x - p2.x)) / (-s2.x * s1.y + s1.x * s2.y);
+
+            if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
+            {
+                point = new Vector2(p0.x + (t * s1.x), p0.y + (t * s1.y));
+                return true;
+            }
+
+            point = Vector2.zero;
+            return false;
+        }
+
+
+        public static bool DoesLineIntersectWithBox(Vector2 lineStart, Vector2 lineEnd, 
+            Vector2 boxTL, bool isBoxOption, out Vector2 point)
+        {
+            int width = (isBoxOption) ? UIOptionNode.Width : UIActionNode.Width;
+            int height = (isBoxOption) ? UIOptionNode.Height : UIActionNode.Height;            
+            Vector2 s, e;
+
+            // Check top
+            s = new Vector2(boxTL.x , boxTL.y);
+            e = new Vector2(boxTL.x + width, s.y);
+            Vector2 topIntersect;
+            bool t = (DoLinesIntersect(lineStart, lineEnd, s, e, out topIntersect));
+
+            // Check right
+            s = new Vector2(boxTL.x + width, boxTL.y);
+            e = new Vector2(s.x, boxTL.y + height);
+            Vector2 rightIntersect;
+            bool r = (DoLinesIntersect(lineStart, lineEnd, s, e, out rightIntersect));
+
+            // check bot
+            s = new Vector2(boxTL.x, boxTL.y + height);
+            e = new Vector2(boxTL.x + width, s.y);
+            Vector2 botIntersect;
+            bool b = (DoLinesIntersect(lineStart, lineEnd, s, e, out botIntersect));
+
+            // Check left
+            s = new Vector2(boxTL.x, boxTL.y);
+            e = new Vector2(s.x, boxTL.y + height);
+            Vector2 leftIntersect;
+            bool l = (DoLinesIntersect(lineStart, lineEnd, s, e, out leftIntersect));
+
+            // Test/compare all and find closest intersection point
+            if (t || r || b || l)
+            {
+                Vector2 closest = new Vector2(float.MaxValue, float.MaxValue);
+
+                if (t)
+                {
+                    float closeDist = (lineStart - closest).sqrMagnitude;
+                    float topDist = (lineStart - topIntersect).sqrMagnitude;
+
+                    if (topDist < closeDist)
+                        closest = topIntersect;
+                }
+
+                if (r)
+                {
+                    float closeDist = (lineStart - closest).sqrMagnitude;
+                    float rightDist = (lineStart - rightIntersect).sqrMagnitude;
+
+                    if (rightDist < closeDist)
+                        closest = rightIntersect;
+                }
+
+                if (b)
+                {
+                    float closeDist = (lineStart - closest).sqrMagnitude;
+                    float botDist = (lineStart - botIntersect).sqrMagnitude;
+
+                    if (botDist < closeDist)
+                        closest = botIntersect;
+                }
+
+                if (l)
+                {
+                    float closeDist = (lineStart - closest).sqrMagnitude;
+                    float leftDist = (lineStart - leftIntersect).sqrMagnitude;
+
+                    if (leftDist < closeDist)
+                        closest = leftIntersect;
+                }
+
+                point = closest;
+                return true;
+            }
+
+            point = Vector2.zero;
+            return false;
+        }
+
+        public static void DrawArrow(Vector2 pos, Vector2 dir, Color color)
+        {
+            const float rotAmount = 25;
+            const float len = 15f;
+            Vector2 start, end, toStart, toEnd;
+            start = pos;
+
+            // Left arc
+            Vector2 leftLine = Quaternion.Euler(0, 0, rotAmount) * -dir;
+            end = start + leftLine.normalized * len;
+            toStart = (start - end).normalized;
+            toEnd = (end - start).normalized;
+            Handles.DrawBezier(start, end, start + toStart, end + toEnd, color, null, UINode.LINE_WIDTH);
+
+            // Right arc
+            Vector2 rightLine = Quaternion.Euler(0, 0, -rotAmount) * -dir;
+            end = start + rightLine.normalized * len;
+            toStart = (start - end).normalized;
+            toEnd = (end - start).normalized;
+            Handles.DrawBezier(start, end, start + toStart, end + toEnd, color, null, UINode.LINE_WIDTH);
         }
 
         public static Color Colour(float r, float g, float b)

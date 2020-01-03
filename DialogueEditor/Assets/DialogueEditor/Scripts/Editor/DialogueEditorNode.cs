@@ -26,7 +26,7 @@ namespace DialogueEditor
         protected const int TITLE_HEIGHT = 18;
         protected const int TITLE_GAP = 4;
         protected const int TEXT_BOX_HEIGHT = 40;
-        protected const int LINE_WIDTH = 3;
+        public const int LINE_WIDTH = 3;
 
         // Members
         public Rect rect;
@@ -299,6 +299,13 @@ namespace DialogueEditor
                     Vector2 toStart = (start - end).normalized;
                     Vector2 toEnd = (end - start).normalized;
                     Handles.DrawBezier(start, end, start + toStart, end + toEnd, DefaultColor, null, LINE_WIDTH);
+
+                    Vector2 intersection;
+                    Vector2 boxPos = new Vector2(ConversationNode.Options[i].EditorInfo.xPos, ConversationNode.Options[i].EditorInfo.yPos);
+                    if (DialogueEditorUtil.DoesLineIntersectWithBox(start, end, boxPos, true, out intersection))
+                    {
+                        DialogueEditorUtil.DrawArrow(intersection, toEnd, DefaultColor);
+                    }
                 }
             }
             else if (ConversationNode.Action != null)
@@ -309,6 +316,13 @@ namespace DialogueEditor
                 Vector2 toStart = (start - end).normalized;
                 Vector2 toEnd = (end - start).normalized;
                 Handles.DrawBezier(start, end, start + toStart, end + toEnd, DefaultColor, null, LINE_WIDTH);
+
+                Vector2 intersection;
+                Vector2 boxPos = new Vector2(ConversationNode.Action.EditorInfo.xPos, ConversationNode.Action.EditorInfo.yPos);
+                if (DialogueEditorUtil.DoesLineIntersectWithBox(start, end, boxPos, false, out intersection))
+                {
+                    DialogueEditorUtil.DrawArrow(intersection, toEnd, DefaultColor);
+                }
             }
 
         }
@@ -425,6 +439,13 @@ namespace DialogueEditor
                 Vector2 toStart = (start - end).normalized;
                 Vector2 toEnd = (end - start).normalized;
                 Handles.DrawBezier(start, end, start + toStart, end + toEnd, DefaultColor, null, LINE_WIDTH);
+
+                Vector2 intersection;
+                Vector2 boxPos = new Vector2(OptionNode.Action.EditorInfo.xPos, OptionNode.Action.EditorInfo.yPos);
+                if (DialogueEditorUtil.DoesLineIntersectWithBox(start, end, boxPos, false, out intersection))
+                {
+                    DialogueEditorUtil.DrawArrow(intersection, toEnd, DefaultColor);
+                }
             }
         }
 
