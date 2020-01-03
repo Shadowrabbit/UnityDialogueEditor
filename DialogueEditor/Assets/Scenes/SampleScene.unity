@@ -358,139 +358,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 245332582726269615}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &498398096
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 498398102}
-  - component: {fileID: 498398101}
-  - component: {fileID: 498398100}
-  - component: {fileID: 498398099}
-  - component: {fileID: 498398098}
-  - component: {fileID: 498398097}
-  m_Layer: 0
-  m_Name: conversation
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &498398097
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 498398096}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  NodeID: 3
-  Event:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
---- !u!114 &498398098
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 498398096}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  NodeID: 0
-  Event:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
---- !u!114 &498398099
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 498398096}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  NodeID: 2
-  Event:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
---- !u!114 &498398100
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 498398096}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  NodeID: 1
-  Event:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
---- !u!114 &498398101
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 498398096}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83189876d4d389f43b7dd2e925aa112e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  json: '{"Actions":[{"EditorInfo":{"isRoot":true,"xPos":271,"yPos":55},"ID":0,"TMPFontGUID":"","Text":null,"parentUIDs":[1,1],"ActionUID":-1,"AudioGUID":"","IconGUID":"","OptionUIDs":[]},{"EditorInfo":{"isRoot":false,"xPos":271,"yPos":164.5},"ID":1,"TMPFontGUID":"","Text":null,"parentUIDs":[],"ActionUID":0,"AudioGUID":"","IconGUID":"","OptionUIDs":[]},{"EditorInfo":{"isRoot":false,"xPos":233,"yPos":285.5},"ID":2,"TMPFontGUID":"","Text":null,"parentUIDs":[],"ActionUID":-1,"AudioGUID":"","IconGUID":"","OptionUIDs":[]}],"Options":[]}'
-  CurrentIDCounter: 4
-  DefaultSprite: {fileID: 0}
-  DefaultFont: {fileID: 0}
-  Events:
-  - {fileID: 498398100}
-  - {fileID: 498398099}
-  - {fileID: 498398098}
-  - {fileID: 498398097}
-  Event:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
---- !u!4 &498398102
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 498398096}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 356.64935, y: 245.99644, z: 10.9375}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0
@@ -718,6 +585,263 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 835770436}
   m_CullTransparentMesh: 0
+--- !u!1 &885038272
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 885038283}
+  - component: {fileID: 885038282}
+  - component: {fileID: 885038281}
+  - component: {fileID: 885038280}
+  - component: {fileID: 885038279}
+  - component: {fileID: 885038278}
+  - component: {fileID: 885038277}
+  - component: {fileID: 885038276}
+  - component: {fileID: 885038275}
+  - component: {fileID: 885038274}
+  - component: {fileID: 885038273}
+  m_Layer: 0
+  m_Name: conversation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &885038273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 885038272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NodeID: 14
+  Event:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+--- !u!114 &885038274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 885038272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NodeID: 13
+  Event:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+--- !u!114 &885038275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 885038272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NodeID: 12
+  Event:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+--- !u!114 &885038276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 885038272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NodeID: 0
+  Event:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+--- !u!114 &885038277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 885038272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NodeID: 10
+  Event:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1387261916}
+        m_MethodName: BeginQuest
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 11400000, guid: 83f42f9f48f18f1499238b77b976bb2b,
+            type: 2}
+          m_ObjectArgumentAssemblyTypeName: Quest, Assembly-CSharp
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+--- !u!114 &885038278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 885038272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NodeID: 9
+  Event:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+--- !u!114 &885038279
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 885038272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NodeID: 8
+  Event:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+--- !u!114 &885038280
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 885038272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NodeID: 4
+  Event:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+--- !u!114 &885038281
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 885038272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NodeID: 3
+  Event:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+--- !u!114 &885038282
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 885038272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83189876d4d389f43b7dd2e925aa112e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  json: '{"Actions":[{"EditorInfo":{"isRoot":true,"xPos":381,"yPos":18},"ID":0,"TMPFontGUID":"","Text":"Hello
+    adventurer, how can I assist you today?","parentUIDs":[],"ActionUID":-1,"AudioGUID":"","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","OptionUIDs":[1,2,11]},{"EditorInfo":{"isRoot":false,"xPos":117,"yPos":191.5},"ID":3,"TMPFontGUID":"","Text":"A
+    quest you say, are you sure you''re up to the task?","parentUIDs":[1,1],"ActionUID":-1,"AudioGUID":"","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","OptionUIDs":[5,6]},{"EditorInfo":{"isRoot":false,"xPos":365,"yPos":196.5},"ID":4,"TMPFontGUID":"","Text":"Hello
+    - did you want to know about the magic potion I found earlier?","parentUIDs":[2,2],"ActionUID":-1,"AudioGUID":"","IconGUID":"f71c0dc03d067a342aa16a51674f6507","OptionUIDs":[6,7,15]},{"EditorInfo":{"isRoot":false,"xPos":321,"yPos":395.5},"ID":8,"TMPFontGUID":"","Text":"I
+    can tell you about the quest to obtain the Great Mana Potion...","parentUIDs":[6,15,6,15],"ActionUID":10,"AudioGUID":"","IconGUID":"f71c0dc03d067a342aa16a51674f6507","OptionUIDs":[]},{"EditorInfo":{"isRoot":false,"xPos":11,"yPos":397.5},"ID":9,"TMPFontGUID":"","Text":"Very
+    well then.","parentUIDs":[5,5],"ActionUID":-1,"AudioGUID":"","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","OptionUIDs":[]},{"EditorInfo":{"isRoot":false,"xPos":319,"yPos":496.5},"ID":10,"TMPFontGUID":"d1e79b06c01ff1c4bb15552c18c4e0d3","Text":"There
+    we go. I''ve updated your quest-log for you.","parentUIDs":[8,8],"ActionUID":-1,"AudioGUID":"4d5b9d7dcedebba40b0ad09de63d7f44","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","OptionUIDs":[]},{"EditorInfo":{"isRoot":false,"xPos":630,"yPos":190.5},"ID":12,"TMPFontGUID":"","Text":"Farewell.","parentUIDs":[11,11],"ActionUID":-1,"AudioGUID":"","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","OptionUIDs":[]},{"EditorInfo":{"isRoot":false,"xPos":672,"yPos":397.5},"ID":13,"TMPFontGUID":"","Text":"Alright.
+    Well, goodbye.","parentUIDs":[7,7],"ActionUID":-1,"AudioGUID":"","IconGUID":"f71c0dc03d067a342aa16a51674f6507","OptionUIDs":[]}],"Options":[{"EditorInfo":{"isRoot":false,"xPos":163,"yPos":123},"ID":1,"TMPFontGUID":"","Text":"I
+    come in search of a quest","parentUIDs":[0,0],"ActionUID":3},{"EditorInfo":{"isRoot":false,"xPos":374,"yPos":122},"ID":2,"TMPFontGUID":"","Text":"Actually,
+    i''m here to speak to the new student","parentUIDs":[0,0],"ActionUID":4},{"EditorInfo":{"isRoot":false,"xPos":12,"yPos":306},"ID":5,"TMPFontGUID":"","Text":"Actually,
+    I''ve changed my mind.","parentUIDs":[3,3],"ActionUID":9},{"EditorInfo":{"isRoot":false,"xPos":231,"yPos":306},"ID":6,"TMPFontGUID":"","Text":"Yes","parentUIDs":[3,4,3,4],"ActionUID":8},{"EditorInfo":{"isRoot":false,"xPos":669,"yPos":309},"ID":7,"TMPFontGUID":"","Text":"No","parentUIDs":[4,4],"ActionUID":13},{"EditorInfo":{"isRoot":false,"xPos":590,"yPos":120},"ID":11,"TMPFontGUID":"","Text":"Actually,
+    I don''t need anything. Goodbye.","parentUIDs":[0,0],"ActionUID":12},{"EditorInfo":{"isRoot":false,"xPos":456,"yPos":306},"ID":15,"TMPFontGUID":"","Text":"Shhh!
+    Yes, but don''t tell anybody.","parentUIDs":[4,4],"ActionUID":8}]}'
+  CurrentIDCounter: 16
+  DefaultSprite: {fileID: 0}
+  DefaultFont: {fileID: 0}
+  Events:
+  - {fileID: 885038281}
+  - {fileID: 885038280}
+  - {fileID: 885038279}
+  - {fileID: 885038278}
+  - {fileID: 885038277}
+  - {fileID: 885038276}
+  - {fileID: 885038275}
+  - {fileID: 885038274}
+  - {fileID: 885038273}
+  Event:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+--- !u!4 &885038283
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 885038272}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 356.64935, y: 245.99644, z: 10.9375}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1038036005
 GameObject:
   m_ObjectHideFlags: 0
