@@ -9,6 +9,12 @@ namespace DialogueEditor
     {
         public static ConversationManager Instance { get; private set; }
 
+        public delegate void ConversationStartEvent();
+        public delegate void ConversationEndEvent();
+
+        public static ConversationStartEvent OnConversationStarted;
+        public static ConversationEndEvent OnConversationEnded;
+
         [Header("User-facing Options")]
         public bool ScrollText;
         public float ScrollSpeed = 1;
@@ -119,8 +125,12 @@ namespace DialogueEditor
             m_currentConversationData = conversation;
             m_currentConversation = conversation.Deserialize();
 
+            if (OnConversationStarted != null)
+                OnConversationStarted.Invoke();
+
             DoAction(m_currentConversation.GetRootNode());
         }
+
 
 
 
@@ -132,7 +142,7 @@ namespace DialogueEditor
         {
             if (action == null)
             {
-                TurnOffUI();
+                EndConversation();
                 return;
             }
 
@@ -214,17 +224,31 @@ namespace DialogueEditor
 
             if (option == null)
             {
-                TurnOffUI();
+                EndConversation();
                 return;
             }
 
             ConversationAction nextAction = m_currentConversation.GetActionByUID(option.ActionUID);
             if (nextAction == null)
-                TurnOffUI();
+                EndConversation();
             else
                 DoAction(nextAction);
         }
 
+
+
+
+        //--------------------------------------
+        // End Conversation
+        //--------------------------------------
+
+        private void EndConversation()
+        {
+            TurnOffUI();
+
+            if (OnConversationEnded != null)
+                OnConversationEnded.Invoke();
+        }
 
 
 

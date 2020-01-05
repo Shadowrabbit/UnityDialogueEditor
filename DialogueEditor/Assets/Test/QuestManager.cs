@@ -10,9 +10,26 @@ public class QuestManager : MonoBehaviour
         DragonSlayer    = 1,
     }
 
-    public void BeginQuest(Quests quest)
+    public void Awake()
     {
+        DialogueEditor.ConversationManager.OnConversationStarted += ConversationStart;
+        DialogueEditor.ConversationManager.OnConversationEnded += ConversationEnd;
+    }
 
+    public void OnDestroy()
+    {
+        DialogueEditor.ConversationManager.OnConversationStarted -= ConversationStart;
+        DialogueEditor.ConversationManager.OnConversationEnded -= ConversationEnd;
+    }
+
+    private void ConversationStart()
+    {
+        Debug.Log("[QuestManager]: Conversation has started. Closing Quest UI.");
+    }
+
+    private void ConversationEnd()
+    {
+        Debug.Log("[QuestManager]: Conversation has ended.");
     }
 
     public void BeginQuest(Quest i)
