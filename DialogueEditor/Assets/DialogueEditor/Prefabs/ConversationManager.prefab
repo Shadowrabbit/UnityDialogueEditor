@@ -218,6 +218,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ScrollText: 1
   ScrollSpeed: 1
+  BackgroundImage: {fileID: 21300000, guid: fd370138f6cc0c14a9ea9cc1c47c3467, type: 3}
+  BackgroundImageSliced: 1
+  OptionImage: {fileID: 21300000, guid: fd370138f6cc0c14a9ea9cc1c47c3467, type: 3}
+  OptionImageSliced: 1
   DialoguePanel: {fileID: 3900108755395677323}
   OptionsPanel: {fileID: 3852935656990629450}
   NpcIcon: {fileID: 3900108755397112056}

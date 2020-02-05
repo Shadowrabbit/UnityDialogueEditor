@@ -18,19 +18,23 @@ namespace DialogueEditor
         [Header("User-facing Options")]
         public bool ScrollText;
         public float ScrollSpeed = 1;
+        public Sprite BackgroundImage;
+        public bool BackgroundImageSliced;
+        public Sprite OptionImage;
+        public bool OptionImageSliced;
 
-        [Header("Base")]
+        [Header("Dev: Base")]
         public RectTransform DialoguePanel;
         public RectTransform OptionsPanel;
 
-        [Header("Dialogue UI")]
+        [Header("Dev: Dialogue UI")]
         public Image NpcIcon;
         public TMPro.TextMeshProUGUI DialogueText;
 
-        [Header("Components")]
+        [Header("Dev: Components")]
         public AudioSource AudioPlayer;
 
-        [Header("Prefabs")]
+        [Header("Dev: Prefabs")]
         public UIConversationButton ButtonPrefab;
 
         private NPCConversation m_currentConversationData;
