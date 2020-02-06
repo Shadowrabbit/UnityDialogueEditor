@@ -912,9 +912,18 @@ namespace DialogueEditor
             // Delete tree/internal objects
             node.Info.RemoveSelfFromTree();
 
+            // Delete the EventHolder script if it's an action node
+            if (node is UIActionNode)
+            {
+                CurrentAsset.DeleteEventHolderForID(node.Info.ID);
+            }
+
             // Delete the UI classes
             uiNodes.Remove(node);
             node = null;
+
+            // "Unselect" what we were looking at.
+            CurrentlySelectedNode = null;
         }
 
         /* -- Deleting connection -- */

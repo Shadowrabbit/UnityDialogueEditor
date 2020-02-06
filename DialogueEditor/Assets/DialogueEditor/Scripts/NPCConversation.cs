@@ -45,7 +45,20 @@ namespace DialogueEditor
             return h;
         }
 
+        public void DeleteEventHolderForID(int id)
+        {
+            if (Events == null)
+                return;
 
+            for (int i = 0; i < Events.Count; i++)
+            {
+                if (Events[i].NodeID == id)
+                {
+                    GameObject.DestroyImmediate(Events[i]);
+                    Events.RemoveAt(i);
+                }
+            }
+        }
 
 
         //--------------------------------------
