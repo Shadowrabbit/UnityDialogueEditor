@@ -139,12 +139,12 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 3900108754347413305}
-    characterCount: 157
+    characterCount: 362
     spriteCount: 0
-    spaceCount: 25
-    wordCount: 26
+    spaceCount: 55
+    wordCount: 56
     linkCount: 0
-    lineCount: 4
+    lineCount: 9
     pageCount: 1
     materialCount: 1
   m_havePropertiesChanged: 0
@@ -224,10 +224,11 @@ MonoBehaviour:
   OptionImageSliced: 1
   DialoguePanel: {fileID: 3900108755395677323}
   OptionsPanel: {fileID: 3852935656990629450}
+  DialogueBackground: {fileID: 3900108755395677320}
   NpcIcon: {fileID: 3900108755397112056}
   DialogueText: {fileID: 3900108754347413305}
   AudioPlayer: {fileID: 3900108755062758274}
-  ButtonPrefab: {fileID: 8725739980436382828, guid: fd923107028e3e14c9ee0e440d75fb86,
+  ButtonPrefab: {fileID: 6120265339105655453, guid: 1d48feb1cf04aec499db38c5c2abd76c,
     type: 3}
 --- !u!82 &3900108755062758274
 AudioSource:
@@ -391,7 +392,7 @@ MonoBehaviour:
   m_StartCorner: 0
   m_StartAxis: 0
   m_CellSize: {x: 200, y: 32}
-  m_Spacing: {x: 2, y: 2}
+  m_Spacing: {x: 20, y: 2}
   m_Constraint: 0
   m_ConstraintCount: 2
 --- !u!1 &3900108755395677322

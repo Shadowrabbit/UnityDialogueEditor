@@ -15,7 +15,8 @@ namespace DialogueEditor
         public static ConversationStartEvent OnConversationStarted;
         public static ConversationEndEvent OnConversationEnded;
 
-        [Header("User-facing Options")]
+        // User-Facing options
+        // Drawn by custom inspector
         public bool ScrollText;
         public float ScrollSpeed = 1;
         public Sprite BackgroundImage;
@@ -23,18 +24,19 @@ namespace DialogueEditor
         public Sprite OptionImage;
         public bool OptionImageSliced;
 
-        [Header("Dev: Base")]
+        // Non-User facing 
+        // Not exposed via custom inspector
+        //
+        // Base panels
         public RectTransform DialoguePanel;
         public RectTransform OptionsPanel;
-
-        [Header("Dev: Dialogue UI")]
+        // Dialogue UI
+        public Image DialogueBackground;
         public Image NpcIcon;
         public TMPro.TextMeshProUGUI DialogueText;
-
-        [Header("Dev: Components")]
+        // Components
         public AudioSource AudioPlayer;
-
-        [Header("Dev: Prefabs")]
+        // Prefabs
         public UIConversationButton ButtonPrefab;
 
         private NPCConversation m_currentConversationData;
@@ -219,6 +221,11 @@ namespace DialogueEditor
                 option.SetAsEndConversation();
                 m_options.Add(option);
             }
+
+            for (int i = 0; i < m_options.Count; i++)
+            {
+                m_options[i].SetImage(OptionImage, OptionImageSliced);
+            }
         }
 
         public void OptionSelected(ConversationOption option)
@@ -264,6 +271,16 @@ namespace DialogueEditor
         {
             DialoguePanel.gameObject.SetActive(true);
             OptionsPanel.gameObject.SetActive(true);
+
+            if (BackgroundImage != null)
+            {
+                DialogueBackground.sprite = BackgroundImage;
+
+                if (BackgroundImageSliced)
+                    DialogueBackground.type = Image.Type.Sliced;
+                else
+                    DialogueBackground.type = Image.Type.Simple;
+            }
         }
 
         private void TurnOffUI()

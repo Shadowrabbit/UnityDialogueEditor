@@ -1,13 +1,28 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 namespace DialogueEditor
 {
     public class UIConversationButton : MonoBehaviour
     {
         public TMPro.TextMeshProUGUI TextMesh;
+        public Image OptionBackgroundImage;
 
         private ConversationOption m_option;
         private ConversationAction m_action;
+
+        public void SetImage(Sprite sprite, bool sliced)
+        {
+            if (sprite != null)
+            {
+                OptionBackgroundImage.sprite = sprite;
+
+                if (sliced)
+                    OptionBackgroundImage.type = Image.Type.Sliced;
+                else
+                    OptionBackgroundImage.type = Image.Type.Simple;
+            }
+        }
 
         public void SetOption(ConversationOption option)
         {
