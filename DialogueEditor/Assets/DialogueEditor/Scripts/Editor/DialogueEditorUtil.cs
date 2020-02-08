@@ -8,7 +8,7 @@ namespace DialogueEditor
     public static class DialogueEditorUtil
     {
         public static bool IsPointerNearConnection(List<UINode> uiNodes, Vector2 mousePos, 
-            out ConversationNode par, out ConversationNode child)
+            out EditableConversationNode par, out EditableConversationNode child)
         {
             par = null;
             child = null;
@@ -85,14 +85,14 @@ namespace DialogueEditor
         }
 
         public static void GetConnectionDrawInfo(Rect originRect, 
-            ConversationNode connectionTarget, out Vector2 start, out Vector2 end)
+            EditableConversationNode connectionTarget, out Vector2 start, out Vector2 end)
         {
             float offset = 12;
 
             Vector2 origin = new Vector2(originRect.x + originRect.width / 2, originRect.y + originRect.height / 2);
             Vector2 target;
 
-            if (connectionTarget is ConversationAction)
+            if (connectionTarget is EditableSpeechNode)
             {
                 target = new Vector2(
                     connectionTarget.EditorInfo.xPos + UIActionNode.Width / 2,

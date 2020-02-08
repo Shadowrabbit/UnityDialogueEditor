@@ -39,9 +39,8 @@ namespace DialogueEditor
         // Prefabs
         public UIConversationButton ButtonPrefab;
 
-        private NPCConversation m_currentConversationData;
-        private Conversation m_currentConversation;
-        private List<UIConversationButton> m_options;
+        private Conversation m_conversation;
+        private List<UIConversationButton> m_uiOptions;
 
         private string m_currentScrollText;
         private string m_targetScrollText;
@@ -64,7 +63,7 @@ namespace DialogueEditor
             }
             Instance = this;
 
-            m_options = new List<UIConversationButton>();
+            m_uiOptions = new List<UIConversationButton>();
         }
 
         private void Start()
@@ -128,13 +127,12 @@ namespace DialogueEditor
         {
             TurnOnUI();
 
-            m_currentConversationData = conversation;
-            m_currentConversation = conversation.Deserialize();
+            m_conversation = conversation.Deserialize();
 
             if (OnConversationStarted != null)
                 OnConversationStarted.Invoke();
 
-            DoAction(m_currentConversation.GetRootNode());
+            DoAction(m_conversation.Root);
         }
 
 
@@ -144,7 +142,7 @@ namespace DialogueEditor
         // Set action
         //--------------------------------------
 
-        public void DoAction(ConversationAction action)
+        public void DoAction(DialogueNode action)
         {
             if (action == null)
             {
@@ -161,9 +159,9 @@ namespace DialogueEditor
             {
                 DialogueText.font = action.TMPFont;
             }
-            else if (m_currentConversationData.DefaultFont != null)
+            else if (m_conversation.DefaultTMPFont != null)
             {
-                DialogueText.font = m_currentConversationData.DefaultFont;
+                DialogueText.font = m_conversation.DefaultTMPFont;
             }
             else
             {
@@ -186,9 +184,8 @@ namespace DialogueEditor
             }
 
             // Call the event
-            UnityEvent actionEvent = m_currentConversationData.GetEventHolderForID(action.ID).Event;
-            if (actionEvent != null)
-                actionEvent.Invoke();
+            if (action.Event != null)
+                action.Event.Invoke();
 
             // Play the audio
             if (action.Audio != null)
@@ -198,37 +195,38 @@ namespace DialogueEditor
             }
 
             // Display new options
-            if (action.OptionUIDs != null && action.OptionUIDs.Count > 0)
+            if (action.Options.Count > 0)
             {
-                for (int i = 0; i < action.OptionUIDs.Count; i++)
+                for (int i = 0; i < action.Options.Count; i++)
                 {
                     UIConversationButton option = GameObject.Instantiate(ButtonPrefab, OptionsPanel);
-                    option.SetOption(m_currentConversation.GetOptionByUID(action.OptionUIDs[i]));
-                    m_options.Add(option);
+                    option.SetOption(action.Options[i]);
+                    m_uiOptions.Add(option);
                 }
             }
-            // Display "continue" button to go to the following dialogue
-            else if (action.ActionUID != Conversation.INVALID_UID)
+            // Else display "continue" button to go to following dialogue
+            else if (action.Dialogue != null)
             {
                 UIConversationButton option = GameObject.Instantiate(ButtonPrefab, OptionsPanel);
-                option.SetAction(m_currentConversation.GetActionByUID(action.ActionUID));
-                m_options.Add(option);
+                option.SetAction(action.Dialogue);
+                m_uiOptions.Add(option);
             }
-            // Display "end" button
+            // Else display "end" button
             else
             {
                 UIConversationButton option = GameObject.Instantiate(ButtonPrefab, OptionsPanel);
                 option.SetAsEndConversation();
-                m_options.Add(option);
+                m_uiOptions.Add(option);
             }
 
-            for (int i = 0; i < m_options.Count; i++)
+            // Set the button sprite
+            for (int i = 0; i < m_uiOptions.Count; i++)
             {
-                m_options[i].SetImage(OptionImage, OptionImageSliced);
+                m_uiOptions[i].SetImage(OptionImage, OptionImageSliced);
             }
         }
 
-        public void OptionSelected(ConversationOption option)
+        public void OptionSelected(OptionNode option)
         {
             // Clear all current options
             ClearOptions();
@@ -239,11 +237,15 @@ namespace DialogueEditor
                 return;
             }
 
-            ConversationAction nextAction = m_currentConversation.GetActionByUID(option.ActionUID);
+            DialogueNode nextAction = option.Dialogue;
             if (nextAction == null)
+            {
                 EndConversation();
+            }
             else
+            {
                 DoAction(nextAction);
+            }
         }
 
 
@@ -291,10 +293,10 @@ namespace DialogueEditor
 
         private void ClearOptions()
         {
-            while (m_options.Count != 0)
+            while (m_uiOptions.Count != 0)
             {
-                GameObject.Destroy(m_options[0].gameObject);
-                m_options.RemoveAt(0);
+                GameObject.Destroy(m_uiOptions[0].gameObject);
+                m_uiOptions.RemoveAt(0);
             }
         }
     }

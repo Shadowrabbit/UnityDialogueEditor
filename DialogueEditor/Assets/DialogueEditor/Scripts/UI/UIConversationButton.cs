@@ -8,8 +8,8 @@ namespace DialogueEditor
         public TMPro.TextMeshProUGUI TextMesh;
         public Image OptionBackgroundImage;
 
-        private ConversationOption m_option;
-        private ConversationAction m_action;
+        private OptionNode m_option;
+        private DialogueNode m_action;
 
         public void SetImage(Sprite sprite, bool sliced)
         {
@@ -24,13 +24,13 @@ namespace DialogueEditor
             }
         }
 
-        public void SetOption(ConversationOption option)
+        public void SetOption(OptionNode option)
         {
             m_option = option;
             TextMesh.text = option.Text;
         }
 
-        public void SetAction(ConversationAction action)
+        public void SetAction(DialogueNode action)
         {
             m_action = action;
             TextMesh.text = "Continue.";

@@ -39,7 +39,7 @@ namespace DialogueEditor
         private static GUIStyle titleStyle;
 
         // Properties
-        public ConversationNode Info { get; protected set; }
+        public EditableConversationNode Info { get; protected set; }
         public abstract Color DefaultColor { get; }
         public abstract Color SelectedColor { get; }
 
@@ -48,7 +48,7 @@ namespace DialogueEditor
         // Constructor 
         //---------------------------------
 
-        public UINode(ConversationNode infoNode, Vector2 pos)
+        public UINode(EditableConversationNode infoNode, Vector2 pos)
         {
             Info = infoNode;
 
@@ -232,7 +232,7 @@ namespace DialogueEditor
         public static int Height { get { return 75; } }
 
         // Properties
-        public ConversationAction ConversationNode { get { return Info as ConversationAction; } }
+        public EditableSpeechNode ConversationNode { get { return Info as EditableSpeechNode; } }
         public override Color DefaultColor { get { return DialogueEditorUtil.Colour(189, 0, 0); } }
         public override Color SelectedColor { get { return DialogueEditorUtil.Colour(255, 0, 0); } }
 
@@ -245,7 +245,7 @@ namespace DialogueEditor
         // Constructor
         //---------------------------------
 
-        public UIActionNode(ConversationNode infoNode, Vector2 pos) : base(infoNode, pos)
+        public UIActionNode(EditableConversationNode infoNode, Vector2 pos) : base(infoNode, pos)
         {
             if (defaultNodeStyle == null || defaultNodeStyle.normal.background == null)
             {
@@ -385,7 +385,7 @@ namespace DialogueEditor
         public static int Height { get { return 50; } }
 
         // Properties
-        public ConversationOption OptionNode { get { return Info as ConversationOption; } }
+        public EditableOptionNode OptionNode { get { return Info as EditableOptionNode; } }
         public override Color DefaultColor { get { return DialogueEditorUtil.Colour(0, 158, 118); } }
         public override Color SelectedColor { get { return DialogueEditorUtil.Colour(0, 179, 134); } }
 
@@ -398,7 +398,7 @@ namespace DialogueEditor
         // Constructor 
         //---------------------------------
 
-        public UIOptionNode(ConversationNode infoNode, Vector2 pos) : base(infoNode, pos)
+        public UIOptionNode(EditableConversationNode infoNode, Vector2 pos) : base(infoNode, pos)
         {
             if (defaultNodeStyle == null || defaultNodeStyle.normal.background == null)
             {

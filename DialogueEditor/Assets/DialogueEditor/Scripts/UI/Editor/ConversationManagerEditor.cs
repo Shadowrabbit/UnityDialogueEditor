@@ -9,7 +9,7 @@ namespace DialogueEditor
         private const string PREVIEW_TEXT = "Placeholder text. This image acts as a preview of the in-game GUI.";
         private const float BOX_HEIGHT = 75;
         private const float BUFFER = 15;
-        private const float ICON_SIZE = 55;
+        private const float ICON_SIZE = 50;
         private const float OPTION_HEIGHT = 35;
         private const float OPTION_BUFFER = 5;
         private const float OPTION_TEXT_BUF_Y = 10;
@@ -92,7 +92,7 @@ namespace DialogueEditor
             Rect iconRect = new Rect(boxRect.x + BUFFER, boxRect.y + difference * 0.5f, ICON_SIZE, ICON_SIZE);
             EditorGUI.DrawRect(iconRect, Color.white);
             Rect tmpt = new Rect(iconRect);
-            tmpt.x += 5;
+            tmpt.x += 2f;
             tmpt.y += ICON_SIZE * 0.35f;
             EditorGUI.LabelField(tmpt, "<Icon>");
 
@@ -110,11 +110,11 @@ namespace DialogueEditor
 
             // Option (left)
             float option_x, option_wid;
-            option_x = boxRect.x + OPTION_BUFFER;
-            option_wid = (boxRect.width * 0.5f) - OPTION_BUFFER * 2;
+            option_wid = boxRect.width * 0.8f;
+            option_x = boxRect.x + boxRect.width * 0.1f;
             Rect optionRect = new Rect(option_x, boxRect.y + boxRect.height + OPTION_BUFFER, option_wid, OPTION_HEIGHT);
             Rect optionTextRect = new Rect(optionRect);
-            optionTextRect.x += optionRect.width * 0.35f;
+            optionTextRect.x += optionRect.width * 0.4f;
             optionTextRect.y += OPTION_TEXT_BUF_Y;
             if (t.OptionImage == null)
             {
@@ -139,35 +139,7 @@ namespace DialogueEditor
                     GUI.DrawTexture(optionRect, t.OptionImage.texture, ScaleMode.StretchToFill);
                 }
             }
-            EditorGUI.LabelField(optionTextRect, "Option 1.", textStyle);
-
-            // Option (right)
-            optionRect.x += boxRect.width * 0.5f;
-            optionTextRect.x += boxRect.width * 0.5f;
-            if (t.OptionImage == null)
-            {
-                EditorGUI.DrawRect(optionRect, Color.black);
-            }
-            else
-            {
-                if (t.OptionImageSliced)
-                {
-                    GUIStyle style = new GUIStyle();
-                    RectOffset ro = new RectOffset();
-                    ro.left = (int)t.OptionImage.border.w;
-                    ro.top = (int)t.OptionImage.border.x;
-                    ro.right = (int)t.OptionImage.border.y;
-                    ro.bottom = (int)t.OptionImage.border.z;
-                    style.border = ro;
-                    style.normal.background = t.OptionImage.texture;
-                    EditorGUI.LabelField(optionRect, "", style);
-                }
-                else
-                {
-                    GUI.DrawTexture(optionRect, t.OptionImage.texture, ScaleMode.StretchToFill);
-                }
-            }
-            EditorGUI.LabelField(optionTextRect, "Option 2.", textStyle);
+            EditorGUI.LabelField(optionTextRect, "Option.", textStyle);
         }
     }
 }
