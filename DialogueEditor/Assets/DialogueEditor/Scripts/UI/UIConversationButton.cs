@@ -24,6 +24,16 @@ namespace DialogueEditor
             }
         }
 
+        public void SetAlpha(float a)
+        {
+            Color c_image = OptionBackgroundImage.color;
+            Color c_text = TextMesh.color;
+            c_image.a = a;
+            c_text.a = a;
+            OptionBackgroundImage.color = c_image;
+            TextMesh.color = c_text;
+        }
+
         public void SetOption(OptionNode option)
         {
             m_option = option;

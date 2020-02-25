@@ -881,7 +881,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83189876d4d389f43b7dd2e925aa112e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  json: '{"Actions":[{"EditorInfo":{"isRoot":true,"xPos":429,"yPos":85},"ID":0,"TMPFontGUID":"","Text":"TEST_DIALOGUE","parentUIDs":[],"ActionUID":-1,"AudioGUID":"","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","OptionUIDs":[1,3]},{"EditorInfo":{"isRoot":false,"xPos":199,"yPos":296.5},"ID":2,"TMPFontGUID":"d1e79b06c01ff1c4bb15552c18c4e0d3","Text":"DIALOGUE_1","parentUIDs":[1,1],"ActionUID":-1,"AudioGUID":"4d5b9d7dcedebba40b0ad09de63d7f44","IconGUID":"af5b0b703be9b424f8b755c3e701a1f9","OptionUIDs":[]},{"EditorInfo":{"isRoot":false,"xPos":606,"yPos":295.5},"ID":4,"TMPFontGUID":"d1e79b06c01ff1c4bb15552c18c4e0d3","Text":"DIALOGUE_2","parentUIDs":[3],"ActionUID":-1,"AudioGUID":"cee9d7c1657fef046b3375d8f6b2a851","IconGUID":"f71c0dc03d067a342aa16a51674f6507","OptionUIDs":[]}],"Options":[{"EditorInfo":{"isRoot":false,"xPos":250,"yPos":187},"ID":1,"TMPFontGUID":"","Text":"OPTION_1","parentUIDs":[0,0],"ActionUID":2},{"EditorInfo":{"isRoot":false,"xPos":587,"yPos":182},"ID":3,"TMPFontGUID":"","Text":"OPTION_2","parentUIDs":[0],"ActionUID":4}]}'
+  json: '{"Actions":[{"EditorInfo":{"isRoot":true,"xPos":429,"yPos":85},"ID":0,"TMPFontGUID":"","Text":"TEST_DIALOGUE","parentUIDs":[],"ActionUID":-1,"AudioGUID":"","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","OptionUIDs":[1,3]},{"EditorInfo":{"isRoot":false,"xPos":199,"yPos":296.5},"ID":2,"TMPFontGUID":"d1e79b06c01ff1c4bb15552c18c4e0d3","Text":"DIALOGUE_1","parentUIDs":[1,1],"ActionUID":-1,"AudioGUID":"4d5b9d7dcedebba40b0ad09de63d7f44","IconGUID":"af5b0b703be9b424f8b755c3e701a1f9","OptionUIDs":[]},{"EditorInfo":{"isRoot":false,"xPos":606,"yPos":295.5},"ID":4,"TMPFontGUID":"d1e79b06c01ff1c4bb15552c18c4e0d3","Text":"DIALOGUE_2","parentUIDs":[3,3],"ActionUID":-1,"AudioGUID":"cee9d7c1657fef046b3375d8f6b2a851","IconGUID":"f71c0dc03d067a342aa16a51674f6507","OptionUIDs":[]}],"Options":[{"EditorInfo":{"isRoot":false,"xPos":250,"yPos":187},"ID":1,"TMPFontGUID":"","Text":"OPTION_1","parentUIDs":[0,0],"ActionUID":2},{"EditorInfo":{"isRoot":false,"xPos":587,"yPos":182},"ID":3,"TMPFontGUID":"","Text":"OPTION_2","parentUIDs":[0,0],"ActionUID":4}]}'
   CurrentIDCounter: 5
   DefaultSprite: {fileID: 0}
   DefaultFont: {fileID: 0}
@@ -891,19 +891,7 @@ MonoBehaviour:
   - {fileID: 1211354232}
   Event:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1387261916}
-        m_MethodName: BeginQuest
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 11400000, guid: 83f42f9f48f18f1499238b77b976bb2b,
-            type: 2}
-          m_ObjectArgumentAssemblyTypeName: Quest, Assembly-CSharp
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!4 &1211354236
@@ -918,7 +906,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1387261915
 GameObject:
@@ -1046,7 +1034,7 @@ MonoBehaviour:
         m_MethodName: StartConversation
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 1211354235}
+          m_ObjectArgument: {fileID: 885038282}
           m_ObjectArgumentAssemblyTypeName: DialogueEditor.NPCConversation, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
@@ -1092,99 +1080,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1799720315}
   m_CullTransparentMesh: 0
---- !u!1 &1921340764
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1921340768}
-  - component: {fileID: 1921340767}
-  - component: {fileID: 1921340766}
-  - component: {fileID: 1921340765}
-  m_Layer: 0
-  m_Name: simplecon
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1921340765
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1921340764}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  NodeID: 9
-  Event:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
---- !u!114 &1921340766
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1921340764}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  NodeID: 8
-  Event:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
---- !u!114 &1921340767
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1921340764}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83189876d4d389f43b7dd2e925aa112e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  json: '{"Actions":[{"EditorInfo":{"isRoot":true,"xPos":310,"yPos":64},"ID":0,"TMPFontGUID":"","Text":null,"parentUIDs":[],"ActionUID":-1,"AudioGUID":"","IconGUID":"","OptionUIDs":[1,11]},{"EditorInfo":{"isRoot":false,"xPos":51,"yPos":437.5},"ID":8,"TMPFontGUID":"","Text":null,"parentUIDs":[10,10],"ActionUID":-1,"AudioGUID":"","IconGUID":"","OptionUIDs":[]},{"EditorInfo":{"isRoot":false,"xPos":54,"yPos":245.5},"ID":9,"TMPFontGUID":"","Text":null,"parentUIDs":[1,1],"ActionUID":-1,"AudioGUID":"","IconGUID":"","OptionUIDs":[10]}],"Options":[{"EditorInfo":{"isRoot":false,"xPos":133,"yPos":152},"ID":1,"TMPFontGUID":"","Text":null,"parentUIDs":[0,0],"ActionUID":9},{"EditorInfo":{"isRoot":false,"xPos":54,"yPos":361},"ID":10,"TMPFontGUID":"","Text":null,"parentUIDs":[9,9],"ActionUID":8},{"EditorInfo":{"isRoot":false,"xPos":469,"yPos":150},"ID":11,"TMPFontGUID":"","Text":null,"parentUIDs":[0,0],"ActionUID":-1}]}'
-  CurrentIDCounter: 12
-  DefaultSprite: {fileID: 0}
-  DefaultFont: {fileID: 0}
-  Events:
-  - {fileID: 1921340766}
-  - {fileID: 1921340765}
-  Event:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
---- !u!4 &1921340768
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1921340764}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 449.4853, y: 351.76376, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 6
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &3900108755490481402
 PrefabInstance:
   m_ObjectHideFlags: 0
