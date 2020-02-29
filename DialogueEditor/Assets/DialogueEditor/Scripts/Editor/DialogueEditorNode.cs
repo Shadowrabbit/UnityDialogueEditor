@@ -218,13 +218,13 @@ namespace DialogueEditor
     // Action Node
     //--------------------------------------
 
-    public class UIActionNode : UINode
+    public class UISpeechNode : UINode
     {
         // Events
-        public delegate void CreateOptionEvent(UIActionNode node);
+        public delegate void CreateOptionEvent(UISpeechNode node);
         public static CreateOptionEvent OnCreateOption;
 
-        public delegate void ConnectToOptionEvent(UIActionNode node);
+        public delegate void ConnectToOptionEvent(UISpeechNode node);
         public static ConnectToOptionEvent OnConnectToOption;
 
         // Static properties
@@ -245,7 +245,7 @@ namespace DialogueEditor
         // Constructor
         //---------------------------------
 
-        public UIActionNode(EditableConversationNode infoNode, Vector2 pos) : base(infoNode, pos)
+        public UISpeechNode(EditableConversationNode infoNode, Vector2 pos) : base(infoNode, pos)
         {
             if (defaultNodeStyle == null || defaultNodeStyle.normal.background == null)
             {
@@ -274,9 +274,9 @@ namespace DialogueEditor
             const float SPRITE_SZ = 50;
 
             if (DialogueEditorWindow.ConversationRoot == ConversationNode)
-                DrawTitle("<Root> NPC Dialogue node.");
+                DrawTitle("[Root] Speech node.");
             else
-                DrawTitle("NPC Dialogue node.");
+                DrawTitle("Speech node.");
 
             // Icon
             Rect internalText = new Rect(rect.x + TEXT_BORDER * 0.5f, rect.y + TITLE_HEIGHT + TITLE_GAP, SPRITE_SZ, SPRITE_SZ);
@@ -304,7 +304,7 @@ namespace DialogueEditor
                     Vector2 boxPos = new Vector2(ConversationNode.Options[i].EditorInfo.xPos, ConversationNode.Options[i].EditorInfo.yPos);
                     if (DialogueEditorUtil.DoesLineIntersectWithBox(start, end, boxPos, true, out intersection))
                     {
-                        DialogueEditorUtil.DrawArrow(intersection, toEnd, DefaultColor);
+                        DialogueEditorUtil.DrawArrowTip(intersection, toEnd, DefaultColor);
                     }
                 }
             }
@@ -321,7 +321,7 @@ namespace DialogueEditor
                 Vector2 boxPos = new Vector2(ConversationNode.Action.EditorInfo.xPos, ConversationNode.Action.EditorInfo.yPos);
                 if (DialogueEditorUtil.DoesLineIntersectWithBox(start, end, boxPos, false, out intersection))
                 {
-                    DialogueEditorUtil.DrawArrow(intersection, toEnd, DefaultColor);
+                    DialogueEditorUtil.DrawArrowTip(intersection, toEnd, DefaultColor);
                 }
             }
 
@@ -444,7 +444,7 @@ namespace DialogueEditor
                 Vector2 boxPos = new Vector2(OptionNode.Action.EditorInfo.xPos, OptionNode.Action.EditorInfo.yPos);
                 if (DialogueEditorUtil.DoesLineIntersectWithBox(start, end, boxPos, false, out intersection))
                 {
-                    DialogueEditorUtil.DrawArrow(intersection, toEnd, DefaultColor);
+                    DialogueEditorUtil.DrawArrowTip(intersection, toEnd, DefaultColor);
                 }
             }
         }

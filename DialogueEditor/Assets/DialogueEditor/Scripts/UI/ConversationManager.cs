@@ -161,7 +161,7 @@ namespace DialogueEditor
                                 return;
                             }
 
-                            DialogueNode nextAction = m_selectedOption.Dialogue;
+                            SpeechNode nextAction = m_selectedOption.Dialogue;
                             if (nextAction == null)
                             {
                                 EndConversation();
@@ -283,7 +283,7 @@ namespace DialogueEditor
         // Start Conversation
         //--------------------------------------
 
-        private DialogueNode m_pendingDialogue;
+        private SpeechNode m_pendingDialogue;
 
         public void StartConversation(NPCConversation conversation)
         {
@@ -303,7 +303,7 @@ namespace DialogueEditor
         // Set action
         //--------------------------------------
 
-        public void DoAction(DialogueNode action)
+        public void DoAction(SpeechNode action)
         {
             if (action == null)
             {

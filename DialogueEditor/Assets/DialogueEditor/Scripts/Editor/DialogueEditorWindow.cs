@@ -21,6 +21,7 @@ namespace DialogueEditor
         public const float TOOLBAR_HEIGHT = 17;
         public const float START_PANEL_WIDTH = 250;
         private const string WINDOW_NAME = "DIALOGUE_EDITOR_WINDOW";
+        private const string HELP_URL = "https://github.com/JosephBarber96/UnityDialogueEditor";
 
         // Static properties
         public static bool NodeClickedOnThisUpdate { get; set; }
@@ -108,7 +109,7 @@ namespace DialogueEditor
             if (ConversationRoot == null)
             {
                 ConversationRoot = new EditableSpeechNode();
-                ConversationRoot.EditorInfo.xPos = (Screen.width / 2) - (UIActionNode.Width / 2);
+                ConversationRoot.EditorInfo.xPos = (Screen.width / 2) - (UISpeechNode.Width / 2);
                 ConversationRoot.EditorInfo.yPos = 0;
                 ConversationRoot.EditorInfo.isRoot = true;
                 conversation.Actions.Add(ConversationRoot);
@@ -169,7 +170,7 @@ namespace DialogueEditor
                 if (node is EditableSpeechNode)
                 {
                     // 1
-                    UIActionNode uiNode = new UIActionNode(node,
+                    UISpeechNode uiNode = new UISpeechNode(node,
                         new Vector2(node.EditorInfo.xPos, node.EditorInfo.yPos));
 
                     uiNodes.Add(uiNode);
@@ -218,9 +219,9 @@ namespace DialogueEditor
 
             UINode.OnUINodeSelected += SelectNode;
             UINode.OnUINodeDeleted += DeleteUINode;
-            UIActionNode.OnCreateOption += CreateNewOption;
+            UISpeechNode.OnCreateOption += CreateNewOption;
             UIOptionNode.OnCreateAction += CreateNewAction;
-            UIActionNode.OnConnectToOption += ConnectActionToOption;
+            UISpeechNode.OnConnectToOption += ConnectActionToOption;
             UIOptionNode.OnConnectToAction += ConnectOptionToAction;
 
             this.name = WINDOW_NAME;
@@ -231,7 +232,8 @@ namespace DialogueEditor
         {
             // Panel style
             panelStyle = new GUIStyle();
-            panelStyle.normal.background = EditorGUIUtility.Load("builtin skins/lightskin/images/backgroundwithinnershadow.png") as Texture2D;
+            panelStyle.normal.background = new Texture2D(10, 10);
+            panelStyle.normal.background.SetPixel(0, 0, EditorGUIUtility.isProSkin ? new Color32(56, 56, 56, 255) : new Color32(194, 194, 194, 255));
 
             // Panel title style
             panelTitleStyle = new GUIStyle();
@@ -241,7 +243,6 @@ namespace DialogueEditor
             // Resizer style
             resizerStyle = new GUIStyle();
             resizerStyle.normal.background = EditorGUIUtility.Load("icons/d_AvatarBlendBackground.png") as Texture2D;
-
         }
 
         private void OnDisable()
@@ -251,9 +252,9 @@ namespace DialogueEditor
 
             UINode.OnUINodeSelected -= SelectNode;
             UINode.OnUINodeDeleted -= DeleteUINode;
-            UIActionNode.OnCreateOption -= CreateNewOption;
+            UISpeechNode.OnCreateOption -= CreateNewOption;
             UIOptionNode.OnCreateAction -= CreateNewAction;
-            UIActionNode.OnConnectToOption -= ConnectActionToOption;
+            UISpeechNode.OnConnectToOption -= ConnectActionToOption;
             UIOptionNode.OnConnectToAction -= ConnectOptionToAction;
         }
 
@@ -404,10 +405,16 @@ namespace DialogueEditor
                 ResetPanelSize();
             }
             GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Help", EditorStyles.toolbarButton))
+            {
+                Application.OpenURL(HELP_URL);
+            }
+            /*
             if (GUILayout.Button("Save", EditorStyles.toolbarButton))
             {
                 Save(true);
             }
+            */
             GUILayout.EndHorizontal();
         }
 
@@ -464,12 +471,20 @@ namespace DialogueEditor
 
             for (int i = 0; i < widthDivs; i++)
             {
-                Handles.DrawLine(new Vector3(gridSpacing * i, -gridSpacing, 0) + newOffset, new Vector3(gridSpacing * i, position.height, 0f) + newOffset);
+                Vector3 start = new Vector3(gridSpacing * i, -gridSpacing, 0) + newOffset;
+                if (start.x > panelRect.x)
+                    continue;
+                Vector3 end = new Vector3(gridSpacing * i, position.height, 0f) + newOffset;
+                Handles.DrawLine(start, end);
             }
 
             for (int j = 0; j < heightDivs; j++)
             {
-                Handles.DrawLine(new Vector3(-gridSpacing, gridSpacing * j, 0) + newOffset, new Vector3(position.width, gridSpacing * j, 0f) + newOffset);
+                Vector3 start = new Vector3(-gridSpacing, gridSpacing * j, 0) + newOffset;
+                Vector3 end = new Vector3(position.width, gridSpacing * j, 0f) + newOffset;
+                if (end.x > panelRect.x)
+                    end.x = panelRect.x;
+                Handles.DrawLine(start, end);
             }
 
             Handles.color = Color.white;
@@ -494,7 +509,7 @@ namespace DialogueEditor
                 bool differentNodeSelected = (m_cachedSelectedNode != CurrentlySelectedNode);
                 m_cachedSelectedNode = CurrentlySelectedNode;
 
-                if (CurrentlySelectedNode is UIActionNode)
+                if (CurrentlySelectedNode is UISpeechNode)
                 {
                     EditableSpeechNode node = (CurrentlySelectedNode.Info as EditableSpeechNode);
                     GUILayout.Label("[" + node.ID + "] NPC Dialogue Node.", panelTitleStyle);
@@ -638,7 +653,7 @@ namespace DialogueEditor
                             if (uiNodes[i] == m_currentConnectingNode)
                                 continue;
 
-                            if (!(uiNodes[i] is UIActionNode))
+                            if (!(uiNodes[i] is UISpeechNode))
                                 continue;
 
                             if (uiNodes[i].rect.Contains(e.mousePosition))
@@ -646,13 +661,13 @@ namespace DialogueEditor
                                 if (m_currentConnectingNode is UIOptionNode)
                                 {
                                     (m_currentConnectingNode as UIOptionNode).OptionNode.
-                                        SetAction((uiNodes[i] as UIActionNode).ConversationNode);
+                                        SetAction((uiNodes[i] as UISpeechNode).ConversationNode);
                                     break;
                                 }
-                                else if (m_currentConnectingNode is UIActionNode)
+                                else if (m_currentConnectingNode is UISpeechNode)
                                 {
-                                    UIActionNode connecting = m_currentConnectingNode as UIActionNode;
-                                    UIActionNode toBeChild = uiNodes[i] as UIActionNode;
+                                    UISpeechNode connecting = m_currentConnectingNode as UISpeechNode;
+                                    UISpeechNode toBeChild = uiNodes[i] as UISpeechNode;
 
                                     // If a relationship between these actions already exists, swap it 
                                     // around, as a 2way action<->action relationship cannot exist.
@@ -663,8 +678,8 @@ namespace DialogueEditor
                                         toBeChild.ConversationNode.Action = null;
                                     }
 
-                                    (m_currentConnectingNode as UIActionNode).ConversationNode.
-                                        SetAction((uiNodes[i] as UIActionNode).ConversationNode);
+                                    (m_currentConnectingNode as UISpeechNode).ConversationNode.
+                                        SetAction((uiNodes[i] as UISpeechNode).ConversationNode);
                                     break;
                                 }
                             }
@@ -709,7 +724,7 @@ namespace DialogueEditor
 
                             if (uiNodes[i].rect.Contains(e.mousePosition))
                             {
-                                (m_currentConnectingNode as UIActionNode).ConversationNode.AddOption(
+                                (m_currentConnectingNode as UISpeechNode).ConversationNode.AddOption(
                                     (uiNodes[i] as UIOptionNode).OptionNode);
                                 break;
                             }
@@ -824,7 +839,7 @@ namespace DialogueEditor
 
         /* -- Creating Nodes -- */
 
-        public void CreateNewOption(UIActionNode actionUI)
+        public void CreateNewOption(UISpeechNode actionUI)
         {
             // Create new option, the argument action is the options parent
             EditableOptionNode newOption = new EditableOptionNode();
@@ -862,14 +877,14 @@ namespace DialogueEditor
             // Set this new action as the options child
             if (node is UIOptionNode)
                 (node as UIOptionNode).OptionNode.SetAction(newAction);
-            else if (node is UIActionNode)
-                (node as UIActionNode).ConversationNode.SetAction(newAction);
+            else if (node is UISpeechNode)
+                (node as UISpeechNode).ConversationNode.SetAction(newAction);
 
             // This new action doesn't have any children yet
             newAction.Options = null;
 
             // Create a new UI object to represent the new action
-            UIActionNode ui = new UIActionNode(newAction, Vector2.zero);
+            UISpeechNode ui = new UISpeechNode(newAction, Vector2.zero);
             uiNodes.Add(ui);
 
             // Set the input state appropriately
@@ -889,7 +904,7 @@ namespace DialogueEditor
             m_inputState = eInputState.ConnectingNodeToAction;
         }
 
-        public void ConnectActionToOption(UIActionNode action)
+        public void ConnectActionToOption(UISpeechNode action)
         {
             // The option if what we are connecting
             m_currentConnectingNode = action;
@@ -913,7 +928,7 @@ namespace DialogueEditor
             node.Info.RemoveSelfFromTree();
 
             // Delete the EventHolder script if it's an action node
-            if (node is UIActionNode)
+            if (node is UISpeechNode)
             {
                 CurrentAsset.DeleteEventHolderForID(node.Info.ID);
             }
@@ -1014,7 +1029,7 @@ namespace DialogueEditor
             if (ConversationRoot == null) { return; }
 
             // Calc delta to move head to (middle, 0) and then apply this to all nodes
-            Vector2 target = new Vector2((position.width / 2) - (UIActionNode.Width / 2) - (panelWidth / 2), TOOLBAR_HEIGHT);
+            Vector2 target = new Vector2((position.width / 2) - (UISpeechNode.Width / 2) - (panelWidth / 2), TOOLBAR_HEIGHT);
             Vector2 delta = target - new Vector2(ConversationRoot.EditorInfo.xPos, ConversationRoot.EditorInfo.yPos);
             for (int i = 0; i < uiNodes.Count; i++)
             {
@@ -1033,7 +1048,6 @@ namespace DialogueEditor
             {
                 EditableConversation conversation = new EditableConversation();
 
-                // Give each node a uid
                 // Prepare each node for serialization
                 for (int i = 0; i < uiNodes.Count; i++)
                 {
@@ -1047,9 +1061,9 @@ namespace DialogueEditor
                 {
                     uiNodes[i].Info.RegisterUIDs();
 
-                    if (uiNodes[i] is UIActionNode)
+                    if (uiNodes[i] is UISpeechNode)
                     {
-                        conversation.Actions.Add((uiNodes[i] as UIActionNode).ConversationNode);
+                        conversation.Actions.Add((uiNodes[i] as UISpeechNode).ConversationNode);
                     }
                     else if (uiNodes[i] is UIOptionNode)
                     {

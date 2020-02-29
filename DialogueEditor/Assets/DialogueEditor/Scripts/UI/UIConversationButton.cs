@@ -9,7 +9,7 @@ namespace DialogueEditor
         public Image OptionBackgroundImage;
 
         private OptionNode m_option;
-        private DialogueNode m_action;
+        private SpeechNode m_action;
 
         public void SetImage(Sprite sprite, bool sliced)
         {
@@ -40,7 +40,7 @@ namespace DialogueEditor
             TextMesh.text = option.Text;
         }
 
-        public void SetAction(DialogueNode action)
+        public void SetAction(SpeechNode action)
         {
             m_action = action;
             TextMesh.text = "Continue.";

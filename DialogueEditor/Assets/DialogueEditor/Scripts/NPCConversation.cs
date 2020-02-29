@@ -14,6 +14,8 @@ namespace DialogueEditor
     [DisallowMultipleComponent]
     public class NPCConversation : MonoBehaviour
     {
+        private readonly string CHILD_NAME = "ConversationEventInfo";
+
         // Serialized data
         [SerializeField] private string json;
         [SerializeField] public int CurrentIDCounter = 1;
@@ -38,7 +40,16 @@ namespace DialogueEditor
                 if (Events[i].NodeID == id)
                     return Events[i];
 
-            NodeEventHolder h = this.gameObject.AddComponent<NodeEventHolder>();
+            Transform EventInfo = this.transform.Find(CHILD_NAME);
+            if (EventInfo == null)
+            {
+                GameObject obj = new GameObject(CHILD_NAME);
+                obj.transform.SetParent(this.transform);
+            }
+            EventInfo = this.transform.Find(CHILD_NAME);
+
+
+            NodeEventHolder h = EventInfo.gameObject.AddComponent<NodeEventHolder>();
             h.NodeID = id;
             h.Event = new UnityEngine.Events.UnityEvent();
             Events.Add(h);
@@ -79,14 +90,14 @@ namespace DialogueEditor
             // Create a conversation. 
             Conversation conversation = new Conversation();
             // Create a dictionary to store our created nodes by UID
-            Dictionary<int, DialogueNode> dialogues = new Dictionary<int, DialogueNode>();
+            Dictionary<int, SpeechNode> dialogues = new Dictionary<int, SpeechNode>();
             Dictionary<int, OptionNode> options = new Dictionary<int, OptionNode>();
 
             // Create a Dialogue and Option node for each in the conversation
             // Put them in the dictionary
             for (int i = 0; i < ec.Actions.Count; i++)
             {
-                DialogueNode node = new DialogueNode();
+                SpeechNode node = new SpeechNode();
                 node.Text = ec.Actions[i].Text;
                 node.TMPFont = ec.Actions[i].TMPFont;
                 node.Icon = ec.Actions[i].Icon;
@@ -208,7 +219,7 @@ namespace DialogueEditor
 
     public class Conversation
     {
-        public DialogueNode Root;
+        public SpeechNode Root;
 
         public Sprite DefaultIcon;
         public TMPro.TMP_FontAsset DefaultTMPFont;
@@ -220,18 +231,24 @@ namespace DialogueEditor
         public TMPro.TMP_FontAsset TMPFont;
     }
 
-    public class DialogueNode : ConversationNode
+    public class SpeechNode : ConversationNode
     {
         public Sprite Icon;
         public AudioClip Audio;
+        /// <summary>
+        /// The Options available on this Speech node, if any.
+        /// </summary>
         public List<OptionNode> Options;
-        public DialogueNode Dialogue;
+        /// <summary>
+        /// The Speech node following the current, if any.
+        /// </summary>
+        public SpeechNode Dialogue;
         public UnityEngine.Events.UnityEvent Event;
     }
 
     public class OptionNode : ConversationNode
     {
-        public DialogueNode Dialogue;
+        public SpeechNode Dialogue;
     }
 
 
@@ -424,7 +441,8 @@ namespace DialogueEditor
             }
             this.Action = null;
 
-            newOption.parents.Add(this);
+            if (!newOption.parents.Contains(this))
+                newOption.parents.Add(this);
             Options.Add(newOption);
         }
 
@@ -448,7 +466,8 @@ namespace DialogueEditor
             }
 
             this.Action = newAction;
-            newAction.parents.Add(this);
+            if (!newAction.parents.Contains(this))
+                newAction.parents.Add(this);
         }
 
         public override void RemoveSelfFromTree()
@@ -561,7 +580,8 @@ namespace DialogueEditor
             }
 
             this.Action = newAction;
-            newAction.parents.Add(this);
+            if (!newAction.parents.Contains(this))
+                newAction.parents.Add(this);
         }
 
         public override void RemoveSelfFromTree()

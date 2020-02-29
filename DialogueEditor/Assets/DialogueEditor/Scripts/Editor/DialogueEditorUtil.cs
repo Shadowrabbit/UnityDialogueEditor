@@ -12,7 +12,7 @@ namespace DialogueEditor
         {
             par = null;
             child = null;
-            UIActionNode action;
+            UISpeechNode action;
             UIOptionNode option;
             Vector2 start, end;           
             float minDistance = float.MaxValue;
@@ -20,9 +20,9 @@ namespace DialogueEditor
 
             for (int i = 0; i < uiNodes.Count; i++)
             {
-                if (uiNodes[i] is UIActionNode)
+                if (uiNodes[i] is UISpeechNode)
                 {
-                    action = uiNodes[i] as UIActionNode;
+                    action = uiNodes[i] as UISpeechNode;
 
                     if (action.ConversationNode.Options != null)
                     {
@@ -95,8 +95,8 @@ namespace DialogueEditor
             if (connectionTarget is EditableSpeechNode)
             {
                 target = new Vector2(
-                    connectionTarget.EditorInfo.xPos + UIActionNode.Width / 2,
-                    connectionTarget.EditorInfo.yPos + UIActionNode.Height / 2);
+                    connectionTarget.EditorInfo.xPos + UISpeechNode.Width / 2,
+                    connectionTarget.EditorInfo.yPos + UISpeechNode.Height / 2);
 
                 origin.x -= offset;
                 target.x -= offset;
@@ -139,8 +139,8 @@ namespace DialogueEditor
         public static bool DoesLineIntersectWithBox(Vector2 lineStart, Vector2 lineEnd, 
             Vector2 boxTL, bool isBoxOption, out Vector2 point)
         {
-            int width = (isBoxOption) ? UIOptionNode.Width : UIActionNode.Width;
-            int height = (isBoxOption) ? UIOptionNode.Height : UIActionNode.Height;            
+            int width = (isBoxOption) ? UIOptionNode.Width : UISpeechNode.Width;
+            int height = (isBoxOption) ? UIOptionNode.Height : UISpeechNode.Height;            
             Vector2 s, e;
 
             // Check top
@@ -216,7 +216,7 @@ namespace DialogueEditor
             return false;
         }
 
-        public static void DrawArrow(Vector2 pos, Vector2 dir, Color color)
+        public static void DrawArrowTip(Vector2 pos, Vector2 dir, Color color)
         {
             const float rotAmount = 25;
             const float len = 15f;
