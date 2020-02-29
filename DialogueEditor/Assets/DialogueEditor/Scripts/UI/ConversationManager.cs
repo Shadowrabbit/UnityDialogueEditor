@@ -52,12 +52,12 @@ namespace DialogueEditor
         public AudioSource AudioPlayer;
         // Prefabs
         public UIConversationButton ButtonPrefab;
+        // Default values
+        public Sprite BlankSprite;
 
 
         // Private
-        private string m_currentScrollText;
         private string m_targetScrollText;
-        private bool m_scrollingText;
         private float m_elapsedScrollTime;
         private int m_scrollIndex;
         private eState m_state;
@@ -84,6 +84,8 @@ namespace DialogueEditor
 
         private void Start()
         {
+            NpcIcon.sprite = BlankSprite;
+            DialogueText.text = "";
             TurnOffUI();
         }
 
@@ -217,10 +219,8 @@ namespace DialogueEditor
             {
                 m_elapsedScrollTime = 0f;
 
-                m_currentScrollText += m_targetScrollText[m_scrollIndex];
+                DialogueText.text += m_targetScrollText[m_scrollIndex];
                 m_scrollIndex++;
-
-                DialogueText.text = m_currentScrollText;
 
                 // Finished?
                 if (m_scrollIndex >= m_targetScrollText.Length)
@@ -262,6 +262,12 @@ namespace DialogueEditor
                         Color c_text = DialogueText.color;
                         c_text.a = 1;
                         DialogueText.color = c_text;
+
+                        if (string.IsNullOrEmpty(m_targetScrollText))
+                        {
+                            SetState(eState.TransitioningOptionsOn);
+                            return;
+                        }
                     }
                     break;
 
@@ -314,8 +320,17 @@ namespace DialogueEditor
             // Clear current options
             ClearOptions();
 
-            // Set sprite and font
-            NpcIcon.sprite = action.Icon;
+            // Set sprite
+            if (action.Icon == null)
+            {
+                NpcIcon.sprite = BlankSprite;
+            }
+            else
+            {
+                NpcIcon.sprite = action.Icon;
+            }
+
+            // Set font
             if (action.TMPFont != null)
             {
                 DialogueText.font = action.TMPFont;
@@ -332,8 +347,6 @@ namespace DialogueEditor
             // Set text
             if (ScrollText)
             {
-                m_scrollingText = true;
-                m_currentScrollText = "";
                 DialogueText.text = "";
                 m_targetScrollText = action.Text;
                 m_elapsedScrollTime = 0f;

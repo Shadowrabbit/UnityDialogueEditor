@@ -14,11 +14,11 @@ namespace DialogueEditor
         public delegate void UINodeDeletedEvent(UINode node);
         public static UINodeDeletedEvent OnUINodeDeleted;
 
-        public delegate void CreateActionEvent(UINode node);
-        public static CreateActionEvent OnCreateAction;
+        public delegate void CreateSpeechEvent(UINode node);
+        public static CreateSpeechEvent OnCreateSpeech;
 
-        public delegate void ConnectToActionEvent(UINode node);
-        public static ConnectToActionEvent OnConnectToAction;
+        public delegate void ConnectToSpeechEvent(UINode node);
+        public static ConnectToSpeechEvent OnConnectToSpeech;
 
 
         // Consts
@@ -185,14 +185,14 @@ namespace DialogueEditor
         // Inhereted, shared behaviour
         //---------------------------------
 
-        protected void CreateAction()
+        protected void CreateSpeech()
         {
-            OnCreateAction?.Invoke(this);
+            OnCreateSpeech?.Invoke(this);
         }
 
-        protected void ConnectToAction()
+        protected void ConnectToSpeech()
         {
-            OnConnectToAction?.Invoke(this);
+            OnConnectToSpeech?.Invoke(this);
         }
 
         protected void DeleteThisNode()
@@ -215,7 +215,7 @@ namespace DialogueEditor
 
 
     //--------------------------------------
-    // Action Node
+    // Speech Node
     //--------------------------------------
 
     public class UISpeechNode : UINode
@@ -232,7 +232,7 @@ namespace DialogueEditor
         public static int Height { get { return 75; } }
 
         // Properties
-        public EditableSpeechNode ConversationNode { get { return Info as EditableSpeechNode; } }
+        public EditableSpeechNode SpeechNode { get { return Info as EditableSpeechNode; } }
         public override Color DefaultColor { get { return DialogueEditorUtil.Colour(189, 0, 0); } }
         public override Color SelectedColor { get { return DialogueEditorUtil.Colour(255, 0, 0); } }
 
@@ -250,12 +250,12 @@ namespace DialogueEditor
             if (defaultNodeStyle == null || defaultNodeStyle.normal.background == null)
             {
                 defaultNodeStyle = new GUIStyle();
-                defaultNodeStyle.normal.background = DialogueEditorUtil.MakeTexture(Width, Height, DefaultColor);
+                defaultNodeStyle.normal.background = DialogueEditorUtil.MakeTextureForNode(Width, Height, DefaultColor);
             }
             if (selectedNodeStyle == null || selectedNodeStyle.normal.background == null)
             {
                 selectedNodeStyle = new GUIStyle();
-                selectedNodeStyle.normal.background = DialogueEditorUtil.MakeTexture(Width, Height, SelectedColor);
+                selectedNodeStyle.normal.background = DialogueEditorUtil.MakeTextureForNode(Width, Height, SelectedColor);
             }
 
             currentBoxStyle = defaultNodeStyle;
@@ -273,52 +273,52 @@ namespace DialogueEditor
         {
             const float SPRITE_SZ = 50;
 
-            if (DialogueEditorWindow.ConversationRoot == ConversationNode)
+            if (DialogueEditorWindow.ConversationRoot == SpeechNode)
                 DrawTitle("[Root] Speech node.");
             else
                 DrawTitle("Speech node.");
 
             // Icon
             Rect internalText = new Rect(rect.x + TEXT_BORDER * 0.5f, rect.y + TITLE_HEIGHT + TITLE_GAP, SPRITE_SZ, SPRITE_SZ);
-            if (ConversationNode.Icon != null)
-                GUI.DrawTexture(internalText, ConversationNode.Icon.texture, ScaleMode.ScaleToFit); 
+            if (SpeechNode.Icon != null)
+                GUI.DrawTexture(internalText, SpeechNode.Icon.texture, ScaleMode.ScaleToFit); 
 
             // Text
-            DrawInternalText(ConversationNode.Text, SPRITE_SZ);
+            DrawInternalText(SpeechNode.Text, SPRITE_SZ);
         }
 
         public override void DrawConnections()
         {
-            if (ConversationNode.Options != null && ConversationNode.Options.Count > 0)
+            if (SpeechNode.Options != null && SpeechNode.Options.Count > 0)
             {
                 Vector2 start, end;
-                for (int i = 0; i < ConversationNode.Options.Count; i++)
+                for (int i = 0; i < SpeechNode.Options.Count; i++)
                 {
-                    DialogueEditorUtil.GetConnectionDrawInfo(rect, ConversationNode.Options[i], out start, out end);
+                    DialogueEditorUtil.GetConnectionDrawInfo(rect, SpeechNode.Options[i], out start, out end);
 
                     Vector2 toStart = (start - end).normalized;
                     Vector2 toEnd = (end - start).normalized;
                     Handles.DrawBezier(start, end, start + toStart, end + toEnd, DefaultColor, null, LINE_WIDTH);
 
                     Vector2 intersection;
-                    Vector2 boxPos = new Vector2(ConversationNode.Options[i].EditorInfo.xPos, ConversationNode.Options[i].EditorInfo.yPos);
+                    Vector2 boxPos = new Vector2(SpeechNode.Options[i].EditorInfo.xPos, SpeechNode.Options[i].EditorInfo.yPos);
                     if (DialogueEditorUtil.DoesLineIntersectWithBox(start, end, boxPos, true, out intersection))
                     {
                         DialogueEditorUtil.DrawArrowTip(intersection, toEnd, DefaultColor);
                     }
                 }
             }
-            else if (ConversationNode.Action != null)
+            else if (SpeechNode.Speech != null)
             {
                 Vector2 start, end;
-                DialogueEditorUtil.GetConnectionDrawInfo(rect, ConversationNode.Action, out start, out end);
+                DialogueEditorUtil.GetConnectionDrawInfo(rect, SpeechNode.Speech, out start, out end);
 
                 Vector2 toStart = (start - end).normalized;
                 Vector2 toEnd = (end - start).normalized;
                 Handles.DrawBezier(start, end, start + toStart, end + toEnd, DefaultColor, null, LINE_WIDTH);
 
                 Vector2 intersection;
-                Vector2 boxPos = new Vector2(ConversationNode.Action.EditorInfo.xPos, ConversationNode.Action.EditorInfo.yPos);
+                Vector2 boxPos = new Vector2(SpeechNode.Speech.EditorInfo.xPos, SpeechNode.Speech.EditorInfo.yPos);
                 if (DialogueEditorUtil.DoesLineIntersectWithBox(start, end, boxPos, false, out intersection))
                 {
                     DialogueEditorUtil.DrawArrowTip(intersection, toEnd, DefaultColor);
@@ -354,8 +354,8 @@ namespace DialogueEditor
             GenericMenu rightClickMenu = new GenericMenu();
             rightClickMenu.AddItem(new GUIContent("Create New Option"), false, CreateNewOption);
             rightClickMenu.AddItem(new GUIContent("Connect to option"), false, ConnectToOption);
-            rightClickMenu.AddItem(new GUIContent("Create Action"), false, CreateAction);
-            rightClickMenu.AddItem(new GUIContent("Connect to action"), false, ConnectToAction);
+            rightClickMenu.AddItem(new GUIContent("Create Speech"), false, CreateSpeech);
+            rightClickMenu.AddItem(new GUIContent("Connect to speech"), false, ConnectToSpeech);
             rightClickMenu.AddItem(new GUIContent("Delete this node"), false, DeleteThisNode);
             rightClickMenu.ShowAsContext();
         }
@@ -403,12 +403,12 @@ namespace DialogueEditor
             if (defaultNodeStyle == null || defaultNodeStyle.normal.background == null)
             {
                 defaultNodeStyle = new GUIStyle();
-                defaultNodeStyle.normal.background = DialogueEditorUtil.MakeTexture(Width, Height, DefaultColor);
+                defaultNodeStyle.normal.background = DialogueEditorUtil.MakeTextureForNode(Width, Height, DefaultColor);
             }
             if (selectedNodeStyle == null || selectedNodeStyle.normal.background == null)
             {
                 selectedNodeStyle = new GUIStyle();
-                selectedNodeStyle.normal.background = DialogueEditorUtil.MakeTexture(Width, Height, SelectedColor);
+                selectedNodeStyle.normal.background = DialogueEditorUtil.MakeTextureForNode(Width, Height, SelectedColor);
             }
 
             currentBoxStyle = defaultNodeStyle;
@@ -431,17 +431,17 @@ namespace DialogueEditor
 
         public override void DrawConnections()
         {
-            if (OptionNode.Action != null)
+            if (OptionNode.Speech != null)
             {
                 Vector2 start, end;
-                DialogueEditorUtil.GetConnectionDrawInfo(rect, OptionNode.Action, out start, out end);
+                DialogueEditorUtil.GetConnectionDrawInfo(rect, OptionNode.Speech, out start, out end);
 
                 Vector2 toStart = (start - end).normalized;
                 Vector2 toEnd = (end - start).normalized;
                 Handles.DrawBezier(start, end, start + toStart, end + toEnd, DefaultColor, null, LINE_WIDTH);
 
                 Vector2 intersection;
-                Vector2 boxPos = new Vector2(OptionNode.Action.EditorInfo.xPos, OptionNode.Action.EditorInfo.yPos);
+                Vector2 boxPos = new Vector2(OptionNode.Speech.EditorInfo.xPos, OptionNode.Speech.EditorInfo.yPos);
                 if (DialogueEditorUtil.DoesLineIntersectWithBox(start, end, boxPos, false, out intersection))
                 {
                     DialogueEditorUtil.DrawArrowTip(intersection, toEnd, DefaultColor);
@@ -474,8 +474,8 @@ namespace DialogueEditor
         protected override void ProcessContextMenu()
         {
             GenericMenu rightClickMenu = new GenericMenu();
-            rightClickMenu.AddItem(new GUIContent("Create Action"), false, CreateAction);
-            rightClickMenu.AddItem(new GUIContent("Connect to action"), false, ConnectToAction);
+            rightClickMenu.AddItem(new GUIContent("Create Speech"), false, CreateSpeech);
+            rightClickMenu.AddItem(new GUIContent("Connect to speech"), false, ConnectToSpeech);
             rightClickMenu.AddItem(new GUIContent("Delete this node"), false, DeleteThisNode);
             rightClickMenu.ShowAsContext();
         }

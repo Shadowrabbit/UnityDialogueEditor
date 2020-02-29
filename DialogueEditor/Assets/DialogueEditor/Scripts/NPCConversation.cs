@@ -95,20 +95,20 @@ namespace DialogueEditor
 
             // Create a Dialogue and Option node for each in the conversation
             // Put them in the dictionary
-            for (int i = 0; i < ec.Actions.Count; i++)
+            for (int i = 0; i < ec.SpeechNodes.Count; i++)
             {
                 SpeechNode node = new SpeechNode();
-                node.Text = ec.Actions[i].Text;
-                node.TMPFont = ec.Actions[i].TMPFont;
-                node.Icon = ec.Actions[i].Icon;
-                node.Audio = ec.Actions[i].Audio;
+                node.Text = ec.SpeechNodes[i].Text;
+                node.TMPFont = ec.SpeechNodes[i].TMPFont;
+                node.Icon = ec.SpeechNodes[i].Icon;
+                node.Audio = ec.SpeechNodes[i].Audio;
                 node.Options = new List<OptionNode>();
-                if (this.GetEventHolderForID(ec.Actions[i].ID) != null)
+                if (this.GetEventHolderForID(ec.SpeechNodes[i].ID) != null)
                 {
-                    node.Event = this.GetEventHolderForID(ec.Actions[i].ID).Event;
+                    node.Event = this.GetEventHolderForID(ec.SpeechNodes[i].ID).Event;
                 }
 
-                dialogues.Add(ec.Actions[i].ID, node);
+                dialogues.Add(ec.SpeechNodes[i].ID, node);
             }
             for (int i = 0; i < ec.Options.Count; i++)
             {
@@ -121,30 +121,40 @@ namespace DialogueEditor
 
             // Now that we have every node in the dictionary, reconstruct the tree 
             // And also look for the root
-            for (int i = 0; i < ec.Actions.Count; i++)
+            for (int i = 0; i < ec.SpeechNodes.Count; i++)
             {
                 // Connect dialogue to options
-                for (int j = 0; j < ec.Actions[i].OptionUIDs.Count; j++)
+                for (int j = 0; j < ec.SpeechNodes[i].OptionUIDs.Count; j++)
                 {
-                    dialogues[ec.Actions[i].ID].Options.Add(options[ec.Actions[i].OptionUIDs[j]]);
+                    dialogues[ec.SpeechNodes[i].ID].Options.Add(options[ec.SpeechNodes[i].OptionUIDs[j]]);
                 }
 
                 // Connect dialogue to following dialogue
-                if (ec.Actions[i].ActionUID != EditableConversation.INVALID_UID)
+                if (ec.SpeechNodes[i].SpeechUID != EditableConversation.INVALID_UID)
                 {
-                    dialogues[ec.Actions[i].ID].Dialogue = dialogues[ec.Actions[i].ActionUID];
+                    dialogues[ec.SpeechNodes[i].ID].Dialogue = dialogues[ec.SpeechNodes[i].SpeechUID];
                 }
 
                 // Check if root
-                if (ec.Actions[i].EditorInfo.isRoot)
+                if (ec.SpeechNodes[i].EditorInfo.isRoot)
                 {
-                    conversation.Root = dialogues[ec.Actions[i].ID];
+                    conversation.Root = dialogues[ec.SpeechNodes[i].ID];
                 }
             }
+
             for (int i = 0; i < ec.Options.Count; i++)
             {
                 // Connect option to following dialogue
-                options[ec.Options[i].ID].Dialogue = dialogues[ec.Options[i].ActionUID];
+                if (dialogues.ContainsKey(ec.Options[i].SpeechUID))
+                {
+                    options[ec.Options[i].ID].Dialogue = dialogues[ec.Options[i].SpeechUID];
+                }
+#if UNITY_EDITOR
+                else
+                {
+                    Debug.LogWarning("[DialogueEditor]: Option node [" + ec.Options[i].ID + "] has no Speech Node.");
+                }
+#endif
             }
 
             return conversation;
@@ -159,9 +169,9 @@ namespace DialogueEditor
             {
                 // Deserialize the indivudual nodes
                 {
-                    if (conversation.Actions != null)
-                        for (int i = 0; i < conversation.Actions.Count; i++)
-                            conversation.Actions[i].Deserialize();
+                    if (conversation.SpeechNodes != null)
+                        for (int i = 0; i < conversation.SpeechNodes.Count; i++)
+                            conversation.SpeechNodes[i].Deserialize();
 
                     if (conversation.Options != null)
                         for (int i = 0; i < conversation.Options.Count; i++)
@@ -264,31 +274,31 @@ namespace DialogueEditor
 
         public EditableConversation()
         {
-            Actions = new List<EditableSpeechNode>();
+            SpeechNodes = new List<EditableSpeechNode>();
             Options = new List<EditableOptionNode>();
         }
 
         [DataMember]
-        public List<EditableSpeechNode> Actions;
+        public List<EditableSpeechNode> SpeechNodes;
 
         [DataMember]
         public List<EditableOptionNode> Options;
 
         public EditableSpeechNode GetRootNode()
         {
-            for (int i = 0; i < Actions.Count; i++)
+            for (int i = 0; i < SpeechNodes.Count; i++)
             {
-                if (Actions[i].EditorInfo.isRoot)
-                    return Actions[i];
+                if (SpeechNodes[i].EditorInfo.isRoot)
+                    return SpeechNodes[i];
             }
             return null;
         }
 
         public EditableConversationNode GetNodeByUID(int uid)
         {
-            for (int i = 0; i < Actions.Count; i++)
-                if (Actions[i].ID == uid)
-                    return Actions[i];
+            for (int i = 0; i < SpeechNodes.Count; i++)
+                if (SpeechNodes[i].ID == uid)
+                    return SpeechNodes[i];
 
             for (int i = 0; i < Options.Count; i++)
                 if (Options[i].ID == uid)
@@ -297,11 +307,11 @@ namespace DialogueEditor
             return null;
         }
 
-        public EditableSpeechNode GetActionByUID(int uid)
+        public EditableSpeechNode GetSpeechByUID(int uid)
         {
-            for (int i = 0; i < Actions.Count; i++)
-                if (Actions[i].ID == uid)
-                    return Actions[i];
+            for (int i = 0; i < SpeechNodes.Count; i++)
+                if (SpeechNodes[i].ID == uid)
+                    return SpeechNodes[i];
 
             return null;
         }
@@ -399,20 +409,20 @@ namespace DialogueEditor
         {
             Options = new List<EditableOptionNode>();
             OptionUIDs = new List<int>();
-            ActionUID = EditableConversation.INVALID_UID;
+            SpeechUID = EditableConversation.INVALID_UID;
         }
 
         /// <summary>
-        /// The selectable options of this Action.
+        /// The selectable options of this Speech.
         /// </summary>
         public List<EditableOptionNode> Options;
         [DataMember] public List<int> OptionUIDs;
 
         /// <summary>
-        /// The Action this Action leads onto (if no options).
+        /// The Speech this Speech leads onto (if no options).
         /// </summary>
-        public EditableSpeechNode Action;
-        [DataMember] public int ActionUID;
+        public EditableSpeechNode Speech;
+        [DataMember] public int SpeechUID;
 
         /// <summary>
         /// The NPC Icon
@@ -421,7 +431,7 @@ namespace DialogueEditor
         [DataMember] public string IconGUID;
 
         /// <summary>
-        /// The Audio Clip acompanying this Action.
+        /// The Audio Clip acompanying this Speech.
         /// </summary>
         public AudioClip Audio;
         [DataMember] public string AudioGUID;
@@ -434,24 +444,24 @@ namespace DialogueEditor
             if (Options.Contains(newOption))
                 return;
 
-            // Delete the action I point to, if any
-            if (this.Action != null)
+            // Delete the speech I point to, if any
+            if (this.Speech != null)
             {
-                this.Action.parents.Remove(this);
+                this.Speech.parents.Remove(this);
             }
-            this.Action = null;
+            this.Speech = null;
 
             if (!newOption.parents.Contains(this))
                 newOption.parents.Add(this);
             Options.Add(newOption);
         }
 
-        public void SetAction(EditableSpeechNode newAction)
+        public void SetSpeech(EditableSpeechNode newSpeech)
         {
-            // Remove myself as a parent from the action I was previously pointing to
-            if (this.Action != null)
+            // Remove myself as a parent from the speech I was previously pointing to
+            if (this.Speech != null)
             {
-                this.Action.parents.Remove(this);
+                this.Speech.parents.Remove(this);
             }
 
             // Remove any options I may have
@@ -465,18 +475,18 @@ namespace DialogueEditor
                 Options.Clear();
             }
 
-            this.Action = newAction;
-            if (!newAction.parents.Contains(this))
-                newAction.parents.Add(this);
+            this.Speech = newSpeech;
+            if (!newSpeech.parents.Contains(this))
+                newSpeech.parents.Add(this);
         }
 
         public override void RemoveSelfFromTree()
         {
-            // This action is no longer the parents resulting action
+            // This speech is no longer the parents resulting speech
             for (int i = 0; i < parents.Count; i++)
-                (parents[i] as EditableOptionNode).Action = null;
+                (parents[i] as EditableOptionNode).Speech = null;
 
-            // This action is no longer the parent of any children options
+            // This speech is no longer the parent of any children options
             if (Options != null)
             {
                 for (int i = 0; i < Options.Count; i++)
@@ -507,10 +517,10 @@ namespace DialogueEditor
                 }
             }
 
-            if (Action != null)
-                ActionUID = Action.ID;
+            if (Speech != null)
+                SpeechUID = Speech.ID;
             else
-                ActionUID = EditableConversation.INVALID_UID;
+                SpeechUID = EditableConversation.INVALID_UID;
         }
 
         public override void PrepareForSerialization()
@@ -560,42 +570,42 @@ namespace DialogueEditor
     {
         public EditableOptionNode() : base()
         {
-            ActionUID = EditableConversation.INVALID_UID;
+            SpeechUID = EditableConversation.INVALID_UID;
         }
 
         /// <summary>
-        /// The Action this option leads to.
+        /// The Speech this option leads to.
         /// </summary>        
-        public EditableSpeechNode Action;
+        public EditableSpeechNode Speech;
 
         [DataMember]
-        public int ActionUID;
+        public int SpeechUID;
 
-        public void SetAction(EditableSpeechNode newAction)
+        public void SetSpeech(EditableSpeechNode newSpeech)
         {
-            // Remove myself as a parent from the action I was previously pointing to
-            if (this.Action != null)
+            // Remove myself as a parent from the speech I was previously pointing to
+            if (this.Speech != null)
             {
-                this.Action.parents.Remove(this);
+                this.Speech.parents.Remove(this);
             }
 
-            this.Action = newAction;
-            if (!newAction.parents.Contains(this))
-                newAction.parents.Add(this);
+            this.Speech = newSpeech;
+            if (!newSpeech.parents.Contains(this))
+                newSpeech.parents.Add(this);
         }
 
         public override void RemoveSelfFromTree()
         {
-            // This option is no longer part of any parents actions possible options
+            // This option is no longer part of any parents speechs possible options
             for (int i = 0; i < parents.Count; i++)
             {
                 (parents[i] as EditableSpeechNode).Options.Remove(this);
             }
 
-            // This option is no longer the parent to its child action
-            if (Action != null)
+            // This option is no longer the parent to its child speech
+            if (Speech != null)
             {
-                Action.parents.Remove(this);
+                Speech.parents.Remove(this);
             }
         }
 
@@ -609,9 +619,9 @@ namespace DialogueEditor
                 parentUIDs.Add(parents[i].ID);
             }
 
-            ActionUID = EditableConversation.INVALID_UID;
-            if (Action != null)
-                ActionUID = Action.ID;
+            SpeechUID = EditableConversation.INVALID_UID;
+            if (Speech != null)
+                SpeechUID = Speech.ID;
         }
     }
 }

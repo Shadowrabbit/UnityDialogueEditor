@@ -24,18 +24,18 @@ namespace DialogueEditor
                 {
                     action = uiNodes[i] as UISpeechNode;
 
-                    if (action.ConversationNode.Options != null)
+                    if (action.SpeechNode.Options != null)
                     {
-                        for (int j = 0; j < action.ConversationNode.Options.Count; j++)
+                        for (int j = 0; j < action.SpeechNode.Options.Count; j++)
                         {
-                            GetConnectionDrawInfo(action.rect, action.ConversationNode.Options[j], out start, out end);
+                            GetConnectionDrawInfo(action.rect, action.SpeechNode.Options[j], out start, out end);
 
                             float distance = MinimumDistanceBetweenPointAndLine(start, end, mousePos);
                             if (distance < minDistance)
                             {
                                 minDistance = distance;
-                                par = action.ConversationNode;
-                                child = action.ConversationNode.Options[j];
+                                par = action.SpeechNode;
+                                child = action.SpeechNode.Options[j];
                             }
                         }
                     }
@@ -44,16 +44,16 @@ namespace DialogueEditor
                 {
                     option = uiNodes[i] as UIOptionNode;
 
-                    if (option.OptionNode.Action != null)
+                    if (option.OptionNode.Speech != null)
                     {
-                        GetConnectionDrawInfo(option.rect, option.OptionNode.Action, out start, out end);
+                        GetConnectionDrawInfo(option.rect, option.OptionNode.Speech, out start, out end);
 
                         float distance = MinimumDistanceBetweenPointAndLine(start, end, mousePos);
                         if (distance < minDistance)
                         {
                             minDistance = distance;
                             par = option.OptionNode;
-                            child = option.OptionNode.Action;
+                            child = option.OptionNode.Speech;
                         }
                     }
                 }
@@ -248,7 +248,7 @@ namespace DialogueEditor
             return new Color(r / 255f, g / 255f, b / 255f, a / 255f);
         }
 
-        public static Texture2D MakeTexture(int width, int height, Color col)
+        public static Texture2D MakeTextureForNode(int width, int height, Color col)
         {
             Texture2D t2d = new Texture2D(width, height);
             for (int x = 0; x < width - 1; x++)
@@ -267,6 +267,25 @@ namespace DialogueEditor
             }
             t2d.Apply();
             return t2d;
+        }
+
+        public static Texture2D MakeTexture(int width, int height, Color col)
+        {
+            Texture2D t2d = new Texture2D(width, height);
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    t2d.SetPixel(x, y, col);
+                }
+            }
+            t2d.Apply();
+            return t2d;
+        }
+
+        public static Color GetEditorColor()
+        {
+            return EditorGUIUtility.isProSkin ? new Color32(56, 56, 56, 255) : new Color32(194, 194, 194, 255);
         }
     }
 }
