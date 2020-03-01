@@ -484,7 +484,20 @@ namespace DialogueEditor
         {
             // This speech is no longer the parents resulting speech
             for (int i = 0; i < parents.Count; i++)
-                (parents[i] as EditableOptionNode).Speech = null;
+            {
+                if (parents[i] != null)
+                {
+                    if (parents[i] is EditableOptionNode)
+                    {
+                        (parents[i] as EditableOptionNode).Speech = null;
+                    }
+                    else if (parents[i] is EditableSpeechNode)
+                    {
+                        (parents[i] as EditableSpeechNode).Speech = null;
+                    }
+                }
+                
+            }
 
             // This speech is no longer the parent of any children options
             if (Options != null)
