@@ -7,7 +7,7 @@ namespace DialogueEditor
 {
     public class ConversationManager : MonoBehaviour
     {
-        private const float TRANS_TIME = 0.25f; // Transition time for fades
+        private const float TRANS_TIME = 0.2f; // Transition time for fades
 
         public static ConversationManager Instance { get; private set; }
 
@@ -47,6 +47,7 @@ namespace DialogueEditor
         // Dialogue UI
         public Image DialogueBackground;
         public Image NpcIcon;
+        public TMPro.TextMeshProUGUI NameText;
         public TMPro.TextMeshProUGUI DialogueText;
         // Components
         public AudioSource AudioPlayer;
@@ -116,12 +117,9 @@ namespace DialogueEditor
                             return;
                         }
 
-                        Color c_dialogue = DialogueBackground.color;
-                        Color c_icon = NpcIcon.color;
-                        c_dialogue.a = t;
-                        c_icon.a = t;
-                        DialogueBackground.color = c_dialogue;
-                        NpcIcon.color = c_icon;
+                        SetColorAlpha(DialogueBackground, t);
+                        SetColorAlpha(NpcIcon, t);
+                        SetColorAlpha(NameText, t);
                     }
                     break;
 
@@ -179,9 +177,7 @@ namespace DialogueEditor
                         for (int i = 0; i < m_uiOptions.Count; i++)
                             m_uiOptions[i].SetAlpha(1 - t);
 
-                        Color c_text = DialogueText.color;
-                        c_text.a = 1 - t;
-                        DialogueText.color = c_text;
+                        SetColorAlpha(DialogueText, 1 - t);
                     }
                     break;
 
@@ -196,12 +192,9 @@ namespace DialogueEditor
                             return;
                         }
 
-                        Color c_dialogue = DialogueBackground.color;
-                        Color c_icon = NpcIcon.color;
-                        c_dialogue.a = 1 - t;
-                        c_icon.a = 1 - t;
-                        DialogueBackground.color = c_dialogue;
-                        NpcIcon.color = c_icon;
+                        SetColorAlpha(DialogueBackground, 1 -t);
+                        SetColorAlpha(NpcIcon, 1 - t);
+                        SetColorAlpha(NameText, 1 - t);
                     }
                     break;
             }
@@ -246,22 +239,19 @@ namespace DialogueEditor
             {
                 case eState.TransitioningDialogueBoxOn:
                     {
-                        Color c_dialogue = DialogueBackground.color;
-                        Color c_icon = NpcIcon.color;
-                        c_dialogue.a = 0;
-                        c_icon.a = 0;
-                        DialogueBackground.color = c_dialogue;
-                        NpcIcon.color = c_icon;
+                        SetColorAlpha(DialogueBackground, 0);
+                        SetColorAlpha(NpcIcon, 0);
+                        SetColorAlpha(NameText, 0);
 
                         DialogueText.text = "";
+                        NameText.text = m_pendingDialogue.Name;
+                        NpcIcon.sprite = m_pendingDialogue.Icon;
                     }
                     break;
 
                 case eState.ScrollingText:
                     {
-                        Color c_text = DialogueText.color;
-                        c_text.a = 1;
-                        DialogueText.color = c_text;
+                        SetColorAlpha(DialogueText, 1);
 
                         if (string.IsNullOrEmpty(m_targetScrollText))
                         {
@@ -335,14 +325,13 @@ namespace DialogueEditor
             {
                 DialogueText.font = action.TMPFont;
             }
-            else if (m_conversation.DefaultTMPFont != null)
-            {
-                DialogueText.font = m_conversation.DefaultTMPFont;
-            }
             else
             {
                 DialogueText.font = null;
             }
+
+            // Set name
+            NameText.text = action.Name;
 
             // Set text
             if (ScrollText)
@@ -470,6 +459,13 @@ namespace DialogueEditor
                 GameObject.Destroy(m_uiOptions[0].gameObject);
                 m_uiOptions.RemoveAt(0);
             }
+        }
+
+        private void SetColorAlpha(MaskableGraphic graphic, float a)
+        {
+            Color col = graphic.color;
+            col.a = a;
+            graphic.color = col;
         }
     }
 }

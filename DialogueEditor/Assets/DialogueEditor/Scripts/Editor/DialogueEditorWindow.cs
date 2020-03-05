@@ -493,6 +493,8 @@ namespace DialogueEditor
         private void DrawPanel()
         {
             panelRect = new Rect(position.width - panelWidth, TOOLBAR_HEIGHT, panelWidth, position.height - TOOLBAR_HEIGHT);
+            if (panelStyle.normal.background == null)
+                InitGUIStyles();
             GUILayout.BeginArea(panelRect, panelStyle);
             GUILayout.BeginVertical();
             panelVerticalScroll = GUILayout.BeginScrollView(panelVerticalScroll);
@@ -510,7 +512,10 @@ namespace DialogueEditor
                 {
                     EditableSpeechNode node = (CurrentlySelectedNode.Info as EditableSpeechNode);
                     GUILayout.Label("[" + node.ID + "] NPC Dialogue Node.", panelTitleStyle);
-                    
+
+                    GUILayout.Label("Character Name", EditorStyles.boldLabel);
+                    node.Name = GUILayout.TextField(node.Name);
+
                     GUILayout.Label("Dialogue", EditorStyles.boldLabel);
                     node.Text = GUILayout.TextArea(node.Text);
 
@@ -571,10 +576,13 @@ namespace DialogueEditor
             {
                 GUILayout.Label("Conversation options.", panelTitleStyle);
 
-                GUILayout.Label("Main Icon:", EditorStyles.boldLabel);
+                GUILayout.Label("Default name:", EditorStyles.boldLabel);
+                CurrentAsset.DefaultName = EditorGUILayout.TextField(CurrentAsset.DefaultName);
+
+                GUILayout.Label("Default Icon:", EditorStyles.boldLabel);
                 CurrentAsset.DefaultSprite = (Sprite)EditorGUILayout.ObjectField(CurrentAsset.DefaultSprite, typeof(Sprite), false);
 
-                GUILayout.Label("Main font:", EditorStyles.boldLabel);
+                GUILayout.Label("Default font:", EditorStyles.boldLabel);
                 CurrentAsset.DefaultFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(CurrentAsset.DefaultFont, typeof(TMPro.TMP_FontAsset), false);
             }
 
@@ -868,6 +876,7 @@ namespace DialogueEditor
             newSpeech.ID = CurrentAsset.CurrentIDCounter++;
 
             // Give the speech it's default values
+            newSpeech.Name = CurrentAsset.DefaultName;
             newSpeech.Icon = CurrentAsset.DefaultSprite;
             newSpeech.TMPFont = CurrentAsset.DefaultFont;
 
@@ -1009,7 +1018,7 @@ namespace DialogueEditor
 
         private static void Log(string str)
         {
-#if DIALOGUE_DEBUG || true
+#if DIALOGUE_DEBUG
             Debug.Log("[DialogueEditor]: " + str);
 #endif
         }

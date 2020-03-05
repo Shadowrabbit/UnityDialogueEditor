@@ -37,6 +37,7 @@ namespace DialogueEditor
 
         // Static
         private static GUIStyle titleStyle;
+        protected static GUIStyle textStyle;
 
         // Properties
         public EditableConversationNode Info { get; protected set; }
@@ -58,6 +59,14 @@ namespace DialogueEditor
                 titleStyle.alignment = TextAnchor.MiddleCenter;
                 titleStyle.fontStyle = FontStyle.Bold;
                 titleStyle.normal.textColor = Color.white;
+            }
+            if (textStyle == null)
+            {
+                textStyle = new GUIStyle();
+                textStyle.normal.textColor = Color.white;
+                textStyle.wordWrap = true;
+                textStyle.stretchHeight = false;
+                textStyle.clipping = TextClipping.Clip;
             }
         }
 
@@ -95,19 +104,16 @@ namespace DialogueEditor
 
         protected void DrawTitle(string text)
         {
-            // Internals 
-            Rect internalText = new Rect(rect.x, rect.y, rect.width, TITLE_HEIGHT);
-            GUI.Label(internalText, text, titleStyle);
+            Rect title = new Rect(rect.x, rect.y, rect.width, TITLE_HEIGHT);
+            GUI.Label(title, text, titleStyle);
         }
 
-        protected void DrawInternalText(string text, float leftOffset = 0)
+        protected void DrawInternalText(string text, float leftOffset = 0, float heightOffset = 0)
         {
-            Rect internalText = new Rect(rect.x + TEXT_BORDER + leftOffset, rect.y + TITLE_HEIGHT + TITLE_GAP, rect.width - TEXT_BORDER * 2 - leftOffset, TEXT_BOX_HEIGHT);
-            GUIStyle textStyle = new GUIStyle();
-            textStyle.normal.textColor = Color.white;
-            textStyle.wordWrap = true;
-            textStyle.stretchHeight = false;
-            textStyle.clipping = TextClipping.Clip;
+            Rect internalText = new Rect(rect.x + TEXT_BORDER + leftOffset, 
+                rect.y + TITLE_HEIGHT + TITLE_GAP + heightOffset, 
+                rect.width - TEXT_BORDER * 2 - leftOffset, 
+                TEXT_BOX_HEIGHT);
             GUI.Box(internalText, text, textStyle);
         }
 
@@ -220,6 +226,9 @@ namespace DialogueEditor
 
     public class UISpeechNode : UINode
     {
+        protected const float SPRITE_SZ = 40;
+        protected const int NAME_HEIGHT = 12;
+
         // Events
         public delegate void CreateOptionEvent(UISpeechNode node);
         public static CreateOptionEvent OnCreateOption;
@@ -229,7 +238,7 @@ namespace DialogueEditor
 
         // Static properties
         public static int Width { get { return 200; } }
-        public static int Height { get { return 75; } }
+        public static int Height { get { return 80; } }
 
         // Properties
         public EditableSpeechNode SpeechNode { get { return Info as EditableSpeechNode; } }
@@ -239,6 +248,8 @@ namespace DialogueEditor
         // Static styles
         protected static GUIStyle defaultNodeStyle;
         protected static GUIStyle selectedNodeStyle;
+
+        protected static GUIStyle npcNameStyle;
 
 
         //---------------------------------
@@ -257,6 +268,15 @@ namespace DialogueEditor
                 selectedNodeStyle = new GUIStyle();
                 selectedNodeStyle.normal.background = DialogueEditorUtil.MakeTextureForNode(Width, Height, SelectedColor);
             }
+            if (npcNameStyle == null)
+            {
+                npcNameStyle = new GUIStyle();
+                npcNameStyle.normal.textColor = new Color(0.8f, 0.8f, 0.8f, 1);
+                npcNameStyle.wordWrap = true;
+                npcNameStyle.stretchHeight = false;
+                npcNameStyle.alignment = TextAnchor.MiddleCenter;
+                npcNameStyle.clipping = TextClipping.Clip;
+            }
 
             currentBoxStyle = defaultNodeStyle;
 
@@ -271,20 +291,23 @@ namespace DialogueEditor
 
         public override void OnDraw()
         {
-            const float SPRITE_SZ = 50;
-
             if (DialogueEditorWindow.ConversationRoot == SpeechNode)
                 DrawTitle("[Root] Speech node.");
             else
                 DrawTitle("Speech node.");
 
+            // Name
+            const int NAME_PADDING = 1;
+            Rect name = new Rect(rect.x + TEXT_BORDER * 0.5f, rect.y + NAME_PADDING + TITLE_HEIGHT, rect.width - TEXT_BORDER * 0.5f, NAME_HEIGHT);
+            GUI.Box(name, SpeechNode.Name, npcNameStyle);
+
             // Icon
-            Rect internalText = new Rect(rect.x + TEXT_BORDER * 0.5f, rect.y + TITLE_HEIGHT + TITLE_GAP, SPRITE_SZ, SPRITE_SZ);
+            Rect icon = new Rect(rect.x + TEXT_BORDER * 0.5f, rect.y + TITLE_HEIGHT + TITLE_GAP + NAME_HEIGHT, SPRITE_SZ, SPRITE_SZ);
             if (SpeechNode.Icon != null)
-                GUI.DrawTexture(internalText, SpeechNode.Icon.texture, ScaleMode.ScaleToFit); 
+                GUI.DrawTexture(icon, SpeechNode.Icon.texture, ScaleMode.ScaleToFit);
 
             // Text
-            DrawInternalText(SpeechNode.Text, SPRITE_SZ);
+            DrawInternalText(SpeechNode.Text, SPRITE_SZ + 5, NAME_HEIGHT + NAME_PADDING);
         }
 
         public override void DrawConnections()

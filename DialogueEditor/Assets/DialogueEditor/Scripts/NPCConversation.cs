@@ -17,8 +17,9 @@ namespace DialogueEditor
         private readonly string CHILD_NAME = "ConversationEventInfo";
 
         // Serialized data
-        [SerializeField] private string json;
         [SerializeField] public int CurrentIDCounter = 1;
+        [SerializeField] private string json;
+        [SerializeField] public string DefaultName;
         [SerializeField] public Sprite DefaultSprite;
         [SerializeField] public TMPro.TMP_FontAsset DefaultFont;
         [SerializeField] private List<NodeEventHolder> Events;
@@ -98,6 +99,7 @@ namespace DialogueEditor
             for (int i = 0; i < ec.SpeechNodes.Count; i++)
             {
                 SpeechNode node = new SpeechNode();
+                node.Name = ec.SpeechNodes[i].Name;
                 node.Text = ec.SpeechNodes[i].Text;
                 node.TMPFont = ec.SpeechNodes[i].TMPFont;
                 node.Icon = ec.SpeechNodes[i].Icon;
@@ -230,9 +232,6 @@ namespace DialogueEditor
     public class Conversation
     {
         public SpeechNode Root;
-
-        public Sprite DefaultIcon;
-        public TMPro.TMP_FontAsset DefaultTMPFont;
     }
 
     public abstract class ConversationNode
@@ -243,6 +242,7 @@ namespace DialogueEditor
 
     public class SpeechNode : ConversationNode
     {
+        public string Name;
         public Sprite Icon;
         public AudioClip Audio;
         /// <summary>
@@ -411,6 +411,9 @@ namespace DialogueEditor
             OptionUIDs = new List<int>();
             SpeechUID = EditableConversation.INVALID_UID;
         }
+
+        [DataMember]
+        public string Name;
 
         /// <summary>
         /// The selectable options of this Speech.
