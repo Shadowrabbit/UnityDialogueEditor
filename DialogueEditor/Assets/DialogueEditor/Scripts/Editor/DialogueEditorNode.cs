@@ -17,8 +17,8 @@ namespace DialogueEditor
         public delegate void CreateSpeechEvent(UINode node);
         public static CreateSpeechEvent OnCreateSpeech;
 
-        public delegate void ConnectToSpeechEvent(UINode node);
-        public static ConnectToSpeechEvent OnConnectToSpeech;
+        public delegate void ConnectToNodeEvent(UINode node);
+        public static ConnectToNodeEvent OnConnect;
 
 
         // Consts
@@ -196,9 +196,9 @@ namespace DialogueEditor
             OnCreateSpeech?.Invoke(this);
         }
 
-        protected void ConnectToSpeech()
+        protected void ConnectToNode()
         {
-            OnConnectToSpeech?.Invoke(this);
+            OnConnect?.Invoke(this);
         }
 
         protected void DeleteThisNode()
@@ -232,9 +232,6 @@ namespace DialogueEditor
         // Events
         public delegate void CreateOptionEvent(UISpeechNode node);
         public static CreateOptionEvent OnCreateOption;
-
-        public delegate void ConnectToOptionEvent(UISpeechNode node);
-        public static ConnectToOptionEvent OnConnectToOption;
 
         // Static properties
         public static int Width { get { return 200; } }
@@ -375,22 +372,16 @@ namespace DialogueEditor
         protected override void ProcessContextMenu()
         {
             GenericMenu rightClickMenu = new GenericMenu();
-            rightClickMenu.AddItem(new GUIContent("Create New Option"), false, CreateNewOption);
-            rightClickMenu.AddItem(new GUIContent("Connect to option"), false, ConnectToOption);
+            rightClickMenu.AddItem(new GUIContent("Create Option"), false, CreateOption);
             rightClickMenu.AddItem(new GUIContent("Create Speech"), false, CreateSpeech);
-            rightClickMenu.AddItem(new GUIContent("Connect to speech"), false, ConnectToSpeech);
-            rightClickMenu.AddItem(new GUIContent("Delete this node"), false, DeleteThisNode);
+            rightClickMenu.AddItem(new GUIContent("Connect"), false, ConnectToNode);
+            rightClickMenu.AddItem(new GUIContent("Delete"), false, DeleteThisNode);
             rightClickMenu.ShowAsContext();
         }
 
-        private void CreateNewOption()
+        private void CreateOption()
         {
             OnCreateOption?.Invoke(this);
-        }
-
-        private void ConnectToOption()
-        {
-            OnConnectToOption?.Invoke(this);
         }
     }
 
@@ -498,8 +489,8 @@ namespace DialogueEditor
         {
             GenericMenu rightClickMenu = new GenericMenu();
             rightClickMenu.AddItem(new GUIContent("Create Speech"), false, CreateSpeech);
-            rightClickMenu.AddItem(new GUIContent("Connect to speech"), false, ConnectToSpeech);
-            rightClickMenu.AddItem(new GUIContent("Delete this node"), false, DeleteThisNode);
+            rightClickMenu.AddItem(new GUIContent("Connect"), false, ConnectToNode);
+            rightClickMenu.AddItem(new GUIContent("Delete"), false, DeleteThisNode);
             rightClickMenu.ShowAsContext();
         }
     }

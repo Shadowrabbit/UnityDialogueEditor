@@ -245,7 +245,7 @@ namespace DialogueEditor
 
                         DialogueText.text = "";
                         NameText.text = m_pendingDialogue.Name;
-                        NpcIcon.sprite = m_pendingDialogue.Icon;
+                        NpcIcon.sprite = m_pendingDialogue.Icon != null ? m_pendingDialogue.Icon : BlankSprite;
                     }
                     break;
 
@@ -443,6 +443,8 @@ namespace DialogueEditor
                 else
                     DialogueBackground.type = Image.Type.Simple;
             }
+
+            NpcIcon.sprite = BlankSprite;
         }
 
         private void TurnOffUI()

@@ -9,12 +9,11 @@ namespace DialogueEditor
     {
         public enum eInputState
         {
-            Regular                     = 0,
-            PlacingOption               = 1,
-            ConnectingNodeToSpeech      = 2,
-            PlacingSpeech               = 3,
-            ConnectingSpeechToOption    = 4,
-            draggingPanel               = 5,
+            Regular,
+            PlacingOption,
+            PlacingSpeech,
+            ConnectingNode,         
+            draggingPanel,
         }
 
         // Consts
@@ -221,8 +220,7 @@ namespace DialogueEditor
             UINode.OnUINodeDeleted += DeleteUINode;
             UISpeechNode.OnCreateOption += CreateNewOption;
             UIOptionNode.OnCreateSpeech += CreateNewSpeech;
-            UISpeechNode.OnConnectToOption += ConnectSpeechToOption;
-            UIOptionNode.OnConnectToSpeech += ConnectOptionToSpeech;
+            UISpeechNode.OnConnect += ConnectNode;
 
             this.name = WINDOW_NAME;
             panelWidth = START_PANEL_WIDTH;
@@ -253,8 +251,7 @@ namespace DialogueEditor
             UINode.OnUINodeDeleted -= DeleteUINode;
             UISpeechNode.OnCreateOption -= CreateNewOption;
             UIOptionNode.OnCreateSpeech -= CreateNewSpeech;
-            UISpeechNode.OnConnectToOption -= ConnectSpeechToOption;
-            UIOptionNode.OnConnectToSpeech -= ConnectOptionToSpeech;
+            UISpeechNode.OnConnect -= ConnectNode;
         }
 
         protected void OnFocus()
@@ -433,8 +430,7 @@ namespace DialogueEditor
                 uiNodes[i].DrawConnections();
             }
 
-            if (m_inputState == eInputState.ConnectingNodeToSpeech || 
-                m_inputState == eInputState.ConnectingSpeechToOption)
+            if (m_inputState == eInputState.ConnectingNode)
             {
                 Vector2 start, end;
                 start = new Vector2(m_currentConnectingNode.rect.x + UIOptionNode.Width / 2,
@@ -648,58 +644,6 @@ namespace DialogueEditor
                     }
                     break;
 
-                case eInputState.ConnectingNodeToSpeech:
-
-                    // Left click
-                    if (e.type == EventType.MouseDown && e.button == 0)
-                    {
-                        for (int i = 0; i < uiNodes.Count; i++)
-                        {
-                            if (uiNodes[i] == m_currentConnectingNode)
-                                continue;
-
-                            if (!(uiNodes[i] is UISpeechNode))
-                                continue;
-
-                            if (uiNodes[i].rect.Contains(e.mousePosition))
-                            {
-                                if (m_currentConnectingNode is UIOptionNode)
-                                {
-                                    (m_currentConnectingNode as UIOptionNode).OptionNode.
-                                        SetSpeech((uiNodes[i] as UISpeechNode).SpeechNode);
-                                    break;
-                                }
-                                else if (m_currentConnectingNode is UISpeechNode)
-                                {
-                                    UISpeechNode connecting = m_currentConnectingNode as UISpeechNode;
-                                    UISpeechNode toBeChild = uiNodes[i] as UISpeechNode;
-
-                                    // If a relationship between these speechs already exists, swap it 
-                                    // around, as a 2way speech<->speech relationship cannot exist.
-                                    if (connecting.SpeechNode.parents.Contains(toBeChild.SpeechNode))
-                                    {
-                                        // Remove the relationship
-                                        connecting.SpeechNode.parents.Remove(toBeChild.SpeechNode);
-                                        toBeChild.SpeechNode.Speech = null;
-                                    }
-
-                                    (m_currentConnectingNode as UISpeechNode).SpeechNode.
-                                        SetSpeech((uiNodes[i] as UISpeechNode).SpeechNode);
-                                    break;
-                                }
-                            }
-                        }
-                        m_inputState = eInputState.Regular;
-                        e.Use();
-                    }
-
-                    // Esc
-                    if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Escape)
-                    {
-                        m_inputState = eInputState.Regular;
-                    }
-                    break;
-
                 case eInputState.PlacingSpeech:
                     m_currentPlacingNode.SetPosition(e.mousePosition);
 
@@ -714,28 +658,70 @@ namespace DialogueEditor
                     }
                     break;
 
-                case eInputState.ConnectingSpeechToOption:
-
-                    // Left click
+                case eInputState.ConnectingNode:
+                    // Click.
                     if (e.type == EventType.MouseDown && e.button == 0)
                     {
-                        for (int i = 0; i < uiNodes.Count; i++)
+                        // If we're connecting a Speech node
+                        if (m_currentConnectingNode is UISpeechNode)
                         {
-                            if (uiNodes[i] == m_currentConnectingNode)
-                                continue;
-
-                            if (!(uiNodes[i] is UIOptionNode))
-                                continue;
-
-                            if (uiNodes[i].rect.Contains(e.mousePosition))
+                            for (int i = 0; i < uiNodes.Count; i++)
                             {
-                                (m_currentConnectingNode as UISpeechNode).SpeechNode.AddOption(
-                                    (uiNodes[i] as UIOptionNode).OptionNode);
-                                break;
+                                if (uiNodes[i] == m_currentConnectingNode)
+                                    continue;
+
+                                if (uiNodes[i].rect.Contains(e.mousePosition))
+                                {
+                                    if (uiNodes[i] is UISpeechNode)
+                                    {
+                                        UISpeechNode connecting = m_currentConnectingNode as UISpeechNode;
+                                        UISpeechNode toBeChild = uiNodes[i] as UISpeechNode;
+
+                                        // If a relationship between these speechs already exists, swap it 
+                                        // around, as a 2way speech<->speech relationship cannot exist.
+                                        if (connecting.SpeechNode.parents.Contains(toBeChild.SpeechNode))
+                                        {
+                                            // Remove the relationship
+                                            connecting.SpeechNode.parents.Remove(toBeChild.SpeechNode);
+                                            toBeChild.SpeechNode.Speech = null;
+                                        }
+
+                                        (m_currentConnectingNode as UISpeechNode).SpeechNode.SetSpeech((uiNodes[i] as UISpeechNode).SpeechNode);
+                                    }
+                                    else if (uiNodes[i] is UIOptionNode)
+                                    {
+                                        (m_currentConnectingNode as UISpeechNode).SpeechNode.AddOption((uiNodes[i] as UIOptionNode).OptionNode);
+                                    }
+
+                                    m_inputState = eInputState.Regular;
+                                    e.Use();
+
+                                    break;
+                                }
                             }
                         }
-                        m_inputState = eInputState.Regular;
-                        e.Use();
+
+                        // Else if we're connecting an Option node
+                        else if (m_currentConnectingNode is UIOptionNode)
+                        {
+                            for (int i = 0; i < uiNodes.Count; i++)
+                            {
+                                if (uiNodes[i] == m_currentConnectingNode)
+                                    continue;
+
+                                if (uiNodes[i].rect.Contains(e.mousePosition))
+                                {
+                                    if (uiNodes[i] is UISpeechNode)
+                                    {
+                                        (m_currentConnectingNode as UIOptionNode).OptionNode.SetSpeech((uiNodes[i] as UISpeechNode).SpeechNode);
+
+                                        m_inputState = eInputState.Regular;
+                                        e.Use();
+                                        break;
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     // Esc
@@ -745,8 +731,6 @@ namespace DialogueEditor
                     }
                     break;
             }
-
-
         }
 
         private void ProcessEvents(Event e)
@@ -789,8 +773,7 @@ namespace DialogueEditor
                         if (DialogueEditorUtil.IsPointerNearConnection(uiNodes, e.mousePosition, out m_connectionDeleteParent, out m_connectionDeleteChild))
                         {
                             GenericMenu rightClickMenu = new GenericMenu();
-                            rightClickMenu.AddItem(new GUIContent("Delete this connection"), false, DeleteConnection);
-                            rightClickMenu.ShowAsContext();
+                            rightClickMenu.AddItem(new GUIContent("Delete connection"), false, DeleteConnection);
                             rightClickMenu.ShowAsContext();
                         }
                     }
@@ -901,22 +884,13 @@ namespace DialogueEditor
 
         /* -- Connecting Nodes -- */
 
-        public void ConnectOptionToSpeech(UINode option)
+        public void ConnectNode(UINode option)
         {
             // The option if what we are connecting
             m_currentConnectingNode = option;
 
             // Set the input state appropriately
-            m_inputState = eInputState.ConnectingNodeToSpeech;
-        }
-
-        public void ConnectSpeechToOption(UISpeechNode speech)
-        {
-            // The option if what we are connecting
-            m_currentConnectingNode = speech;
-
-            // Set the input state appropriately
-            m_inputState = eInputState.ConnectingSpeechToOption;
+            m_inputState = eInputState.ConnectingNode;
         }
 
 
@@ -959,8 +933,14 @@ namespace DialogueEditor
                 // Remove child relationship
                 if (m_connectionDeleteParent is EditableSpeechNode)
                 {
-                    (m_connectionDeleteParent as EditableSpeechNode).Options.Remove(
-                        (m_connectionDeleteChild as EditableOptionNode));
+                    if (m_connectionDeleteChild is EditableOptionNode)
+                    {
+                        (m_connectionDeleteParent as EditableSpeechNode).Options.Remove((m_connectionDeleteChild as EditableOptionNode));
+                    }
+                    else if (m_connectionDeleteChild is EditableSpeechNode)
+                    {
+                        (m_connectionDeleteParent as EditableSpeechNode).Speech = null;
+                    }
                 }
                 else
                 {

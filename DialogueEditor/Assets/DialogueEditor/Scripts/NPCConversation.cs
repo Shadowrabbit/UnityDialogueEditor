@@ -454,6 +454,7 @@ namespace DialogueEditor
             }
             this.Speech = null;
 
+            // Setup option connection
             if (!newOption.parents.Contains(this))
                 newOption.parents.Add(this);
             Options.Add(newOption);
@@ -499,7 +500,6 @@ namespace DialogueEditor
                         (parents[i] as EditableSpeechNode).Speech = null;
                     }
                 }
-                
             }
 
             // This speech is no longer the parent of any children options
@@ -509,6 +509,12 @@ namespace DialogueEditor
                 {
                     Options[i].parents.Clear();
                 }
+            }
+
+            // This speech is no longer the parent of any speech nodes
+            if (this.Speech != null)
+            {
+                this.Speech.parents.Remove(this);
             }
         }
 

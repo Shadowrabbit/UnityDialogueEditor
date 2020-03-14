@@ -483,6 +483,64 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &225343363
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 225343365}
+  - component: {fileID: 225343364}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &225343364
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 225343363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83189876d4d389f43b7dd2e925aa112e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CurrentIDCounter: 7
+  json: '{"Options":[{"EditorInfo":{"isRoot":false,"xPos":82,"yPos":173},"ID":1,"TMPFontGUID":"","Text":"1","parentUIDs":[0,0],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":308,"yPos":174},"ID":3,"TMPFontGUID":"","Text":"2","parentUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":531,"yPos":168},"ID":4,"TMPFontGUID":"","Text":"3","parentUIDs":[0,0],"SpeechUID":-1}],"SpeechNodes":[{"EditorInfo":{"isRoot":true,"xPos":308,"yPos":36},"ID":0,"TMPFontGUID":"","Text":"top","parentUIDs":[],"AudioGUID":"","IconGUID":"","Name":"top","OptionUIDs":[1,4],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":308,"yPos":275},"ID":5,"TMPFontGUID":"","Text":"mid","parentUIDs":[],"AudioGUID":"","IconGUID":"","Name":null,"OptionUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":323,"yPos":413},"ID":6,"TMPFontGUID":"","Text":"bot","parentUIDs":[],"AudioGUID":"","IconGUID":"","Name":"bot","OptionUIDs":[],"SpeechUID":-1}]}'
+  DefaultName: 
+  DefaultSprite: {fileID: 0}
+  DefaultFont: {fileID: 0}
+  Events:
+  - {fileID: 605852351}
+  - {fileID: 605852350}
+  - {fileID: 605852348}
+  Event:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+--- !u!4 &225343365
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 225343363}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 605852349}
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &240746547
 GameObject:
   m_ObjectHideFlags: 0
@@ -513,20 +571,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentIDCounter: 19
-  json: '{"Options":[{"EditorInfo":{"isRoot":false,"xPos":434,"yPos":202},"ID":1,"TMPFontGUID":"","Text":"I
-    come in search of a quest.","parentUIDs":[0,0],"SpeechUID":8},{"EditorInfo":{"isRoot":false,"xPos":660,"yPos":202},"ID":2,"TMPFontGUID":"","Text":"Actually,
-    i''m here to speak to the new student.","parentUIDs":[0,0],"SpeechUID":9},{"EditorInfo":{"isRoot":false,"xPos":876,"yPos":199},"ID":7,"TMPFontGUID":"","Text":"Actually,
-    I don''t need anything. Goodbye.","parentUIDs":[0,0],"SpeechUID":10},{"EditorInfo":{"isRoot":false,"xPos":762,"yPos":408},"ID":11,"TMPFontGUID":"","Text":"Shh!
-    Yes, but don''t tell anybody","parentUIDs":[9,9],"SpeechUID":16},{"EditorInfo":{"isRoot":false,"xPos":555,"yPos":408},"ID":12,"TMPFontGUID":"","Text":"Yes","parentUIDs":[9,8,8,9],"SpeechUID":16},{"EditorInfo":{"isRoot":false,"xPos":336,"yPos":411},"ID":13,"TMPFontGUID":"","Text":"Actually
-    - I''ve changed my mind, No.","parentUIDs":[8,8],"SpeechUID":17},{"EditorInfo":{"isRoot":false,"xPos":971,"yPos":407},"ID":14,"TMPFontGUID":"","Text":"No","parentUIDs":[9,9],"SpeechUID":15}],"SpeechNodes":[{"EditorInfo":{"isRoot":true,"xPos":664,"yPos":95},"ID":0,"TMPFontGUID":"","Text":"Hello,
+  json: '{"Options":[{"EditorInfo":{"isRoot":false,"xPos":100,"yPos":56},"ID":1,"TMPFontGUID":"","Text":"I
+    come in search of a quest.","parentUIDs":[0,0],"SpeechUID":8},{"EditorInfo":{"isRoot":false,"xPos":326,"yPos":56},"ID":2,"TMPFontGUID":"","Text":"Actually,
+    i''m here to speak to the new student.","parentUIDs":[0,0],"SpeechUID":9},{"EditorInfo":{"isRoot":false,"xPos":542,"yPos":53},"ID":7,"TMPFontGUID":"","Text":"Actually,
+    I don''t need anything. Goodbye.","parentUIDs":[0,0],"SpeechUID":10},{"EditorInfo":{"isRoot":false,"xPos":428,"yPos":262},"ID":11,"TMPFontGUID":"","Text":"Shh!
+    Yes, but don''t tell anybody","parentUIDs":[9,9],"SpeechUID":16},{"EditorInfo":{"isRoot":false,"xPos":221,"yPos":262},"ID":12,"TMPFontGUID":"","Text":"Yes","parentUIDs":[9,8,8,9],"SpeechUID":16},{"EditorInfo":{"isRoot":false,"xPos":2,"yPos":265},"ID":13,"TMPFontGUID":"","Text":"Actually
+    - I''ve changed my mind, No.","parentUIDs":[8,8],"SpeechUID":17},{"EditorInfo":{"isRoot":false,"xPos":637,"yPos":261},"ID":14,"TMPFontGUID":"","Text":"No","parentUIDs":[9,9],"SpeechUID":15}],"SpeechNodes":[{"EditorInfo":{"isRoot":true,"xPos":330,"yPos":-51},"ID":0,"TMPFontGUID":"","Text":"Hello,
     adventurer. How can I help you today?","parentUIDs":[],"AudioGUID":"","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"The
-    dark wizard.","OptionUIDs":[1,2,7],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":429,"yPos":288},"ID":8,"TMPFontGUID":"","Text":"A
+    dark wizard.","OptionUIDs":[1,2,7],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":95,"yPos":142},"ID":8,"TMPFontGUID":"","Text":"A
     quest you are, are you sure you''re up to the task?","parentUIDs":[1,1],"AudioGUID":"","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"The
-    dark wizard.","OptionUIDs":[13,12],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":662,"yPos":289},"ID":9,"TMPFontGUID":"","Text":"Hello
-    - did you want to know about the magic potion I found earlier?","parentUIDs":[2,2],"AudioGUID":"","IconGUID":"f71c0dc03d067a342aa16a51674f6507","Name":"Apprentice.","OptionUIDs":[11,12,14],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":947,"yPos":289},"ID":10,"TMPFontGUID":"","Text":"Farewell.","parentUIDs":[7,7],"AudioGUID":"","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"The
-    dark wizard.","OptionUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":992,"yPos":490},"ID":15,"TMPFontGUID":"","Text":"Alright
-    - Goodbye.","parentUIDs":[14,14],"AudioGUID":"","IconGUID":"f71c0dc03d067a342aa16a51674f6507","Name":"Apprentice.","OptionUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":668,"yPos":488},"ID":16,"TMPFontGUID":"","Text":"I
-    can tell you all about the quest to obtain the Great Mana Potion...","parentUIDs":[12,11,11,12],"AudioGUID":"","IconGUID":"f71c0dc03d067a342aa16a51674f6507","Name":"Apprentice.","OptionUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":337,"yPos":489},"ID":17,"TMPFontGUID":"","Text":"Very
+    dark wizard.","OptionUIDs":[13,12],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":328,"yPos":143},"ID":9,"TMPFontGUID":"","Text":"Hello
+    - did you want to know about the magic potion I found earlier?","parentUIDs":[2,2],"AudioGUID":"","IconGUID":"f71c0dc03d067a342aa16a51674f6507","Name":"Apprentice.","OptionUIDs":[11,12,14],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":613,"yPos":143},"ID":10,"TMPFontGUID":"","Text":"Farewell.","parentUIDs":[7,7],"AudioGUID":"","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"The
+    dark wizard.","OptionUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":658,"yPos":344},"ID":15,"TMPFontGUID":"","Text":"Alright
+    - Goodbye.","parentUIDs":[14,14],"AudioGUID":"","IconGUID":"f71c0dc03d067a342aa16a51674f6507","Name":"Apprentice.","OptionUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":334,"yPos":342},"ID":16,"TMPFontGUID":"","Text":"I
+    can tell you all about the quest to obtain the Great Mana Potion...","parentUIDs":[12,11,11,12],"AudioGUID":"","IconGUID":"f71c0dc03d067a342aa16a51674f6507","Name":"Apprentice.","OptionUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":3,"yPos":343},"ID":17,"TMPFontGUID":"","Text":"Very
     well then.","parentUIDs":[13,13],"AudioGUID":"","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"The
     dark wizard.","OptionUIDs":[],"SpeechUID":-1}]}'
   DefaultName: Default name.
@@ -708,6 +766,93 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &605852347
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 605852349}
+  - component: {fileID: 605852351}
+  - component: {fileID: 605852350}
+  - component: {fileID: 605852348}
+  m_Layer: 0
+  m_Name: ConversationEventInfo
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &605852348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 605852347}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NodeID: 6
+  Event:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+--- !u!4 &605852349
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 605852347}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 225343365}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &605852350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 605852347}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NodeID: 5
+  Event:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+--- !u!114 &605852351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 605852347}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NodeID: 0
+  Event:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!114 &621458276 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3900108755196472086, guid: d9fa78e8c3c4f2b4b8f7f77ca8426cca,
@@ -726,76 +871,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 95696420}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &653772418
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 653772420}
-  - component: {fileID: 653772419}
-  m_Layer: 0
-  m_Name: temp
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &653772419
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 653772418}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83189876d4d389f43b7dd2e925aa112e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CurrentIDCounter: 2
-  json: '{"Options":[{"EditorInfo":{"isRoot":false,"xPos":685,"yPos":219},"ID":1,"TMPFontGUID":"","Text":null,"parentUIDs":[0],"SpeechUID":-1}],"SpeechNodes":[{"EditorInfo":{"isRoot":true,"xPos":665,"yPos":90},"ID":0,"TMPFontGUID":"d1e79b06c01ff1c4bb15552c18c4e0d3","Text":"Hello
-    adventurer, what are you looking for?","parentUIDs":[],"AudioGUID":"cee9d7c1657fef046b3375d8f6b2a851","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"The
-    dark wizard.","OptionUIDs":[1],"SpeechUID":-1}]}'
-  DefaultName: 
-  DefaultSprite: {fileID: 0}
-  DefaultFont: {fileID: 0}
-  Events:
-  - {fileID: 1877329077}
-  Event:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1387261916}
-        m_MethodName: BeginQuest
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 11400000, guid: 83f42f9f48f18f1499238b77b976bb2b,
-            type: 2}
-          m_ObjectArgumentAssemblyTypeName: Quest, Assembly-CSharp
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
---- !u!4 &653772420
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 653772418}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 371.24274, y: 204.81573, z: -2.5}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 1877329078}
-  m_Father: {fileID: 0}
-  m_RootOrder: 6
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &835770436
 GameObject:
   m_ObjectHideFlags: 0
@@ -1101,7 +1176,7 @@ MonoBehaviour:
         m_MethodName: StartConversation
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 240746548}
+          m_ObjectArgument: {fileID: 225343364}
           m_ObjectArgumentAssemblyTypeName: DialogueEditor.NPCConversation, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
@@ -1147,64 +1222,3 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1799720315}
   m_CullTransparentMesh: 0
---- !u!1 &1877329076
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1877329078}
-  - component: {fileID: 1877329077}
-  m_Layer: 0
-  m_Name: ConversationEventInfo
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1877329077
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1877329076}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  NodeID: 0
-  Event:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1387261916}
-        m_MethodName: BeginQuest
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 11400000, guid: 83f42f9f48f18f1499238b77b976bb2b,
-            type: 2}
-          m_ObjectArgumentAssemblyTypeName: Quest, Assembly-CSharp
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
---- !u!4 &1877329078
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1877329076}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -371.24274, y: -204.81573, z: 2.5}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 653772420}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

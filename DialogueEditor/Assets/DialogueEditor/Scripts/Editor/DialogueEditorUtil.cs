@@ -12,7 +12,7 @@ namespace DialogueEditor
         {
             par = null;
             child = null;
-            UISpeechNode action;
+            UISpeechNode speech;
             UIOptionNode option;
             Vector2 start, end;           
             float minDistance = float.MaxValue;
@@ -22,21 +22,32 @@ namespace DialogueEditor
             {
                 if (uiNodes[i] is UISpeechNode)
                 {
-                    action = uiNodes[i] as UISpeechNode;
+                    speech = uiNodes[i] as UISpeechNode;
 
-                    if (action.SpeechNode.Options != null)
+                    if (speech.SpeechNode.Options != null && speech.SpeechNode.Options.Count > 0)
                     {
-                        for (int j = 0; j < action.SpeechNode.Options.Count; j++)
+                        for (int j = 0; j < speech.SpeechNode.Options.Count; j++)
                         {
-                            GetConnectionDrawInfo(action.rect, action.SpeechNode.Options[j], out start, out end);
+                            GetConnectionDrawInfo(speech.rect, speech.SpeechNode.Options[j], out start, out end);
 
                             float distance = MinimumDistanceBetweenPointAndLine(start, end, mousePos);
                             if (distance < minDistance)
                             {
                                 minDistance = distance;
-                                par = action.SpeechNode;
-                                child = action.SpeechNode.Options[j];
+                                par = speech.SpeechNode;
+                                child = speech.SpeechNode.Options[j];
                             }
+                        }
+                    }
+                    else if (speech.SpeechNode.Speech != null)
+                    {
+                        GetConnectionDrawInfo(speech.rect, speech.SpeechNode.Speech, out start, out end);
+                        float distance = MinimumDistanceBetweenPointAndLine(start, end, mousePos);
+                        if (distance < minDistance)
+                        {
+                            minDistance = distance;
+                            par = speech.SpeechNode;
+                            child = speech.SpeechNode.Speech;
                         }
                     }
                 }
