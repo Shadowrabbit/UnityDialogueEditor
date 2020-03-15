@@ -19,8 +19,9 @@ namespace DialogueEditor
         // Consts
         public const float TOOLBAR_HEIGHT = 17;
         public const float START_PANEL_WIDTH = 250;
+        private const float PANEL_RESIZER_PADDING = 5;
         private const string WINDOW_NAME = "DIALOGUE_EDITOR_WINDOW";
-        private const string HELP_URL = "https://github.com/JosephBarber96/UnityDialogueEditor";
+        private const string HELP_URL = "http://jbarber.me/dialogueeditor";
 
         // Static properties
         public static bool NodeClickedOnThisUpdate { get; set; }
@@ -198,6 +199,7 @@ namespace DialogueEditor
                 }
             }
 
+            Recenter();
             Repaint();
         }
 
@@ -609,6 +611,8 @@ namespace DialogueEditor
         {
             Event e = Event.current;
 
+
+
             switch (m_inputState)
             {
                 case eInputState.Regular:
@@ -740,7 +744,6 @@ namespace DialogueEditor
             switch (e.type)
             {
                 case EventType.MouseDown:
-                    const float resizerPadding = 5;
 
                     // Left click
                     if (e.button == 0)
@@ -749,10 +752,7 @@ namespace DialogueEditor
                         {
                             clickInBox = true;
                         }
-                        else if (e.mousePosition.x > panelResizerRect.x - resizerPadding && 
-                            e.mousePosition.x < panelResizerRect.x + panelResizerRect.width + resizerPadding && 
-                            e.mousePosition.y > panelResizerRect.y &&
-                            panelResizerRect.y < panelResizerRect.y + panelResizerRect.height)
+                        else if (InPanelDrag(e.mousePosition))
                         {
                             clickInBox = true;
                             m_inputState = eInputState.draggingPanel;
@@ -996,6 +996,15 @@ namespace DialogueEditor
             return false;
         }
 
+        private bool InPanelDrag(Vector2 pos)
+        {
+            return (
+                pos.x > panelResizerRect.x - panelResizerRect.width - PANEL_RESIZER_PADDING &&
+                pos.x < panelResizerRect.x + panelResizerRect.width + PANEL_RESIZER_PADDING &&
+                pos.y > panelResizerRect.y &&
+                panelResizerRect.y < panelResizerRect.y + panelResizerRect.height);        
+        }
+
         private static void Log(string str)
         {
 #if DIALOGUE_DEBUG
@@ -1015,7 +1024,7 @@ namespace DialogueEditor
             if (ConversationRoot == null) { return; }
 
             // Calc delta to move head to (middle, 0) and then apply this to all nodes
-            Vector2 target = new Vector2((position.width / 2) - (UISpeechNode.Width / 2) - (panelWidth / 2), TOOLBAR_HEIGHT);
+            Vector2 target = new Vector2((position.width / 2) - (UISpeechNode.Width / 2) - (panelWidth / 2), TOOLBAR_HEIGHT + 5);
             Vector2 delta = target - new Vector2(ConversationRoot.EditorInfo.xPos, ConversationRoot.EditorInfo.yPos);
             for (int i = 0; i < uiNodes.Count; i++)
             {

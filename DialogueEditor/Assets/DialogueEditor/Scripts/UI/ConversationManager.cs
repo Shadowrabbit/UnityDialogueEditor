@@ -7,7 +7,7 @@ namespace DialogueEditor
 {
     public class ConversationManager : MonoBehaviour
     {
-        private const float TRANS_TIME = 0.2f; // Transition time for fades
+        private const float TRANSITION_TIME = 0.2f; // Transition time for fades
 
         public static ConversationManager Instance { get; private set; }
 
@@ -66,6 +66,9 @@ namespace DialogueEditor
         private Conversation m_conversation;
         private List<UIConversationButton> m_uiOptions;
 
+        private SpeechNode m_pendingDialogue;
+        private OptionNode m_selectedOption;
+
 
         //--------------------------------------
         // Awake, Start, Destroy
@@ -109,7 +112,7 @@ namespace DialogueEditor
                 case eState.TransitioningDialogueBoxOn:
                     {
                         m_stateTime += Time.deltaTime;
-                        float t = m_stateTime / TRANS_TIME;
+                        float t = m_stateTime / TRANSITION_TIME;
 
                         if (t > 1)
                         {
@@ -130,7 +133,7 @@ namespace DialogueEditor
                 case eState.TransitioningOptionsOn:
                     {
                         m_stateTime += Time.deltaTime;
-                        float t = m_stateTime / TRANS_TIME;
+                        float t = m_stateTime / TRANSITION_TIME;
 
                         if (t > 1)
                         {
@@ -149,7 +152,7 @@ namespace DialogueEditor
                 case eState.TransitioningOptionsOff:
                     {
                         m_stateTime += Time.deltaTime;
-                        float t = m_stateTime / TRANS_TIME;
+                        float t = m_stateTime / TRANSITION_TIME;
 
                         if (t > 1)
                         {
@@ -184,7 +187,7 @@ namespace DialogueEditor
                 case eState.TransitioningDialogueOff:
                     {
                         m_stateTime += Time.deltaTime;
-                        float t = m_stateTime / TRANS_TIME;
+                        float t = m_stateTime / TRANSITION_TIME;
 
                         if (t > 1)
                         {
@@ -276,10 +279,8 @@ namespace DialogueEditor
 
 
         //--------------------------------------
-        // Start Conversation
+        // Start / End Conversation
         //--------------------------------------
-
-        private SpeechNode m_pendingDialogue;
 
         public void StartConversation(NPCConversation conversation)
         {
@@ -290,6 +291,14 @@ namespace DialogueEditor
             TurnOnUI();
             m_pendingDialogue = m_conversation.Root;
             SetState(eState.TransitioningDialogueBoxOn);
+        }
+
+        public void EndConversation()
+        {
+            SetState(eState.TransitioningDialogueOff);
+
+            if (OnConversationEnded != null)
+                OnConversationEnded.Invoke();
         }
 
 
@@ -399,27 +408,10 @@ namespace DialogueEditor
         // Option Selected
         //--------------------------------------
 
-        private OptionNode m_selectedOption;
-
         public void OptionSelected(OptionNode option)
         {
             m_selectedOption = option;
             SetState(eState.TransitioningOptionsOff);
-        }
-
-
-
-
-        //--------------------------------------
-        // End Conversation
-        //--------------------------------------
-
-        private void EndConversation()
-        {
-            SetState(eState.TransitioningDialogueOff);
-
-            if (OnConversationEnded != null)
-                OnConversationEnded.Invoke();
         }
 
 

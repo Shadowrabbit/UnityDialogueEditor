@@ -289,9 +289,9 @@ namespace DialogueEditor
         public override void OnDraw()
         {
             if (DialogueEditorWindow.ConversationRoot == SpeechNode)
-                DrawTitle("[Root] Speech node.");
+                DrawTitle(isSelected ? "[Root]Speech node (selected)." : "[Root] Speech node.");
             else
-                DrawTitle("Speech node.");
+                DrawTitle(isSelected ? "Speech node (selected)." : "Speech node.");
 
             // Name
             const int NAME_PADDING = 1;
@@ -401,7 +401,7 @@ namespace DialogueEditor
         // Properties
         public EditableOptionNode OptionNode { get { return Info as EditableOptionNode; } }
         public override Color DefaultColor { get { return DialogueEditorUtil.Colour(0, 158, 118); } }
-        public override Color SelectedColor { get { return DialogueEditorUtil.Colour(0, 179, 134); } }
+        public override Color SelectedColor { get { return DialogueEditorUtil.Colour(0, 201, 150); } }
 
         // Static styles
         protected static GUIStyle defaultNodeStyle;
@@ -439,7 +439,7 @@ namespace DialogueEditor
 
         public override void OnDraw()
         {
-            DrawTitle("Option node.");
+            DrawTitle( isSelected ? "Option node (selected)." : "Option node.");
             DrawInternalText(OptionNode.Text);
         }
 

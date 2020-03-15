@@ -151,12 +151,6 @@ namespace DialogueEditor
                 {
                     options[ec.Options[i].ID].Dialogue = dialogues[ec.Options[i].SpeechUID];
                 }
-#if UNITY_EDITOR
-                else
-                {
-                    Debug.LogWarning("[DialogueEditor]: Option node [" + ec.Options[i].ID + "] has no Speech Node.");
-                }
-#endif
             }
 
             return conversation;
