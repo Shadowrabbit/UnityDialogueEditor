@@ -58,9 +58,9 @@ namespace DialogueEditor
 
 
         // Private
-        private string m_targetScrollText;
         private float m_elapsedScrollTime;
         private int m_scrollIndex;
+        public int m_targetScrollTextCount;
         private eState m_state;
         private float m_stateTime;
         private Conversation m_conversation;
@@ -215,11 +215,11 @@ namespace DialogueEditor
             {
                 m_elapsedScrollTime = 0f;
 
-                DialogueText.text += m_targetScrollText[m_scrollIndex];
+                DialogueText.maxVisibleCharacters = m_scrollIndex;
                 m_scrollIndex++;
 
                 // Finished?
-                if (m_scrollIndex >= m_targetScrollText.Length)
+                if (m_scrollIndex >= m_targetScrollTextCount)
                 {
                     SetState(eState.TransitioningOptionsOn);
                 }
@@ -256,7 +256,7 @@ namespace DialogueEditor
                     {
                         SetColorAlpha(DialogueText, 1);
 
-                        if (string.IsNullOrEmpty(m_targetScrollText))
+                        if (m_targetScrollTextCount == 0)
                         {
                             SetState(eState.TransitioningOptionsOn);
                             return;
@@ -345,14 +345,16 @@ namespace DialogueEditor
             // Set text
             if (ScrollText)
             {
-                DialogueText.text = "";
-                m_targetScrollText = action.Text;
+                DialogueText.text = action.Text;
+                m_targetScrollTextCount = action.Text.Length + 1;
+                DialogueText.maxVisibleCharacters = 0;
                 m_elapsedScrollTime = 0f;
                 m_scrollIndex = 0;
             }
             else
             {
                 DialogueText.text = action.Text;
+                DialogueText.maxVisibleCharacters = action.Text.Length;
             }
 
             // Call the event

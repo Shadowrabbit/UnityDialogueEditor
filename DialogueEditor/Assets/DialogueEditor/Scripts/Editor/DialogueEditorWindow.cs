@@ -21,7 +21,7 @@ namespace DialogueEditor
         public const float START_PANEL_WIDTH = 250;
         private const float PANEL_RESIZER_PADDING = 5;
         private const string WINDOW_NAME = "DIALOGUE_EDITOR_WINDOW";
-        private const string HELP_URL = "http://jbarber.me/dialogueeditor";
+        private const string HELP_URL = "https://josephbarber96.github.io/dialogueeditor.html";
 
         // Static properties
         public static bool NodeClickedOnThisUpdate { get; set; }

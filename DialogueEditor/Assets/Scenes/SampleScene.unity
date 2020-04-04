@@ -119,6 +119,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1038036009}
     m_Modifications:
+    - target: {fileID: 3900108754347413305, guid: d9fa78e8c3c4f2b4b8f7f77ca8426cca,
+        type: 3}
+      propertyPath: m_havePropertiesChanged
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3900108754347413305, guid: d9fa78e8c3c4f2b4b8f7f77ca8426cca,
+        type: 3}
+      propertyPath: m_isInputParsingRequired
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3900108755062758285, guid: d9fa78e8c3c4f2b4b8f7f77ca8426cca,
         type: 3}
       propertyPath: m_Name
@@ -229,16 +239,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 3900108754347413305, guid: d9fa78e8c3c4f2b4b8f7f77ca8426cca,
-        type: 3}
-      propertyPath: m_havePropertiesChanged
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3900108754347413305, guid: d9fa78e8c3c4f2b4b8f7f77ca8426cca,
-        type: 3}
-      propertyPath: m_isInputParsingRequired
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6116449485086562217, guid: d9fa78e8c3c4f2b4b8f7f77ca8426cca,
         type: 3}
       propertyPath: m_havePropertiesChanged
@@ -290,8 +290,6 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!4 &139136595
 Transform:
   m_ObjectHideFlags: 0
@@ -322,8 +320,6 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &139136597
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -340,8 +336,6 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &139136598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -358,8 +352,6 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &139136599
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -376,8 +368,6 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &139136600
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -394,8 +384,6 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &139136601
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -412,8 +400,6 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!1 &170076733
 GameObject:
   m_ObjectHideFlags: 0
@@ -513,7 +499,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentIDCounter: 17
-  json: '{"Options":[{"EditorInfo":{"isRoot":false,"xPos":-146,"yPos":335},"ID":1,"TMPFontGUID":"","Text":"1","parentUIDs":[0],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":80,"yPos":336},"ID":3,"TMPFontGUID":"","Text":"2","parentUIDs":[],"SpeechUID":6},{"EditorInfo":{"isRoot":false,"xPos":-165,"yPos":230},"ID":7,"TMPFontGUID":"","Text":null,"parentUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":386,"yPos":406},"ID":11,"TMPFontGUID":"","Text":null,"parentUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":324,"yPos":354},"ID":13,"TMPFontGUID":"","Text":null,"parentUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":477,"yPos":282},"ID":15,"TMPFontGUID":"","Text":null,"parentUIDs":[8,8],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":300,"yPos":128},"ID":16,"TMPFontGUID":"","Text":null,"parentUIDs":[0,0],"SpeechUID":-1}],"SpeechNodes":[{"EditorInfo":{"isRoot":true,"xPos":296,"yPos":22},"ID":0,"TMPFontGUID":"","Text":"top","parentUIDs":[],"AudioGUID":"","IconGUID":"","Name":"top","OptionUIDs":[16],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":-88,"yPos":478},"ID":5,"TMPFontGUID":"","Text":"mid","parentUIDs":[],"AudioGUID":"","IconGUID":"","Name":null,"OptionUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":197,"yPos":464},"ID":6,"TMPFontGUID":"","Text":"bot","parentUIDs":[3,3],"AudioGUID":"","IconGUID":"","Name":"bot","OptionUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":568,"yPos":160},"ID":8,"TMPFontGUID":"","Text":null,"parentUIDs":[0],"AudioGUID":"","IconGUID":"","Name":"","OptionUIDs":[15],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":48,"yPos":102},"ID":12,"TMPFontGUID":"","Text":null,"parentUIDs":[],"AudioGUID":"","IconGUID":"","Name":"","OptionUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":90,"yPos":227},"ID":14,"TMPFontGUID":"","Text":null,"parentUIDs":[],"AudioGUID":"","IconGUID":"","Name":"","OptionUIDs":[],"SpeechUID":-1}]}'
+  json: '{"Options":[{"EditorInfo":{"isRoot":false,"xPos":-36.5,"yPos":335},"ID":1,"TMPFontGUID":"","Text":"1","parentUIDs":[0],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":189.5,"yPos":336},"ID":3,"TMPFontGUID":"","Text":"2","parentUIDs":[],"SpeechUID":6},{"EditorInfo":{"isRoot":false,"xPos":-55.5,"yPos":230},"ID":7,"TMPFontGUID":"","Text":null,"parentUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":495.5,"yPos":406},"ID":11,"TMPFontGUID":"","Text":null,"parentUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":433.5,"yPos":354},"ID":13,"TMPFontGUID":"","Text":null,"parentUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":586.5,"yPos":282},"ID":15,"TMPFontGUID":"","Text":null,"parentUIDs":[8,8],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":409.5,"yPos":128},"ID":16,"TMPFontGUID":"","Text":null,"parentUIDs":[0,0],"SpeechUID":-1}],"SpeechNodes":[{"EditorInfo":{"isRoot":true,"xPos":405.5,"yPos":22},"ID":0,"TMPFontGUID":"","Text":"top","parentUIDs":[],"AudioGUID":"","IconGUID":"","Name":"top","OptionUIDs":[16],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":21.5,"yPos":478},"ID":5,"TMPFontGUID":"","Text":"mid","parentUIDs":[],"AudioGUID":"","IconGUID":"","Name":null,"OptionUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":306.5,"yPos":464},"ID":6,"TMPFontGUID":"","Text":"bot","parentUIDs":[3,3],"AudioGUID":"","IconGUID":"","Name":"bot","OptionUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":677.5,"yPos":160},"ID":8,"TMPFontGUID":"","Text":null,"parentUIDs":[0],"AudioGUID":"","IconGUID":"","Name":"","OptionUIDs":[15],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":157.5,"yPos":102},"ID":12,"TMPFontGUID":"","Text":null,"parentUIDs":[],"AudioGUID":"","IconGUID":"","Name":"","OptionUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":199.5,"yPos":227},"ID":14,"TMPFontGUID":"","Text":null,"parentUIDs":[],"AudioGUID":"","IconGUID":"","Name":"","OptionUIDs":[],"SpeechUID":-1}]}'
   DefaultName: 
   DefaultSprite: {fileID: 0}
   DefaultFont: {fileID: 0}
@@ -527,8 +513,6 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!4 &225343365
 Transform:
   m_ObjectHideFlags: 0
@@ -574,20 +558,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentIDCounter: 19
-  json: '{"Options":[{"EditorInfo":{"isRoot":false,"xPos":66,"yPos":129},"ID":1,"TMPFontGUID":"","Text":"I
-    come in search of a quest.","parentUIDs":[0,0],"SpeechUID":8},{"EditorInfo":{"isRoot":false,"xPos":292,"yPos":129},"ID":2,"TMPFontGUID":"","Text":"Actually,
-    i''m here to speak to the new student.","parentUIDs":[0,0],"SpeechUID":9},{"EditorInfo":{"isRoot":false,"xPos":508,"yPos":126},"ID":7,"TMPFontGUID":"","Text":"Actually,
-    I don''t need anything. Goodbye.","parentUIDs":[0,0],"SpeechUID":10},{"EditorInfo":{"isRoot":false,"xPos":394,"yPos":335},"ID":11,"TMPFontGUID":"","Text":"Shh!
-    Yes, but don''t tell anybody","parentUIDs":[9,9],"SpeechUID":16},{"EditorInfo":{"isRoot":false,"xPos":187,"yPos":335},"ID":12,"TMPFontGUID":"","Text":"Yes","parentUIDs":[9,8,8,9],"SpeechUID":16},{"EditorInfo":{"isRoot":false,"xPos":-32,"yPos":338},"ID":13,"TMPFontGUID":"","Text":"Actually
-    - I''ve changed my mind, No.","parentUIDs":[8,8],"SpeechUID":17},{"EditorInfo":{"isRoot":false,"xPos":603,"yPos":334},"ID":14,"TMPFontGUID":"","Text":"No","parentUIDs":[9,9],"SpeechUID":15}],"SpeechNodes":[{"EditorInfo":{"isRoot":true,"xPos":296,"yPos":22},"ID":0,"TMPFontGUID":"","Text":"Hello,
+  json: '{"Options":[{"EditorInfo":{"isRoot":false,"xPos":192.5,"yPos":142},"ID":1,"TMPFontGUID":"","Text":"I
+    come in search of a quest.","parentUIDs":[0,0],"SpeechUID":8},{"EditorInfo":{"isRoot":false,"xPos":418.5,"yPos":142},"ID":2,"TMPFontGUID":"","Text":"Actually,
+    i''m here to speak to the new student.","parentUIDs":[0,0],"SpeechUID":9},{"EditorInfo":{"isRoot":false,"xPos":634.5,"yPos":139},"ID":7,"TMPFontGUID":"","Text":"Actually,
+    I don''t need anything. Goodbye.","parentUIDs":[0,0],"SpeechUID":10},{"EditorInfo":{"isRoot":false,"xPos":520.5,"yPos":348},"ID":11,"TMPFontGUID":"","Text":"Shh!
+    Yes, but don''t tell anybody","parentUIDs":[9,9],"SpeechUID":16},{"EditorInfo":{"isRoot":false,"xPos":313.5,"yPos":348},"ID":12,"TMPFontGUID":"","Text":"Yes","parentUIDs":[9,8,8,9],"SpeechUID":16},{"EditorInfo":{"isRoot":false,"xPos":94.5,"yPos":351},"ID":13,"TMPFontGUID":"","Text":"Actually
+    - I''ve changed my mind, No.","parentUIDs":[8,8],"SpeechUID":17},{"EditorInfo":{"isRoot":false,"xPos":729.5,"yPos":347},"ID":14,"TMPFontGUID":"","Text":"No","parentUIDs":[9,9],"SpeechUID":15}],"SpeechNodes":[{"EditorInfo":{"isRoot":true,"xPos":422.5,"yPos":35},"ID":0,"TMPFontGUID":"","Text":"Hello,
     adventurer. How can I help you today?","parentUIDs":[],"AudioGUID":"","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"The
-    dark wizard.","OptionUIDs":[1,2,7],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":61,"yPos":215},"ID":8,"TMPFontGUID":"","Text":"A
+    dark wizard.","OptionUIDs":[1,2,7],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":187.5,"yPos":228},"ID":8,"TMPFontGUID":"","Text":"A
     quest you are, are you sure you''re up to the task?","parentUIDs":[1,1],"AudioGUID":"","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"The
-    dark wizard.","OptionUIDs":[13,12],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":294,"yPos":216},"ID":9,"TMPFontGUID":"","Text":"Hello
-    - did you want to know about the magic potion I found earlier?","parentUIDs":[2,2],"AudioGUID":"","IconGUID":"f71c0dc03d067a342aa16a51674f6507","Name":"Apprentice.","OptionUIDs":[11,12,14],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":579,"yPos":216},"ID":10,"TMPFontGUID":"","Text":"Farewell.","parentUIDs":[7,7],"AudioGUID":"","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"The
-    dark wizard.","OptionUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":624,"yPos":417},"ID":15,"TMPFontGUID":"","Text":"Alright
-    - Goodbye.","parentUIDs":[14,14],"AudioGUID":"","IconGUID":"f71c0dc03d067a342aa16a51674f6507","Name":"Apprentice.","OptionUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":300,"yPos":415},"ID":16,"TMPFontGUID":"","Text":"I
-    can tell you all about the quest to obtain the Great Mana Potion...","parentUIDs":[12,11,11,12],"AudioGUID":"","IconGUID":"f71c0dc03d067a342aa16a51674f6507","Name":"Apprentice.","OptionUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":-31,"yPos":416},"ID":17,"TMPFontGUID":"","Text":"Very
+    dark wizard.","OptionUIDs":[13,12],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":420.5,"yPos":229},"ID":9,"TMPFontGUID":"","Text":"Hello
+    - did you want to know about the magic potion I found earlier?","parentUIDs":[2,2],"AudioGUID":"","IconGUID":"f71c0dc03d067a342aa16a51674f6507","Name":"Apprentice.","OptionUIDs":[11,12,14],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":705.5,"yPos":229},"ID":10,"TMPFontGUID":"","Text":"Farewell.","parentUIDs":[7,7],"AudioGUID":"","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"The
+    dark wizard.","OptionUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":750.5,"yPos":430},"ID":15,"TMPFontGUID":"","Text":"Alright
+    - Goodbye.","parentUIDs":[14,14],"AudioGUID":"","IconGUID":"f71c0dc03d067a342aa16a51674f6507","Name":"Apprentice.","OptionUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":426.5,"yPos":428},"ID":16,"TMPFontGUID":"","Text":"I
+    can tell you all about the quest to obtain the Great Mana Potion...","parentUIDs":[12,11,11,12],"AudioGUID":"","IconGUID":"f71c0dc03d067a342aa16a51674f6507","Name":"Apprentice.","OptionUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":95.5,"yPos":429},"ID":17,"TMPFontGUID":"","Text":"Very
     well then.","parentUIDs":[13,13],"AudioGUID":"","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"The
     dark wizard.","OptionUIDs":[],"SpeechUID":-1}]}'
   DefaultName: Default name.
@@ -604,8 +588,6 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!4 &240746549
 Transform:
   m_ObjectHideFlags: 0
@@ -807,8 +789,6 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!4 &605852349
 Transform:
   m_ObjectHideFlags: 0
@@ -839,8 +819,6 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &605852351
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -857,8 +835,6 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &605852352
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -875,8 +851,6 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &605852353
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -893,8 +867,6 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &605852354
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -911,8 +883,6 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &621458276 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3900108755196472086, guid: d9fa78e8c3c4f2b4b8f7f77ca8426cca,
@@ -986,8 +956,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 14
@@ -1040,9 +1008,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentIDCounter: 9
-  json: '{"Options":[{"EditorInfo":{"isRoot":false,"xPos":110,"yPos":213},"ID":1,"TMPFontGUID":"","Text":null,"parentUIDs":[0,0],"SpeechUID":5},{"EditorInfo":{"isRoot":false,"xPos":330,"yPos":210},"ID":2,"TMPFontGUID":"","Text":null,"parentUIDs":[0,0],"SpeechUID":4},{"EditorInfo":{"isRoot":false,"xPos":549,"yPos":205},"ID":3,"TMPFontGUID":"","Text":null,"parentUIDs":[0,0],"SpeechUID":4},{"EditorInfo":{"isRoot":false,"xPos":-12,"yPos":442},"ID":6,"TMPFontGUID":"","Text":null,"parentUIDs":[5,5],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":230,"yPos":440},"ID":7,"TMPFontGUID":"","Text":null,"parentUIDs":[5,4,4,5],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":486,"yPos":437},"ID":8,"TMPFontGUID":"","Text":null,"parentUIDs":[4,4],"SpeechUID":-1}],"SpeechNodes":[{"EditorInfo":{"isRoot":true,"xPos":331,"yPos":78},"ID":0,"TMPFontGUID":"","Text":"hello,
+  json: '{"Options":[{"EditorInfo":{"isRoot":false,"xPos":184.5,"yPos":157},"ID":1,"TMPFontGUID":"","Text":null,"parentUIDs":[0,0],"SpeechUID":5},{"EditorInfo":{"isRoot":false,"xPos":404.5,"yPos":154},"ID":2,"TMPFontGUID":"","Text":null,"parentUIDs":[0,0],"SpeechUID":4},{"EditorInfo":{"isRoot":false,"xPos":623.5,"yPos":149},"ID":3,"TMPFontGUID":"","Text":null,"parentUIDs":[0,0],"SpeechUID":4},{"EditorInfo":{"isRoot":false,"xPos":62.5,"yPos":386},"ID":6,"TMPFontGUID":"","Text":null,"parentUIDs":[5,5],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":304.5,"yPos":384},"ID":7,"TMPFontGUID":"","Text":null,"parentUIDs":[5,4,4,5],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":560.5,"yPos":381},"ID":8,"TMPFontGUID":"","Text":null,"parentUIDs":[4,4],"SpeechUID":-1}],"SpeechNodes":[{"EditorInfo":{"isRoot":true,"xPos":405.5,"yPos":22},"ID":0,"TMPFontGUID":"","Text":"hello,
     this is the dialogue!","parentUIDs":[],"AudioGUID":"","IconGUID":"f71c0dc03d067a342aa16a51674f6507","Name":"Woo
-    :)","OptionUIDs":[1,2,3],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":452,"yPos":314},"ID":4,"TMPFontGUID":"","Text":null,"parentUIDs":[2,3,2,3],"AudioGUID":"","IconGUID":"","Name":null,"OptionUIDs":[8,7],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":107,"yPos":312},"ID":5,"TMPFontGUID":"","Text":null,"parentUIDs":[1,1],"AudioGUID":"","IconGUID":"","Name":null,"OptionUIDs":[6,7],"SpeechUID":-1}]}'
+    :)","OptionUIDs":[1,2,3],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":526.5,"yPos":258},"ID":4,"TMPFontGUID":"","Text":null,"parentUIDs":[2,3,2,3],"AudioGUID":"","IconGUID":"","Name":null,"OptionUIDs":[8,7],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":181.5,"yPos":256},"ID":5,"TMPFontGUID":"","Text":null,"parentUIDs":[1,1],"AudioGUID":"","IconGUID":"","Name":null,"OptionUIDs":[6,7],"SpeechUID":-1}]}'
   DefaultName: 
   DefaultSprite: {fileID: 0}
   DefaultFont: {fileID: 0}
@@ -1053,8 +1021,6 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!4 &920153105
 Transform:
   m_ObjectHideFlags: 0
@@ -1205,8 +1171,6 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!4 &1385203463
 Transform:
   m_ObjectHideFlags: 0
@@ -1237,8 +1201,6 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &1385203465
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1255,8 +1217,6 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!1 &1387261915
 GameObject:
   m_ObjectHideFlags: 0
@@ -1383,15 +1343,13 @@ MonoBehaviour:
         m_MethodName: StartConversation
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 225343364}
+          m_ObjectArgument: {fileID: 240746548}
           m_ObjectArgumentAssemblyTypeName: DialogueEditor.NPCConversation, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-    m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &1799720318
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1410,8 +1368,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   m_Type: 1
   m_PreserveAspect: 0
