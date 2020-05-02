@@ -47,6 +47,7 @@ namespace DialogueEditor
         private UINode m_cachedSelectedNode;
 
         // Dragging information
+        private bool dragging;
         private bool clickInBox;
         private Vector2 offset;
         private Vector2 dragDelta;
@@ -744,7 +745,6 @@ namespace DialogueEditor
             switch (e.type)
             {
                 case EventType.MouseDown:
-
                     // Left click
                     if (e.button == 0)
                     {
@@ -777,13 +777,22 @@ namespace DialogueEditor
                             rightClickMenu.ShowAsContext();
                         }
                     }
+
+                    if (e.button == 0 || e.button == 2)
+                        dragging = true;
+                    else
+                        dragging = false;
                     break;
 
                 case EventType.MouseDrag:
-                    if (e.button == 0 && !clickInBox && !IsANodeSelected())
+                    if (dragging && (e.button == 0 || e.button == 2) && !clickInBox && !IsANodeSelected())
                     {
                         OnDrag(e.delta);
                     }
+                    break;
+
+                case EventType.MouseUp:
+                    dragging = false;
                     break;
             }
         }
