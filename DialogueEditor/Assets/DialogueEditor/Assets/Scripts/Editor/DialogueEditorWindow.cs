@@ -512,21 +512,42 @@ namespace DialogueEditor
                 {
                     EditableSpeechNode node = (CurrentlySelectedNode.Info as EditableSpeechNode);
                     GUILayout.Label("[" + node.ID + "] NPC Dialogue Node.", panelTitleStyle);
+                    EditorGUILayout.Space();
 
-                    GUILayout.Label("Character Name", EditorStyles.boldLabel);
+                    GUILayout.Label("Character Name");
                     node.Name = GUILayout.TextField(node.Name);
 
-                    GUILayout.Label("Dialogue", EditorStyles.boldLabel);
+                    GUILayout.Label("Dialogue");
                     node.Text = GUILayout.TextArea(node.Text);
+                    EditorGUILayout.Space();
 
-                    GUILayout.Label("Icon", EditorStyles.boldLabel);
-                    node.Icon = (Sprite)EditorGUILayout.ObjectField(node.Icon, typeof(Sprite), false);
+                    // Advance
+                    if (node.Speech != null || node.Options == null || node.Options.Count == 0)
+                    {
+                        node.AdvanceDialogueAutomatically = EditorGUILayout.Toggle("Automatically Advance", node.AdvanceDialogueAutomatically);
+                        if (node.AdvanceDialogueAutomatically)
+                        {
+                            node.TimeUntilAdvance = EditorGUILayout.FloatField("Dialogue Time", node.TimeUntilAdvance);
+                            if (node.TimeUntilAdvance < 0)
+                                node.TimeUntilAdvance = 0;
+                        }
+                        EditorGUILayout.Space();
+                    }
 
-                    GUILayout.Label("Audio", EditorStyles.boldLabel);
+                    GUILayout.Label("Icon");
+                    node.Icon = (Sprite)EditorGUILayout.ObjectField(node.Icon, typeof(Sprite), false, GUILayout.ExpandWidth(true));
+                    EditorGUILayout.Space();
+
+                    GUILayout.Label("Audio");
                     node.Audio = (AudioClip)EditorGUILayout.ObjectField(node.Audio, typeof(AudioClip), false);
 
-                    GUILayout.Label("TMP Font", EditorStyles.boldLabel);
+                    GUILayout.Label("Audio Volume");
+                    node.Volume = EditorGUILayout.Slider(node.Volume, 0, 1);
+                    EditorGUILayout.Space();
+
+                    GUILayout.Label("TMP Font");
                     node.TMPFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(node.TMPFont, typeof(TMPro.TMP_FontAsset), false);
+                    EditorGUILayout.Space();
 
                     // Events
                     {
@@ -562,8 +583,7 @@ namespace DialogueEditor
                 else if (CurrentlySelectedNode is UIOptionNode)
                 {
                     EditableOptionNode node = (CurrentlySelectedNode.Info as EditableOptionNode);
-                    GUILayout.Label("[" + node.ID + "] Option Node.", panelTitleStyle);
-                    
+                    GUILayout.Label("[" + node.ID + "] Option Node.", panelTitleStyle);                   
 
                     GUILayout.Label("Option text:", EditorStyles.boldLabel);
                     node.Text = GUILayout.TextArea(node.Text);

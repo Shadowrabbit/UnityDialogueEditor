@@ -55,7 +55,7 @@ namespace DialogueEditor
         public void OnOptionSelected()
         {
             if (m_action != null)
-                ConversationManager.Instance.DoAction(m_action);
+                ConversationManager.Instance.DoSpeech(m_action);
             else
                 ConversationManager.Instance.OptionSelected(m_option);
         }

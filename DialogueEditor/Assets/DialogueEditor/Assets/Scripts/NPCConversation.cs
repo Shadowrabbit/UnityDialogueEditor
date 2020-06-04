@@ -101,9 +101,12 @@ namespace DialogueEditor
                 SpeechNode node = new SpeechNode();
                 node.Name = ec.SpeechNodes[i].Name;
                 node.Text = ec.SpeechNodes[i].Text;
+                node.AutomaticallyAdvance = ec.SpeechNodes[i].AdvanceDialogueAutomatically;
+                node.TimeUntilAdvance = ec.SpeechNodes[i].TimeUntilAdvance;
                 node.TMPFont = ec.SpeechNodes[i].TMPFont;
                 node.Icon = ec.SpeechNodes[i].Icon;
                 node.Audio = ec.SpeechNodes[i].Audio;
+                node.Volume = ec.SpeechNodes[i].Volume;
                 node.Options = new List<OptionNode>();
                 if (this.GetEventHolderForID(ec.SpeechNodes[i].ID) != null)
                 {
@@ -181,12 +184,6 @@ namespace DialogueEditor
             return conversation;
         }
 
-
-
-        //--------------------------------------
-        // Serialize and Deserialize
-        //--------------------------------------
-
         private string Jsonify(EditableConversation conversation)
         {
             if (conversation == null || conversation.Options == null) { return ""; }
@@ -220,7 +217,7 @@ namespace DialogueEditor
 
 
     //--------------------------------------
-    // Conversation C# class - For use by user (Deserialized)
+    // Conversation C# class - For use by user to build UI (Deserialized)
     //--------------------------------------
 
     public class Conversation
@@ -237,8 +234,18 @@ namespace DialogueEditor
     public class SpeechNode : ConversationNode
     {
         public string Name;
+        /// <summary>
+        /// Should this speech node go onto the next one automatically?
+        /// </summary>
+        public bool AutomaticallyAdvance;
+        /// <summary>
+        /// If AutomaticallyAdvance==True, how long should this speech node 
+        /// display before going onto the next one?
+        /// </summary>
+        public float TimeUntilAdvance;
         public Sprite Icon;
         public AudioClip Audio;
+        public float Volume;
         /// <summary>
         /// The Options available on this Speech node, if any.
         /// </summary>
@@ -257,8 +264,9 @@ namespace DialogueEditor
 
 
 
+
     //--------------------------------------
-    // Conversation C# class - For use in editor (Deserialized)
+    // Editable Conversation C# class - For use in editor (Deserialized)
     //--------------------------------------
 
     [DataContract]
@@ -277,6 +285,8 @@ namespace DialogueEditor
 
         [DataMember]
         public List<EditableOptionNode> Options;
+
+        // ----
 
         public EditableSpeechNode GetRootNode()
         {
@@ -320,9 +330,9 @@ namespace DialogueEditor
         }
     }
 
+
     //--------------------------------------
-    // Abstract Node class
-    //--------------------------------------
+    // Abstract Node class (Editor)
 
     [DataContract]
     public abstract class EditableConversationNode
@@ -358,16 +368,16 @@ namespace DialogueEditor
         [DataMember]
         public string Text;
 
-        /// <summary>
-        /// TextMeshPro font 
-        /// </summary>
+        /// <summary> TextMeshPro font </summary>
         public TMPro.TMP_FontAsset TMPFont;
-        [DataMember] public string TMPFontGUID;
+        [DataMember]
+        public string TMPFontGUID;
 
         [DataMember]
         public List<int> parentUIDs;
-
         public List<EditableConversationNode> parents;
+
+        // ------------------------
 
         public abstract void RemoveSelfFromTree();
         public abstract void RegisterUIDs();
@@ -395,6 +405,10 @@ namespace DialogueEditor
             }
         }
     }
+
+
+    //--------------------------------------
+    // Speech Node class (Editor)
 
     [DataContract]
     public class EditableSpeechNode : EditableConversationNode
@@ -432,6 +446,24 @@ namespace DialogueEditor
         /// </summary>
         public AudioClip Audio;
         [DataMember] public string AudioGUID;
+
+        /// <summary>
+        /// The Volume for the AudioClip;
+        /// </summary>
+        [DataMember] public float Volume;
+
+        /// <summary>
+        /// If this dialogue leads onto another dialogue... 
+        /// Should the dialogue advance automatially?
+        /// </summary>
+        [DataMember] public bool AdvanceDialogueAutomatically;
+
+        /// <summary>
+        /// The time it will take for the Dialogue to automaically advance
+        /// </summary>
+        [DataMember] public float TimeUntilAdvance;
+
+        // ------------------------------
 
         public void AddOption(EditableOptionNode newOption)
         {
@@ -580,6 +612,9 @@ namespace DialogueEditor
             }
         }
     }
+
+    //--------------------------------------
+    // Option Node class (Editor)
 
     [DataContract]
     public class EditableOptionNode : EditableConversationNode

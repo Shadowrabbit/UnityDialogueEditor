@@ -28,7 +28,7 @@ namespace DialogueEditor
             // Background image
             GUILayout.Label("Dialogue Image Options", EditorStyles.boldLabel);
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PrefixLabel("Background Sprite");
+            EditorGUILayout.PrefixLabel("Dialogue Background Sprite");
             t.BackgroundImage = (Sprite)EditorGUILayout.ObjectField(t.BackgroundImage, typeof(Sprite), allowSceneObjects: false);
             EditorGUILayout.EndHorizontal();
             t.BackgroundImageSliced = EditorGUILayout.Toggle("Sliced image", t.BackgroundImageSliced);
@@ -37,7 +37,7 @@ namespace DialogueEditor
             // Option image
             GUILayout.Label("Dialogue Image Options", EditorStyles.boldLabel);
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PrefixLabel("Option Sprite");
+            EditorGUILayout.PrefixLabel("Option Background Sprite");
             t.OptionImage = (Sprite)EditorGUILayout.ObjectField(t.OptionImage, typeof(Sprite), allowSceneObjects: false);
             EditorGUILayout.EndHorizontal();
             t.OptionImageSliced = EditorGUILayout.Toggle("Sliced image", t.OptionImageSliced);

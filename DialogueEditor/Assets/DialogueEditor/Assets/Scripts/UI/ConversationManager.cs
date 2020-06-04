@@ -68,6 +68,7 @@ namespace DialogueEditor
 
         private SpeechNode m_pendingDialogue;
         private OptionNode m_selectedOption;
+        private SpeechNode m_currentSpeech;
 
 
         //--------------------------------------
@@ -116,7 +117,7 @@ namespace DialogueEditor
 
                         if (t > 1)
                         {
-                            DoAction(m_pendingDialogue);
+                            DoSpeech(m_pendingDialogue);
                             return;
                         }
 
@@ -147,6 +148,20 @@ namespace DialogueEditor
                     break;
 
                 case eState.Idle:
+                    {
+                        m_stateTime += Time.deltaTime;
+
+                        if (m_currentSpeech.AutomaticallyAdvance)
+                        {
+                            if (m_currentSpeech.Dialogue != null || m_currentSpeech.Options == null || m_currentSpeech.Options.Count == 0)
+                            {
+                                if (m_stateTime > m_currentSpeech.TimeUntilAdvance)
+                                {
+                                    SetState(eState.TransitioningOptionsOff);
+                                }
+                            }
+                        }
+                    }
                     break;
 
                 case eState.TransitioningOptionsOff:
@@ -157,6 +172,20 @@ namespace DialogueEditor
                         if (t > 1)
                         {
                             ClearOptions();
+
+                            if (m_currentSpeech.AutomaticallyAdvance)
+                            {
+                                if (m_currentSpeech.Dialogue != null)
+                                {
+                                    DoSpeech(m_currentSpeech.Dialogue);
+                                    return;
+                                }
+                                else if (m_currentSpeech.Options == null || m_currentSpeech.Options.Count == 0)
+                                {
+                                    EndConversation();
+                                    return;
+                                }  
+                            }
 
                             if (m_selectedOption == null)
                             {
@@ -171,7 +200,7 @@ namespace DialogueEditor
                             }
                             else
                             {
-                                DoAction(nextAction);
+                                DoSpeech(nextAction);
                             }
                             return;
                         }
@@ -235,6 +264,13 @@ namespace DialogueEditor
 
         private void SetState(eState newState)
         {
+            switch (m_state)
+            {
+                case eState.TransitioningOptionsOff:
+                    m_selectedOption = null;
+                    break;
+            }
+
             m_state = newState;
             m_stateTime = 0f;
 
@@ -305,34 +341,36 @@ namespace DialogueEditor
 
 
         //--------------------------------------
-        // Set action
+        // Do Speech
         //--------------------------------------
 
-        public void DoAction(SpeechNode action)
+        public void DoSpeech(SpeechNode speech)
         {
-            if (action == null)
+            if (speech == null)
             {
                 EndConversation();
                 return;
             }
 
+            m_currentSpeech = speech;
+
             // Clear current options
             ClearOptions();
 
             // Set sprite
-            if (action.Icon == null)
+            if (speech.Icon == null)
             {
                 NpcIcon.sprite = BlankSprite;
             }
             else
             {
-                NpcIcon.sprite = action.Icon;
+                NpcIcon.sprite = speech.Icon;
             }
 
             // Set font
-            if (action.TMPFont != null)
+            if (speech.TMPFont != null)
             {
-                DialogueText.font = action.TMPFont;
+                DialogueText.font = speech.TMPFont;
             }
             else
             {
@@ -340,49 +378,50 @@ namespace DialogueEditor
             }
 
             // Set name
-            NameText.text = action.Name;
+            NameText.text = speech.Name;
 
             // Set text
             if (ScrollText)
             {
-                DialogueText.text = action.Text;
-                m_targetScrollTextCount = action.Text.Length + 1;
+                DialogueText.text = speech.Text;
+                m_targetScrollTextCount = speech.Text.Length + 1;
                 DialogueText.maxVisibleCharacters = 0;
                 m_elapsedScrollTime = 0f;
                 m_scrollIndex = 0;
             }
             else
             {
-                DialogueText.text = action.Text;
-                DialogueText.maxVisibleCharacters = action.Text.Length;
+                DialogueText.text = speech.Text;
+                DialogueText.maxVisibleCharacters = speech.Text.Length;
             }
 
             // Call the event
-            if (action.Event != null)
-                action.Event.Invoke();
+            if (speech.Event != null)
+                speech.Event.Invoke();
 
             // Play the audio
-            if (action.Audio != null)
+            if (speech.Audio != null)
             {
-                AudioPlayer.clip = action.Audio;
+                AudioPlayer.clip = speech.Audio;
+                AudioPlayer.volume = speech.Volume;
                 AudioPlayer.Play();
             }
 
             // Display new options
-            if (action.Options.Count > 0)
+            if (speech.Options.Count > 0)
             {
-                for (int i = 0; i < action.Options.Count; i++)
+                for (int i = 0; i < speech.Options.Count; i++)
                 {
                     UIConversationButton option = GameObject.Instantiate(ButtonPrefab, OptionsPanel);
-                    option.SetOption(action.Options[i]);
+                    option.SetOption(speech.Options[i]);
                     m_uiOptions.Add(option);
                 }
             }
             // Else display "continue" button to go to following dialogue
-            else if (action.Dialogue != null)
+            else if (speech.Dialogue != null)
             {
                 UIConversationButton option = GameObject.Instantiate(ButtonPrefab, OptionsPanel);
-                option.SetAction(action.Dialogue);
+                option.SetAction(speech.Dialogue);
                 m_uiOptions.Add(option);
             }
             // Else display "end" button
@@ -446,6 +485,9 @@ namespace DialogueEditor
             DialoguePanel.gameObject.SetActive(false);
             OptionsPanel.gameObject.SetActive(false);
             SetState(eState.Off);
+#if UNITY_EDITOR
+            // Debug.Log("[ConversationManager]: Conversation UI off.");
+#endif
         }
 
         private void ClearOptions()
