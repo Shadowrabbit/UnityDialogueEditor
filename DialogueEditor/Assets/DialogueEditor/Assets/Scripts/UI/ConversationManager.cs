@@ -434,6 +434,7 @@ namespace DialogueEditor
                 for (int i = 0; i < speech.Options.Count; i++)
                 {
                     UIConversationButton option = GameObject.Instantiate(ButtonPrefab, OptionsPanel);
+                    option.InitButton(speech.Options[i]);
                     option.SetOption(speech.Options[i]);
                     m_uiOptions.Add(option);
                 }
@@ -449,7 +450,7 @@ namespace DialogueEditor
                     if (speech.Dialogue != null)
                     {
                         UIConversationButton option = GameObject.Instantiate(ButtonPrefab, OptionsPanel);
-                        option.SetAction(speech.Dialogue);
+                        option.SetFollowingAction(speech.Dialogue);
                         m_uiOptions.Add(option);
                     }
                     // Else display "end" button

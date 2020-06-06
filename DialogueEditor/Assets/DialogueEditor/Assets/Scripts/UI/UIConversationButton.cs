@@ -24,6 +24,19 @@ namespace DialogueEditor
             }
         }
 
+        public void InitButton(OptionNode option)
+        {
+            // Set font
+            if (option.TMPFont != null)
+            {
+                TextMesh.font = option.TMPFont;
+            }
+            else
+            {
+                TextMesh.font = null;
+            }
+        }
+
         public void SetAlpha(float a)
         {
             Color c_image = OptionBackgroundImage.color;
@@ -40,7 +53,7 @@ namespace DialogueEditor
             TextMesh.text = option.Text;
         }
 
-        public void SetAction(SpeechNode action)
+        public void SetFollowingAction(SpeechNode action)
         {
             m_action = action;
             TextMesh.text = "Continue.";

@@ -146,7 +146,7 @@ MonoBehaviour:
   DefaultName: 
   DefaultSprite: {fileID: 0}
   DefaultFont: {fileID: 0}
-  Events:
+  NodeSerializedDataList:
   - {fileID: 1705980347}
   Event:
     m_PersistentCalls:
@@ -321,6 +321,13 @@ GameObject:
   - component: {fileID: 139136598}
   - component: {fileID: 139136597}
   - component: {fileID: 139136596}
+  - component: {fileID: 139136608}
+  - component: {fileID: 139136607}
+  - component: {fileID: 139136606}
+  - component: {fileID: 139136605}
+  - component: {fileID: 139136604}
+  - component: {fileID: 139136603}
+  - component: {fileID: 139136602}
   m_Layer: 0
   m_Name: ConversationEventInfo
   m_TagString: Untagged
@@ -344,6 +351,9 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
+  TMPFont: {fileID: 11400000, guid: d1e79b06c01ff1c4bb15552c18c4e0d3, type: 2}
+  Icon: {fileID: 21300000, guid: 2c2a5be59b4a36648a911535c6e46ab8, type: 3}
+  Audio: {fileID: 0}
 --- !u!4 &139136595
 Transform:
   m_ObjectHideFlags: 0
@@ -374,6 +384,9 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
+  TMPFont: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 2c2a5be59b4a36648a911535c6e46ab8, type: 3}
+  Audio: {fileID: 0}
 --- !u!114 &139136597
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -390,6 +403,9 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
+  TMPFont: {fileID: 0}
+  Icon: {fileID: 21300000, guid: f71c0dc03d067a342aa16a51674f6507, type: 3}
+  Audio: {fileID: 0}
 --- !u!114 &139136598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -406,6 +422,9 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
+  TMPFont: {fileID: 0}
+  Icon: {fileID: 21300000, guid: f71c0dc03d067a342aa16a51674f6507, type: 3}
+  Audio: {fileID: 0}
 --- !u!114 &139136599
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -422,6 +441,9 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
+  TMPFont: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 2c2a5be59b4a36648a911535c6e46ab8, type: 3}
+  Audio: {fileID: 0}
 --- !u!114 &139136600
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -438,6 +460,9 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
+  TMPFont: {fileID: 0}
+  Icon: {fileID: 21300000, guid: f71c0dc03d067a342aa16a51674f6507, type: 3}
+  Audio: {fileID: 0}
 --- !u!114 &139136601
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -454,6 +479,142 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
+  TMPFont: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 2c2a5be59b4a36648a911535c6e46ab8, type: 3}
+  Audio: {fileID: 0}
+--- !u!114 &139136602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 139136593}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NodeID: 14
+  Event:
+    m_PersistentCalls:
+      m_Calls: []
+  TMPFont: {fileID: 0}
+  Icon: {fileID: 0}
+  Audio: {fileID: 0}
+--- !u!114 &139136603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 139136593}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NodeID: 13
+  Event:
+    m_PersistentCalls:
+      m_Calls: []
+  TMPFont: {fileID: 0}
+  Icon: {fileID: 0}
+  Audio: {fileID: 0}
+--- !u!114 &139136604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 139136593}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NodeID: 12
+  Event:
+    m_PersistentCalls:
+      m_Calls: []
+  TMPFont: {fileID: 0}
+  Icon: {fileID: 0}
+  Audio: {fileID: 0}
+--- !u!114 &139136605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 139136593}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NodeID: 11
+  Event:
+    m_PersistentCalls:
+      m_Calls: []
+  TMPFont: {fileID: 11400000, guid: d1e79b06c01ff1c4bb15552c18c4e0d3, type: 2}
+  Icon: {fileID: 0}
+  Audio: {fileID: 0}
+--- !u!114 &139136606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 139136593}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NodeID: 7
+  Event:
+    m_PersistentCalls:
+      m_Calls: []
+  TMPFont: {fileID: 0}
+  Icon: {fileID: 0}
+  Audio: {fileID: 0}
+--- !u!114 &139136607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 139136593}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NodeID: 2
+  Event:
+    m_PersistentCalls:
+      m_Calls: []
+  TMPFont: {fileID: 11400000, guid: d1e79b06c01ff1c4bb15552c18c4e0d3, type: 2}
+  Icon: {fileID: 0}
+  Audio: {fileID: 0}
+--- !u!114 &139136608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 139136593}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00abedce3cdbbba46bf2d86c9518c9f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NodeID: 1
+  Event:
+    m_PersistentCalls:
+      m_Calls: []
+  TMPFont: {fileID: 0}
+  Icon: {fileID: 0}
+  Audio: {fileID: 0}
 --- !u!1 &170076733
 GameObject:
   m_ObjectHideFlags: 0
@@ -553,26 +714,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentIDCounter: 19
-  json: '{"Options":[{"EditorInfo":{"isRoot":false,"xPos":-122.5,"yPos":30},"ID":1,"TMPFontGUID":"","Text":"I
-    come in search of a quest.","parentUIDs":[0,0],"SpeechUID":8},{"EditorInfo":{"isRoot":false,"xPos":103.5,"yPos":30},"ID":2,"TMPFontGUID":"","Text":"Actually,
-    i''m here to speak to the new student.","parentUIDs":[0,0],"SpeechUID":9},{"EditorInfo":{"isRoot":false,"xPos":319.5,"yPos":27},"ID":7,"TMPFontGUID":"","Text":"Actually,
-    I don''t need anything. Goodbye.","parentUIDs":[0,0],"SpeechUID":10},{"EditorInfo":{"isRoot":false,"xPos":205.5,"yPos":236},"ID":11,"TMPFontGUID":"","Text":"Shh!
-    Yes, but don''t tell anybody","parentUIDs":[9,9],"SpeechUID":16},{"EditorInfo":{"isRoot":false,"xPos":-1.5,"yPos":236},"ID":12,"TMPFontGUID":"","Text":"Yes","parentUIDs":[9,8,8,9],"SpeechUID":16},{"EditorInfo":{"isRoot":false,"xPos":-220.5,"yPos":239},"ID":13,"TMPFontGUID":"","Text":"Actually
-    - I''ve changed my mind, No.","parentUIDs":[8,8],"SpeechUID":17},{"EditorInfo":{"isRoot":false,"xPos":414.5,"yPos":235},"ID":14,"TMPFontGUID":"","Text":"No","parentUIDs":[9,9],"SpeechUID":15}],"SpeechNodes":[{"EditorInfo":{"isRoot":true,"xPos":107.5,"yPos":-77},"ID":0,"TMPFontGUID":"","Text":"Hello,
-    adventurer. How can I help you today?","parentUIDs":[],"AudioGUID":"","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"The
-    dark wizard.","OptionUIDs":[1,2,7],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":-127.5,"yPos":116},"ID":8,"TMPFontGUID":"","Text":"A
-    quest you are, are you sure you''re up to the task?","parentUIDs":[1,1],"AudioGUID":"","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"The
-    dark wizard.","OptionUIDs":[13,12],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":105.5,"yPos":117},"ID":9,"TMPFontGUID":"","Text":"Hello
-    - did you want to know about the magic potion I found earlier?","parentUIDs":[2,2],"AudioGUID":"","IconGUID":"f71c0dc03d067a342aa16a51674f6507","Name":"Apprentice.","OptionUIDs":[11,12,14],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":390.5,"yPos":118},"ID":10,"TMPFontGUID":"","Text":"Farewell.","parentUIDs":[7,7],"AudioGUID":"","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"The
-    dark wizard.","OptionUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":435.5,"yPos":318},"ID":15,"TMPFontGUID":"","Text":"Alright
-    - Goodbye.","parentUIDs":[14,14],"AudioGUID":"","IconGUID":"f71c0dc03d067a342aa16a51674f6507","Name":"Apprentice.","OptionUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":111.5,"yPos":316},"ID":16,"TMPFontGUID":"","Text":"I
-    can tell you all about the quest to obtain the Great Mana Potion...","parentUIDs":[12,11,11,12],"AudioGUID":"","IconGUID":"f71c0dc03d067a342aa16a51674f6507","Name":"Apprentice.","OptionUIDs":[],"SpeechUID":-1},{"EditorInfo":{"isRoot":false,"xPos":-219.5,"yPos":317},"ID":17,"TMPFontGUID":"","Text":"Very
-    well then.","parentUIDs":[13,13],"AudioGUID":"","IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"The
-    dark wizard.","OptionUIDs":[],"SpeechUID":-1}]}'
+  json: '{"Options":[{"EditorInfo":{"isRoot":false,"xPos":84.5,"yPos":129},"ID":1,"TMPFontGUID":"","Text":"I
+    come in search of a quest.","parentUIDs":[0,0],"SpeechUID":8},{"EditorInfo":{"isRoot":false,"xPos":310.5,"yPos":129},"ID":2,"TMPFontGUID":"","Text":"Actually,
+    i''m here to speak to the new student.","parentUIDs":[0,0],"SpeechUID":9},{"EditorInfo":{"isRoot":false,"xPos":526.5,"yPos":126},"ID":7,"TMPFontGUID":"","Text":"Actually,
+    I don''t need anything. Goodbye.","parentUIDs":[0,0],"SpeechUID":10},{"EditorInfo":{"isRoot":false,"xPos":412.5,"yPos":335},"ID":11,"TMPFontGUID":"","Text":"Shh!
+    Yes, but don''t tell anybody","parentUIDs":[9,9],"SpeechUID":16},{"EditorInfo":{"isRoot":false,"xPos":205.5,"yPos":335},"ID":12,"TMPFontGUID":"","Text":"Yes","parentUIDs":[9,8,8,9],"SpeechUID":16},{"EditorInfo":{"isRoot":false,"xPos":-13.5,"yPos":338},"ID":13,"TMPFontGUID":"","Text":"Actually
+    - I''ve changed my mind, No.","parentUIDs":[8,8],"SpeechUID":17},{"EditorInfo":{"isRoot":false,"xPos":621.5,"yPos":334},"ID":14,"TMPFontGUID":"","Text":"No","parentUIDs":[9,9],"SpeechUID":15}],"SpeechNodes":[{"EditorInfo":{"isRoot":true,"xPos":314.5,"yPos":22},"ID":0,"TMPFontGUID":"","Text":"Hello,
+    adventurer. How can I help you today?","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":"","AutoAdvanceShouldDisplayOption":false,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"The
+    dark wizard.","OptionUIDs":[1,2,7],"SpeechUID":-1,"TimeUntilAdvance":0,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":79.5,"yPos":215},"ID":8,"TMPFontGUID":"","Text":"A
+    quest you are, are you sure you''re up to the task?","parentUIDs":[1,1],"AdvanceDialogueAutomatically":false,"AudioGUID":"","AutoAdvanceShouldDisplayOption":false,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"The
+    dark wizard.","OptionUIDs":[13,12],"SpeechUID":-1,"TimeUntilAdvance":0,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":312.5,"yPos":216},"ID":9,"TMPFontGUID":"","Text":"Hello
+    - did you want to know about the magic potion I found earlier?","parentUIDs":[2,2],"AdvanceDialogueAutomatically":false,"AudioGUID":"","AutoAdvanceShouldDisplayOption":false,"IconGUID":"f71c0dc03d067a342aa16a51674f6507","Name":"Apprentice.","OptionUIDs":[11,12,14],"SpeechUID":-1,"TimeUntilAdvance":0,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":597.5,"yPos":217},"ID":10,"TMPFontGUID":"","Text":"Farewell.","parentUIDs":[7,7],"AdvanceDialogueAutomatically":false,"AudioGUID":"","AutoAdvanceShouldDisplayOption":false,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"The
+    dark wizard.","OptionUIDs":[],"SpeechUID":-1,"TimeUntilAdvance":0,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":642.5,"yPos":417},"ID":15,"TMPFontGUID":"","Text":"Alright
+    - Goodbye.","parentUIDs":[14,14],"AdvanceDialogueAutomatically":false,"AudioGUID":"","AutoAdvanceShouldDisplayOption":false,"IconGUID":"f71c0dc03d067a342aa16a51674f6507","Name":"Apprentice.","OptionUIDs":[],"SpeechUID":-1,"TimeUntilAdvance":0,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":318.5,"yPos":415},"ID":16,"TMPFontGUID":"","Text":"I
+    can tell you all about the quest to obtain the Great Mana Potion...","parentUIDs":[12,11,11,12],"AdvanceDialogueAutomatically":false,"AudioGUID":"","AutoAdvanceShouldDisplayOption":false,"IconGUID":"f71c0dc03d067a342aa16a51674f6507","Name":"Apprentice.","OptionUIDs":[],"SpeechUID":-1,"TimeUntilAdvance":0,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":-12.5,"yPos":416},"ID":17,"TMPFontGUID":"","Text":"Very
+    well then.","parentUIDs":[13,13],"AdvanceDialogueAutomatically":false,"AudioGUID":"","AutoAdvanceShouldDisplayOption":false,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"The
+    dark wizard.","OptionUIDs":[],"SpeechUID":-1,"TimeUntilAdvance":0,"Volume":0}]}'
   DefaultName: Default name.
   DefaultSprite: {fileID: 21300000, guid: f71c0dc03d067a342aa16a51674f6507, type: 3}
   DefaultFont: {fileID: 0}
-  Events:
+  NodeSerializedDataList:
   - {fileID: 139136594}
   - {fileID: 139136601}
   - {fileID: 139136600}
@@ -580,6 +741,13 @@ MonoBehaviour:
   - {fileID: 139136598}
   - {fileID: 139136597}
   - {fileID: 139136596}
+  - {fileID: 139136608}
+  - {fileID: 139136607}
+  - {fileID: 139136606}
+  - {fileID: 139136605}
+  - {fileID: 139136604}
+  - {fileID: 139136603}
+  - {fileID: 139136602}
   Event:
     m_PersistentCalls:
       m_Calls: []
@@ -1017,6 +1185,9 @@ MonoBehaviour:
   Event:
     m_PersistentCalls:
       m_Calls: []
+  TMPFont: {fileID: 0}
+  Icon: {fileID: 0}
+  Audio: {fileID: 0}
 --- !u!4 &1705980348
 Transform:
   m_ObjectHideFlags: 0
