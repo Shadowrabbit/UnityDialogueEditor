@@ -381,19 +381,40 @@ namespace DialogueEditor
             NameText.text = speech.Name;
 
             // Set text
-            if (ScrollText)
+            if (string.IsNullOrEmpty(speech.Text))
             {
-                DialogueText.text = speech.Text;
-                m_targetScrollTextCount = speech.Text.Length + 1;
-                DialogueText.maxVisibleCharacters = 0;
-                m_elapsedScrollTime = 0f;
-                m_scrollIndex = 0;
+                if (ScrollText)
+                {
+                    DialogueText.text = "";
+                    m_targetScrollTextCount = 0;
+                    DialogueText.maxVisibleCharacters = 0;
+                    m_elapsedScrollTime = 0f;
+                    m_scrollIndex = 0;
+                }
+                else
+                {
+                    DialogueText.text = "";
+                    DialogueText.maxVisibleCharacters = 1;
+                }
             }
             else
             {
-                DialogueText.text = speech.Text;
-                DialogueText.maxVisibleCharacters = speech.Text.Length;
+                if (ScrollText)
+                {
+                    DialogueText.text = speech.Text;
+                    m_targetScrollTextCount = speech.Text.Length + 1;
+                    DialogueText.maxVisibleCharacters = 0;
+                    m_elapsedScrollTime = 0f;
+                    m_scrollIndex = 0;
+                }
+                else
+                {
+                    DialogueText.text = speech.Text;
+                    DialogueText.maxVisibleCharacters = speech.Text.Length;
+                }
             }
+
+
 
             // Call the event
             if (speech.Event != null)

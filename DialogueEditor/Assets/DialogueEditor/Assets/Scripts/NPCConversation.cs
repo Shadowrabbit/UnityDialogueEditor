@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 
@@ -14,6 +15,9 @@ namespace DialogueEditor
     [DisallowMultipleComponent]
     public class NPCConversation : MonoBehaviour
     {
+        /// <summary> V1.01 </summary>
+        public const int VERSION = 101;
+
         private readonly string CHILD_NAME = "ConversationEventInfo";
 
         // Serialized data
@@ -22,7 +26,8 @@ namespace DialogueEditor
         [SerializeField] public string DefaultName;
         [SerializeField] public Sprite DefaultSprite;
         [SerializeField] public TMPro.TMP_FontAsset DefaultFont;
-        [SerializeField] private List<NodeEventHolder> Events;
+        [FormerlySerializedAs("Events")]
+        [SerializeField] private List<NodeEventHolder> NodeSerializedDataList;
 
         // Runtime vars
         public UnityEngine.Events.UnityEvent Event;
@@ -32,15 +37,18 @@ namespace DialogueEditor
         // Util
         //--------------------------------------
 
-        public NodeEventHolder GetEventHolderForID(int id)
+        public NodeEventHolder GetNodeData(int id)
         {
-            if (Events == null)
-                Events = new List<NodeEventHolder>();
+            // Create list if none
+            if (NodeSerializedDataList == null)
+                NodeSerializedDataList = new List<NodeEventHolder>();
 
-            for (int i = 0; i < Events.Count; i++)
-                if (Events[i].NodeID == id)
-                    return Events[i];
+            // Look through list to find by ID
+            for (int i = 0; i < NodeSerializedDataList.Count; i++)
+                if (NodeSerializedDataList[i].NodeID == id)
+                    return NodeSerializedDataList[i];
 
+            // If none exist, create a new GameObject
             Transform EventInfo = this.transform.Find(CHILD_NAME);
             if (EventInfo == null)
             {
@@ -49,25 +57,25 @@ namespace DialogueEditor
             }
             EventInfo = this.transform.Find(CHILD_NAME);
 
-
+            // Add a new Component for this node
             NodeEventHolder h = EventInfo.gameObject.AddComponent<NodeEventHolder>();
             h.NodeID = id;
             h.Event = new UnityEngine.Events.UnityEvent();
-            Events.Add(h);
+            NodeSerializedDataList.Add(h);
             return h;
         }
 
-        public void DeleteEventHolderForID(int id)
+        public void DeleteDataForNode(int id)
         {
-            if (Events == null)
+            if (NodeSerializedDataList == null)
                 return;
 
-            for (int i = 0; i < Events.Count; i++)
+            for (int i = 0; i < NodeSerializedDataList.Count; i++)
             {
-                if (Events[i].NodeID == id)
+                if (NodeSerializedDataList[i].NodeID == id)
                 {
-                    GameObject.DestroyImmediate(Events[i]);
-                    Events.RemoveAt(i);
+                    GameObject.DestroyImmediate(NodeSerializedDataList[i]);
+                    NodeSerializedDataList.RemoveAt(i);
                 }
             }
         }
@@ -108,9 +116,9 @@ namespace DialogueEditor
                 node.Audio = ec.SpeechNodes[i].Audio;
                 node.Volume = ec.SpeechNodes[i].Volume;
                 node.Options = new List<OptionNode>();
-                if (this.GetEventHolderForID(ec.SpeechNodes[i].ID) != null)
+                if (this.GetNodeData(ec.SpeechNodes[i].ID) != null)
                 {
-                    node.Event = this.GetEventHolderForID(ec.SpeechNodes[i].ID).Event;
+                    node.Event = this.GetNodeData(ec.SpeechNodes[i].ID).Event;
                 }
 
                 dialogues.Add(ec.SpeechNodes[i].ID, node);
@@ -170,11 +178,11 @@ namespace DialogueEditor
                 {
                     if (conversation.SpeechNodes != null)
                         for (int i = 0; i < conversation.SpeechNodes.Count; i++)
-                            conversation.SpeechNodes[i].Deserialize();
+                            conversation.SpeechNodes[i].Deserialize(this);
 
                     if (conversation.Options != null)
                         for (int i = 0; i < conversation.Options.Count; i++)
-                            conversation.Options[i].Deserialize();
+                            conversation.Options[i].Deserialize(this);
                 }
             }
 
@@ -382,27 +390,27 @@ namespace DialogueEditor
         public abstract void RemoveSelfFromTree();
         public abstract void RegisterUIDs();
 
-        public virtual void PrepareForSerialization()
+        public virtual void PrepareForSerialization(NPCConversation conversation)
         {
-            string guid;
-            long li;
-
-            if (TMPFont != null)
-            {
-                if (UnityEditor.AssetDatabase.TryGetGUIDAndLocalFileIdentifier(TMPFont, out guid, out li))
-                    TMPFontGUID = guid;
-            }
-            else
-                TMPFontGUID = "";
+            conversation.GetNodeData(this.ID).TMPFont = this.TMPFont;
         }
 
-        public virtual void Deserialize()
+        public virtual void Deserialize(NPCConversation conversation)
         {
-            if (!string.IsNullOrEmpty(TMPFontGUID))
+            this.TMPFont = conversation.GetNodeData(this.ID).TMPFont;
+
+#if UNITY_EDITOR
+            // Load from database so data is not lost for people who are upgrading
+            if (this.TMPFont == null)
             {
-                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(TMPFontGUID);
-                TMPFont = (TMPro.TMP_FontAsset)UnityEditor.AssetDatabase.LoadAssetAtPath(path, typeof(TMPro.TMP_FontAsset));
+                if (!string.IsNullOrEmpty(TMPFontGUID))
+                {
+                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(TMPFontGUID);
+                    this.TMPFont = (TMPro.TMP_FontAsset)UnityEditor.AssetDatabase.LoadAssetAtPath(path, typeof(TMPro.TMP_FontAsset));
+
+                }
             }
+#endif
         }
     }
 
@@ -571,45 +579,43 @@ namespace DialogueEditor
                 SpeechUID = EditableConversation.INVALID_UID;
         }
 
-        public override void PrepareForSerialization()
+        public override void PrepareForSerialization(NPCConversation conversation)
         {
-            base.PrepareForSerialization();
+            base.PrepareForSerialization(conversation);
 
-            string guid;
-            long li;
-
-            if (Audio != null)
-            {
-                if (UnityEditor.AssetDatabase.TryGetGUIDAndLocalFileIdentifier(Audio, out guid, out li))
-                    AudioGUID = guid;
-            }
-            else
-                AudioGUID = "";
-
-            if (Icon != null)
-            {
-                if (UnityEditor.AssetDatabase.TryGetGUIDAndLocalFileIdentifier(Icon, out guid, out li))
-                    IconGUID = guid;
-            }
-            else
-                IconGUID = "";
+            conversation.GetNodeData(this.ID).Audio = this.Audio;
+            conversation.GetNodeData(this.ID).Icon = this.Icon;
         }
 
-        public override void Deserialize()
+        public override void Deserialize(NPCConversation conversation)
         {
-            base.Deserialize();
+            base.Deserialize(conversation);
 
-            if (!string.IsNullOrEmpty(AudioGUID))
+            this.Audio = conversation.GetNodeData(this.ID).Audio;
+            this.Icon = conversation.GetNodeData(this.ID).Icon;
+
+#if UNITY_EDITOR
+            // Load from database so data is not lost for people who are upgrading
+            if (this.Audio == null)
             {
-                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(AudioGUID);
-                Audio = (AudioClip)UnityEditor.AssetDatabase.LoadAssetAtPath(path, typeof(AudioClip));
+                if (!string.IsNullOrEmpty(AudioGUID))
+                {
+                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(AudioGUID);
+                    this.Audio = (AudioClip)UnityEditor.AssetDatabase.LoadAssetAtPath(path, typeof(AudioClip));
+
+                }
             }
 
-            if (!string.IsNullOrEmpty(IconGUID))
+            if (this.Icon == null)
             {
-                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(IconGUID);
-                Icon = (Sprite)UnityEditor.AssetDatabase.LoadAssetAtPath(path, typeof(Sprite));
+                if (!string.IsNullOrEmpty(IconGUID))
+                {
+                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(IconGUID);
+                    this.Icon = (Sprite)UnityEditor.AssetDatabase.LoadAssetAtPath(path, typeof(Sprite));
+
+                }
             }
+#endif
         }
     }
 

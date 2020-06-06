@@ -551,7 +551,7 @@ namespace DialogueEditor
 
                     // Events
                     {
-                        NodeEventHolder NodeEvent = CurrentAsset.GetEventHolderForID(node.ID);
+                        NodeEventHolder NodeEvent = CurrentAsset.GetNodeData(node.ID);
                         if (differentNodeSelected)
                         {
                             CurrentAsset.Event = NodeEvent.Event;
@@ -940,7 +940,7 @@ namespace DialogueEditor
             // Delete the EventHolder script if it's an speech node
             if (node is UISpeechNode)
             {
-                CurrentAsset.DeleteEventHolderForID(node.Info.ID);
+                CurrentAsset.DeleteDataForNode(node.Info.ID);
             }
 
             // Delete the UI classes
@@ -1076,7 +1076,7 @@ namespace DialogueEditor
                 // Prepare each node for serialization
                 for (int i = 0; i < uiNodes.Count; i++)
                 {
-                    uiNodes[i].Info.PrepareForSerialization();
+                    uiNodes[i].Info.PrepareForSerialization(CurrentAsset);
                 }
 
                 // Now that each node has a UID:
