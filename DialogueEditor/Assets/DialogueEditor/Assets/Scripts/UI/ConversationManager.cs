@@ -438,19 +438,28 @@ namespace DialogueEditor
                     m_uiOptions.Add(option);
                 }
             }
-            // Else display "continue" button to go to following dialogue
-            else if (speech.Dialogue != null)
-            {
-                UIConversationButton option = GameObject.Instantiate(ButtonPrefab, OptionsPanel);
-                option.SetAction(speech.Dialogue);
-                m_uiOptions.Add(option);
-            }
-            // Else display "end" button
             else
             {
-                UIConversationButton option = GameObject.Instantiate(ButtonPrefab, OptionsPanel);
-                option.SetAsEndConversation();
-                m_uiOptions.Add(option);
+                // Display "Continue" / "End" if we should.
+                bool notAutoAdvance = !speech.AutomaticallyAdvance;
+                bool autoWithOption = (speech.AutomaticallyAdvance && speech.AutoAdvanceShouldDisplayOption);
+                if (notAutoAdvance || autoWithOption)
+                {
+                    // Else display "continue" button to go to following dialogue
+                    if (speech.Dialogue != null)
+                    {
+                        UIConversationButton option = GameObject.Instantiate(ButtonPrefab, OptionsPanel);
+                        option.SetAction(speech.Dialogue);
+                        m_uiOptions.Add(option);
+                    }
+                    // Else display "end" button
+                    else
+                    {
+                        UIConversationButton option = GameObject.Instantiate(ButtonPrefab, OptionsPanel);
+                        option.SetAsEndConversation();
+                        m_uiOptions.Add(option);
+                    }
+                }
             }
 
             // Set the button sprite and alpha

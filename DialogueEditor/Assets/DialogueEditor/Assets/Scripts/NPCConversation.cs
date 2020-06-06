@@ -110,6 +110,7 @@ namespace DialogueEditor
                 node.Name = ec.SpeechNodes[i].Name;
                 node.Text = ec.SpeechNodes[i].Text;
                 node.AutomaticallyAdvance = ec.SpeechNodes[i].AdvanceDialogueAutomatically;
+                node.AutoAdvanceShouldDisplayOption = ec.SpeechNodes[i].AutoAdvanceShouldDisplayOption;
                 node.TimeUntilAdvance = ec.SpeechNodes[i].TimeUntilAdvance;
                 node.TMPFont = ec.SpeechNodes[i].TMPFont;
                 node.Icon = ec.SpeechNodes[i].Icon;
@@ -246,6 +247,10 @@ namespace DialogueEditor
         /// Should this speech node go onto the next one automatically?
         /// </summary>
         public bool AutomaticallyAdvance;
+        /// <summary>
+        /// Should this speech node display a "continue" or "end" option?
+        /// </summary>
+        public bool AutoAdvanceShouldDisplayOption;
         /// <summary>
         /// If AutomaticallyAdvance==True, how long should this speech node 
         /// display before going onto the next one?
@@ -465,6 +470,12 @@ namespace DialogueEditor
         /// Should the dialogue advance automatially?
         /// </summary>
         [DataMember] public bool AdvanceDialogueAutomatically;
+
+        /// <summary>
+        /// If this dialogue automatically advances, should it also display an 
+        /// "end" / "continue" button?
+        /// </summary>
+        [DataMember] public bool AutoAdvanceShouldDisplayOption;
 
         /// <summary>
         /// The time it will take for the Dialogue to automaically advance

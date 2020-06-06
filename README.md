@@ -4,5 +4,5 @@ Unity Dialogue Editor is a custom tool for easily creating complex and branching
 
 
 <p align="center">
-<img src="docs/readme/tool.png"/>
+<img src="docs_files/readme/tool.png"/>
 </p>

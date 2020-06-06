@@ -22,6 +22,7 @@ namespace DialogueEditor
         private const float PANEL_RESIZER_PADDING = 5;
         private const string WINDOW_NAME = "DIALOGUE_EDITOR_WINDOW";
         private const string HELP_URL = "https://josephbarber96.github.io/dialogueeditor.html";
+        private const string CONTROL_NAME = "DEFAULT_CONTROL";
 
         // Static properties
         public static bool NodeClickedOnThisUpdate { get; set; }
@@ -499,7 +500,7 @@ namespace DialogueEditor
             GUILayout.BeginVertical();
             panelVerticalScroll = GUILayout.BeginScrollView(panelVerticalScroll);
 
-            GUILayout.Label("Dialogue Editor.", panelTitleStyle);
+            GUI.SetNextControlName("CONTROL_TITLE");
 
             GUILayout.Space(10);
 
@@ -507,6 +508,10 @@ namespace DialogueEditor
             {
                 bool differentNodeSelected = (m_cachedSelectedNode != CurrentlySelectedNode);
                 m_cachedSelectedNode = CurrentlySelectedNode;
+                if (differentNodeSelected)
+                {
+                    GUI.FocusControl(CONTROL_NAME);
+                }
 
                 if (CurrentlySelectedNode is UISpeechNode)
                 {
@@ -514,30 +519,35 @@ namespace DialogueEditor
                     GUILayout.Label("[" + node.ID + "] NPC Dialogue Node.", panelTitleStyle);
                     EditorGUILayout.Space();
 
-                    GUILayout.Label("Character Name");
+                    GUILayout.Label("Character Name", EditorStyles.boldLabel);
+                    GUI.SetNextControlName(CONTROL_NAME);
                     node.Name = GUILayout.TextField(node.Name);
+                    EditorGUILayout.Space();
 
-                    GUILayout.Label("Dialogue");
+                    GUILayout.Label("Dialogue", EditorStyles.boldLabel);
                     node.Text = GUILayout.TextArea(node.Text);
                     EditorGUILayout.Space();
 
                     // Advance
                     if (node.Speech != null || node.Options == null || node.Options.Count == 0)
                     {
+                        GUILayout.Label("Auto-Advance options", EditorStyles.boldLabel);
                         node.AdvanceDialogueAutomatically = EditorGUILayout.Toggle("Automatically Advance", node.AdvanceDialogueAutomatically);
                         if (node.AdvanceDialogueAutomatically)
                         {
+                            node.AutoAdvanceShouldDisplayOption = EditorGUILayout.Toggle("Display continue option", node.AutoAdvanceShouldDisplayOption);
                             node.TimeUntilAdvance = EditorGUILayout.FloatField("Dialogue Time", node.TimeUntilAdvance);
-                            if (node.TimeUntilAdvance < 0)
-                                node.TimeUntilAdvance = 0;
+                            if (node.TimeUntilAdvance < 0.1f)
+                                node.TimeUntilAdvance = 0.1f;
                         }
                         EditorGUILayout.Space();
                     }
 
-                    GUILayout.Label("Icon");
+                    GUILayout.Label("Icon", EditorStyles.boldLabel);
                     node.Icon = (Sprite)EditorGUILayout.ObjectField(node.Icon, typeof(Sprite), false, GUILayout.ExpandWidth(true));
                     EditorGUILayout.Space();
 
+                    GUILayout.Label("Audio Options", EditorStyles.boldLabel);
                     GUILayout.Label("Audio");
                     node.Audio = (AudioClip)EditorGUILayout.ObjectField(node.Audio, typeof(AudioClip), false);
 
@@ -545,7 +555,7 @@ namespace DialogueEditor
                     node.Volume = EditorGUILayout.Slider(node.Volume, 0, 1);
                     EditorGUILayout.Space();
 
-                    GUILayout.Label("TMP Font");
+                    GUILayout.Label("TMP Font", EditorStyles.boldLabel);
                     node.TMPFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(node.TMPFont, typeof(TMPro.TMP_FontAsset), false);
                     EditorGUILayout.Space();
 
