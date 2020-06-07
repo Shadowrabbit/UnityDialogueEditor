@@ -203,7 +203,9 @@ namespace DialogueEditor
 
             Recenter();
             Repaint();
+#if UNITY_EDITOR
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
+#endif
         }
 
 
@@ -1118,7 +1120,9 @@ namespace DialogueEditor
                     CurrentlySelectedNode = null;
                 }
 
+#if UNITY_EDITOR
                 UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
+#endif
             }
         }
     }

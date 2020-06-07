@@ -15,8 +15,8 @@ namespace DialogueEditor
     [DisallowMultipleComponent]
     public class NPCConversation : MonoBehaviour
     {
-        /// <summary> V1.01 </summary>
-        public const int VERSION = 101;
+        /// <summary> V1.02 </summary>
+        public const int VERSION = 102;
 
         private readonly string CHILD_NAME = "ConversationEventInfo";
 
