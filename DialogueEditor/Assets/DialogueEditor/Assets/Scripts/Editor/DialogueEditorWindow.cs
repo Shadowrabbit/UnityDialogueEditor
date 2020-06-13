@@ -469,21 +469,19 @@ namespace DialogueEditor
             offset += dragDelta * 0.5f;
             Vector3 newOffset = new Vector3(offset.x % gridSpacing, offset.y % gridSpacing, 0);
 
+            // Vertical lines
             for (int i = 0; i < widthDivs; i++)
             {
                 Vector3 start = new Vector3(gridSpacing * i, -gridSpacing, 0) + newOffset;
-                if (start.x > panelRect.x)
-                    continue;
                 Vector3 end = new Vector3(gridSpacing * i, position.height, 0f) + newOffset;
                 Handles.DrawLine(start, end);
             }
 
+            // Horitonzal lines
             for (int j = 0; j < heightDivs; j++)
             {
                 Vector3 start = new Vector3(-gridSpacing, gridSpacing * j, 0) + newOffset;
                 Vector3 end = new Vector3(position.width, gridSpacing * j, 0f) + newOffset;
-                if (end.x > panelRect.x)
-                    end.x = panelRect.x;
                 Handles.DrawLine(start, end);
             }
 
@@ -644,8 +642,6 @@ namespace DialogueEditor
         private void ProcessInput()
         {
             Event e = Event.current;
-
-
 
             switch (m_inputState)
             {
@@ -1072,6 +1068,7 @@ namespace DialogueEditor
             {
                 uiNodes[i].Drag(delta);
             }
+            Repaint();
         }
 
         private void ResetPanelSize()
@@ -1091,7 +1088,7 @@ namespace DialogueEditor
                     uiNodes[i].Info.PrepareForSerialization(CurrentAsset);
                 }
 
-                // Now that each node has a UID:
+                // Now that each node has been prepared for serialization: 
                 // - Register the UIDs of their parents/children
                 // - Add it to the conversation
                 for (int i = 0; i < uiNodes.Count; i++)

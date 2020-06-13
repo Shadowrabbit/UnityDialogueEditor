@@ -15,14 +15,15 @@ namespace DialogueEditor
     [DisallowMultipleComponent]
     public class NPCConversation : MonoBehaviour
     {
-        /// <summary> V1.02 </summary>
-        public const int VERSION = 102;
+        /// <summary> Version 1.03 </summary>
+        public const int CurrentVersion = 103;
 
         private readonly string CHILD_NAME = "ConversationEventInfo";
 
         // Serialized data
         [SerializeField] public int CurrentIDCounter = 1;
         [SerializeField] private string json;
+        [SerializeField] private int saveVersion;
         [SerializeField] public string DefaultName;
         [SerializeField] public Sprite DefaultSprite;
         [SerializeField] public TMPro.TMP_FontAsset DefaultFont;
@@ -31,6 +32,8 @@ namespace DialogueEditor
 
         // Runtime vars
         public UnityEngine.Events.UnityEvent Event;
+
+        public int Version { get { return saveVersion; } }
 
 
         //--------------------------------------
@@ -88,6 +91,7 @@ namespace DialogueEditor
         public void Serialize(EditableConversation conversation)
         {
             json = Jsonify(conversation);
+            saveVersion = CurrentVersion;
         }
 
         public Conversation Deserialize()
@@ -224,69 +228,8 @@ namespace DialogueEditor
     }
 
 
-
     //--------------------------------------
-    // Conversation C# class - For use by user to build UI (Deserialized)
-    //--------------------------------------
-
-    public class Conversation
-    {
-        public SpeechNode Root;
-    }
-
-    public abstract class ConversationNode
-    {
-        public string Text;
-        public TMPro.TMP_FontAsset TMPFont;
-    }
-
-    public class SpeechNode : ConversationNode
-    {
-        public string Name;
-
-        /// <summary>
-        /// Should this speech node go onto the next one automatically?
-        /// </summary>
-        public bool AutomaticallyAdvance;
-
-        /// <summary>
-        /// Should this speech node display a "continue" or "end" option?
-        /// </summary>
-        public bool AutoAdvanceShouldDisplayOption;
-
-        /// <summary>
-        /// If AutomaticallyAdvance==True, how long should this speech node 
-        /// display before going onto the next one?
-        /// </summary>
-        public float TimeUntilAdvance;
-
-        public Sprite Icon;
-        public AudioClip Audio;
-        public float Volume;
-
-        /// <summary>
-        /// The Options available on this Speech node, if any.
-        /// </summary>
-        public List<OptionNode> Options;
-
-        /// <summary>
-        /// The Speech node following the current, if any.
-        /// </summary>
-        public SpeechNode Dialogue;
-
-        public UnityEngine.Events.UnityEvent Event;
-    }
-
-    public class OptionNode : ConversationNode
-    {
-        public SpeechNode Dialogue;
-    }
-
-
-
-
-    //--------------------------------------
-    // Editable Conversation C# class - For use in editor (Deserialized)
+    // Editable Conversation C# class - Non-User facing; for use in editor (Deserialized)
     //--------------------------------------
 
     [DataContract]
@@ -412,14 +355,17 @@ namespace DialogueEditor
             this.TMPFont = conversation.GetNodeData(this.ID).TMPFont;
 
 #if UNITY_EDITOR
-            // Load from database so data is not lost for people who are upgrading
-            if (this.TMPFont == null)
+            // If under V1.03, Load from database via GUID, so data is not lost for people who are upgrading
+            if (conversation.Version < 103)
             {
-                if (!string.IsNullOrEmpty(TMPFontGUID))
+                if (this.TMPFont == null)
                 {
-                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(TMPFontGUID);
-                    this.TMPFont = (TMPro.TMP_FontAsset)UnityEditor.AssetDatabase.LoadAssetAtPath(path, typeof(TMPro.TMP_FontAsset));
+                    if (!string.IsNullOrEmpty(TMPFontGUID))
+                    {
+                        string path = UnityEditor.AssetDatabase.GUIDToAssetPath(TMPFontGUID);
+                        this.TMPFont = (TMPro.TMP_FontAsset)UnityEditor.AssetDatabase.LoadAssetAtPath(path, typeof(TMPro.TMP_FontAsset));
 
+                    }
                 }
             }
 #endif
@@ -613,24 +559,27 @@ namespace DialogueEditor
             this.Icon = conversation.GetNodeData(this.ID).Icon;
 
 #if UNITY_EDITOR
-            // Load from database so data is not lost for people who are upgrading
-            if (this.Audio == null)
-            {
-                if (!string.IsNullOrEmpty(AudioGUID))
+            // If under V1.03, Load from database via GUID, so data is not lost for people who are upgrading
+            if (conversation.Version < 103)
+            {            
+                if (this.Audio == null)
                 {
-                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(AudioGUID);
-                    this.Audio = (AudioClip)UnityEditor.AssetDatabase.LoadAssetAtPath(path, typeof(AudioClip));
+                    if (!string.IsNullOrEmpty(AudioGUID))
+                    {
+                        string path = UnityEditor.AssetDatabase.GUIDToAssetPath(AudioGUID);
+                        this.Audio = (AudioClip)UnityEditor.AssetDatabase.LoadAssetAtPath(path, typeof(AudioClip));
 
+                    }
                 }
-            }
 
-            if (this.Icon == null)
-            {
-                if (!string.IsNullOrEmpty(IconGUID))
+                if (this.Icon == null)
                 {
-                    string path = UnityEditor.AssetDatabase.GUIDToAssetPath(IconGUID);
-                    this.Icon = (Sprite)UnityEditor.AssetDatabase.LoadAssetAtPath(path, typeof(Sprite));
+                    if (!string.IsNullOrEmpty(IconGUID))
+                    {
+                        string path = UnityEditor.AssetDatabase.GUIDToAssetPath(IconGUID);
+                        this.Icon = (Sprite)UnityEditor.AssetDatabase.LoadAssetAtPath(path, typeof(Sprite));
 
+                    }
                 }
             }
 #endif

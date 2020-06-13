@@ -377,11 +377,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentIDCounter: 4
-  json: '{"Options":[],"SpeechNodes":[{"EditorInfo":{"isRoot":true,"xPos":228.5,"yPos":22},"ID":0,"TMPFontGUID":"","Text":"Child,
-    do you come in search of magic?","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":"","AutoAdvanceShouldDisplayOption":false,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"Wizard","OptionUIDs":[],"SpeechUID":1,"TimeUntilAdvance":0,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":226.5,"yPos":123},"ID":1,"TMPFontGUID":"","Text":"Yes!
-    I want to learn magical spells!","parentUIDs":[0,0],"AdvanceDialogueAutomatically":false,"AudioGUID":"","AutoAdvanceShouldDisplayOption":false,"IconGUID":"f71c0dc03d067a342aa16a51674f6507","Name":"Child","OptionUIDs":[],"SpeechUID":2,"TimeUntilAdvance":0,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":228.5,"yPos":225},"ID":2,"TMPFontGUID":"","Text":"Very
-    well. But magic is very difficult. Are you prepared?","parentUIDs":[1,1],"AdvanceDialogueAutomatically":false,"AudioGUID":"","AutoAdvanceShouldDisplayOption":false,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"Wizard","OptionUIDs":[],"SpeechUID":3,"TimeUntilAdvance":0,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":228.5,"yPos":340},"ID":3,"TMPFontGUID":"","Text":"Yes!
+  json: '{"Options":[],"SpeechNodes":[{"EditorInfo":{"isRoot":true,"xPos":348,"yPos":22},"ID":0,"TMPFontGUID":"","Text":"Child,
+    do you come in search of magic?","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":"","AutoAdvanceShouldDisplayOption":false,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"Wizard","OptionUIDs":[],"SpeechUID":1,"TimeUntilAdvance":0,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":346,"yPos":123},"ID":1,"TMPFontGUID":"","Text":"Yes!
+    I want to learn magical spells!","parentUIDs":[0,0],"AdvanceDialogueAutomatically":false,"AudioGUID":"","AutoAdvanceShouldDisplayOption":false,"IconGUID":"f71c0dc03d067a342aa16a51674f6507","Name":"Child","OptionUIDs":[],"SpeechUID":2,"TimeUntilAdvance":0,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":345,"yPos":232},"ID":2,"TMPFontGUID":"","Text":"Very
+    well. But magic is very difficult. Are you prepared?","parentUIDs":[1,1],"AdvanceDialogueAutomatically":false,"AudioGUID":"","AutoAdvanceShouldDisplayOption":false,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"Wizard","OptionUIDs":[],"SpeechUID":3,"TimeUntilAdvance":0,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":348,"yPos":340},"ID":3,"TMPFontGUID":"","Text":"Yes!
     I''ll try my best!","parentUIDs":[2,2],"AdvanceDialogueAutomatically":false,"AudioGUID":"","AutoAdvanceShouldDisplayOption":false,"IconGUID":"f71c0dc03d067a342aa16a51674f6507","Name":"Child","OptionUIDs":[],"SpeechUID":-1,"TimeUntilAdvance":0,"Volume":0}]}'
+  saveVersion: 103
   DefaultName: 
   DefaultSprite: {fileID: 0}
   DefaultFont: {fileID: 0}
@@ -756,23 +757,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83189876d4d389f43b7dd2e925aa112e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CurrentIDCounter: 11
-  json: '{"Options":[{"EditorInfo":{"isRoot":false,"xPos":154.5,"yPos":124},"ID":1,"TMPFontGUID":"","Text":"I''ve
-    traveled from afar in seek of new magical spells.","parentUIDs":[0,0],"SpeechUID":3},{"EditorInfo":{"isRoot":false,"xPos":475.5,"yPos":125},"ID":2,"TMPFontGUID":"","Text":"I
-    come in search of a quest.","parentUIDs":[0,0],"SpeechUID":4},{"EditorInfo":{"isRoot":false,"xPos":521.5,"yPos":326},"ID":5,"TMPFontGUID":"","Text":"Yes!","parentUIDs":[4,4],"SpeechUID":10},{"EditorInfo":{"isRoot":false,"xPos":297.5,"yPos":326},"ID":6,"TMPFontGUID":"","Text":"No...
-    I''ve changed my mind. ","parentUIDs":[4,3,3,4],"SpeechUID":9},{"EditorInfo":{"isRoot":false,"xPos":34.5,"yPos":319},"ID":7,"TMPFontGUID":"","Text":"Yes!","parentUIDs":[3,3],"SpeechUID":8}],"SpeechNodes":[{"EditorInfo":{"isRoot":true,"xPos":314.5,"yPos":22},"ID":0,"TMPFontGUID":"","Text":"Hello
+  CurrentIDCounter: 12
+  json: '{"Options":[{"EditorInfo":{"isRoot":false,"xPos":188,"yPos":124},"ID":1,"TMPFontGUID":"","Text":"I''ve
+    traveled from afar in seek of new magical spells.","parentUIDs":[0,0],"SpeechUID":3},{"EditorInfo":{"isRoot":false,"xPos":509,"yPos":125},"ID":2,"TMPFontGUID":"","Text":"I
+    come in search of a quest.","parentUIDs":[0,0],"SpeechUID":4},{"EditorInfo":{"isRoot":false,"xPos":555,"yPos":326},"ID":5,"TMPFontGUID":"","Text":"Yes!","parentUIDs":[4,4],"SpeechUID":10},{"EditorInfo":{"isRoot":false,"xPos":331,"yPos":326},"ID":6,"TMPFontGUID":"","Text":"No...
+    I''ve changed my mind. ","parentUIDs":[4,3,3,4],"SpeechUID":9},{"EditorInfo":{"isRoot":false,"xPos":68,"yPos":319},"ID":7,"TMPFontGUID":"","Text":"Yes!","parentUIDs":[3,3],"SpeechUID":8}],"SpeechNodes":[{"EditorInfo":{"isRoot":true,"xPos":348,"yPos":22},"ID":0,"TMPFontGUID":"","Text":"Hello
     traveler. I see you''ve come from far.","parentUIDs":[],"AdvanceDialogueAutomatically":false,"AudioGUID":"","AutoAdvanceShouldDisplayOption":false,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"The
-    great wizard","OptionUIDs":[1,2],"SpeechUID":-1,"TimeUntilAdvance":0,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":154.5,"yPos":208},"ID":3,"TMPFontGUID":"","Text":"Some
+    great wizard","OptionUIDs":[1,2],"SpeechUID":-1,"TimeUntilAdvance":0,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":188,"yPos":208},"ID":3,"TMPFontGUID":"","Text":"Some
     magic, are you prepared?","parentUIDs":[1,1],"AdvanceDialogueAutomatically":false,"AudioGUID":"","AutoAdvanceShouldDisplayOption":false,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"The
-    great wizard","OptionUIDs":[7,6],"SpeechUID":-1,"TimeUntilAdvance":0,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":474.5,"yPos":212},"ID":4,"TMPFontGUID":"","Text":"Are
+    great wizard","OptionUIDs":[7,6],"SpeechUID":-1,"TimeUntilAdvance":0,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":508,"yPos":212},"ID":4,"TMPFontGUID":"","Text":"Are
     you sure?","parentUIDs":[2,2],"AdvanceDialogueAutomatically":false,"AudioGUID":"","AutoAdvanceShouldDisplayOption":false,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"The
-    great wizard","OptionUIDs":[5,6],"SpeechUID":-1,"TimeUntilAdvance":0,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":40.5,"yPos":405},"ID":8,"TMPFontGUID":"","Text":"Very
+    great wizard","OptionUIDs":[5,6],"SpeechUID":-1,"TimeUntilAdvance":0,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":74,"yPos":405},"ID":8,"TMPFontGUID":"","Text":"Very
     well, I will teach you the ancient magic. ","parentUIDs":[7,7],"AdvanceDialogueAutomatically":false,"AudioGUID":"","AutoAdvanceShouldDisplayOption":false,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"The
-    great wizard","OptionUIDs":[],"SpeechUID":-1,"TimeUntilAdvance":0,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":297.5,"yPos":402},"ID":9,"TMPFontGUID":"","Text":"Fare
+    great wizard","OptionUIDs":[],"SpeechUID":-1,"TimeUntilAdvance":0,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":331,"yPos":402},"ID":9,"TMPFontGUID":"","Text":"Fare
     the well, traveler. ","parentUIDs":[6,6],"AdvanceDialogueAutomatically":false,"AudioGUID":"","AutoAdvanceShouldDisplayOption":false,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"The
-    great wizard","OptionUIDs":[],"SpeechUID":-1,"TimeUntilAdvance":0,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":527.5,"yPos":404},"ID":10,"TMPFontGUID":"","Text":"Very
+    great wizard","OptionUIDs":[],"SpeechUID":-1,"TimeUntilAdvance":0,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":561,"yPos":404},"ID":10,"TMPFontGUID":"","Text":"Very
     well, You may begin your quest. ","parentUIDs":[5,5],"AdvanceDialogueAutomatically":false,"AudioGUID":"","AutoAdvanceShouldDisplayOption":false,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"The
     great wizard","OptionUIDs":[],"SpeechUID":-1,"TimeUntilAdvance":0,"Volume":0}]}'
+  saveVersion: 103
   DefaultName: 
   DefaultSprite: {fileID: 0}
   DefaultFont: {fileID: 0}
@@ -2015,15 +2017,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentIDCounter: 5
-  json: '{"Options":[],"SpeechNodes":[{"EditorInfo":{"isRoot":true,"xPos":230.5,"yPos":26},"ID":0,"TMPFontGUID":"","Text":"Timmothy,
+  json: '{"Options":[],"SpeechNodes":[{"EditorInfo":{"isRoot":true,"xPos":348,"yPos":22},"ID":0,"TMPFontGUID":"","Text":"Timmothy,
     Are you here, are you ready?!","parentUIDs":[],"AdvanceDialogueAutomatically":true,"AudioGUID":"","AutoAdvanceShouldDisplayOption":true,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"Wizard
-    Maldred","OptionUIDs":[],"SpeechUID":2,"TimeUntilAdvance":3,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":233.5,"yPos":144},"ID":2,"TMPFontGUID":"","Text":"Yes,
+    Maldred","OptionUIDs":[],"SpeechUID":2,"TimeUntilAdvance":3,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":351,"yPos":139.999954},"ID":2,"TMPFontGUID":"","Text":"Yes,
     I''m here!","parentUIDs":[0,0],"AdvanceDialogueAutomatically":true,"AudioGUID":"","AutoAdvanceShouldDisplayOption":true,"IconGUID":"f71c0dc03d067a342aa16a51674f6507","Name":"Student
-    Timmothy","OptionUIDs":[],"SpeechUID":3,"TimeUntilAdvance":3,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":232.5,"yPos":255},"ID":3,"TMPFontGUID":"","Text":"Alright,
+    Timmothy","OptionUIDs":[],"SpeechUID":3,"TimeUntilAdvance":3,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":351,"yPos":243.000015},"ID":3,"TMPFontGUID":"","Text":"Alright,
     lets get started! Follow me...","parentUIDs":[2,2],"AdvanceDialogueAutomatically":true,"AudioGUID":"","AutoAdvanceShouldDisplayOption":false,"IconGUID":"2c2a5be59b4a36648a911535c6e46ab8","Name":"Wizard
-    Maldred","OptionUIDs":[],"SpeechUID":4,"TimeUntilAdvance":2,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":237.5,"yPos":364},"ID":4,"TMPFontGUID":"","Text":"Ok
+    Maldred","OptionUIDs":[],"SpeechUID":4,"TimeUntilAdvance":2,"Volume":0},{"EditorInfo":{"isRoot":false,"xPos":355,"yPos":361},"ID":4,"TMPFontGUID":"","Text":"Ok
     sir!","parentUIDs":[3,3],"AdvanceDialogueAutomatically":true,"AudioGUID":"","AutoAdvanceShouldDisplayOption":false,"IconGUID":"f71c0dc03d067a342aa16a51674f6507","Name":"Student
     Timmothy","OptionUIDs":[],"SpeechUID":-1,"TimeUntilAdvance":2,"Volume":0}]}'
+  saveVersion: 103
   DefaultName: 
   DefaultSprite: {fileID: 0}
   DefaultFont: {fileID: 0}
