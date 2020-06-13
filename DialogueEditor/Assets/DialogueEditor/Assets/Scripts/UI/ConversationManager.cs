@@ -56,6 +56,14 @@ namespace DialogueEditor
         // Default values
         public Sprite BlankSprite;
 
+        // Getter properties
+        public bool IsConversationActive
+        {
+            get
+            {
+                return m_state != eState.NONE && m_state != eState.Off;
+            }
+        }
 
         // Private
         private float m_elapsedScrollTime;
@@ -69,6 +77,9 @@ namespace DialogueEditor
         private SpeechNode m_pendingDialogue;
         private OptionNode m_selectedOption;
         private SpeechNode m_currentSpeech;
+
+        // Selection options
+        private int m_currentSelectedIndex;
 
 
         //--------------------------------------
@@ -341,6 +352,61 @@ namespace DialogueEditor
 
 
         //--------------------------------------
+        // Public functions
+        //--------------------------------------
+
+        public void SelectNextOption()
+        {
+            int next = m_currentSelectedIndex + 1;
+            if (next > m_uiOptions.Count - 1)
+            {
+                next = 0;
+            }
+            SetSelectedOption(next);
+        }
+
+        public void SelectPreviousOption()
+        {
+            int previous = m_currentSelectedIndex - 1;
+            if (previous < 0)
+            {
+                previous = m_uiOptions.Count - 1;
+            }
+            SetSelectedOption(previous);
+        }
+
+        public void PressSelectedOption()
+        {
+            if (m_state != eState.Idle) { return; }
+            if (m_currentSelectedIndex < 0) { return; }
+
+            UIConversationButton button = m_uiOptions[m_currentSelectedIndex];
+
+            if (button.Speech != null)
+                ConversationManager.Instance.DoSpeech(button.Speech);
+            else
+                ConversationManager.Instance.OptionSelected(button.Option);
+        }
+
+        public void AlertHover(UIConversationButton button)
+        {
+            for (int i = 0; i < m_uiOptions.Count; i++)
+            {
+                if (m_uiOptions[i] == button)
+                {
+                    SetSelectedOption(i);
+                    return;
+                }
+            }
+
+            if (button == null)
+                UnselectOption();
+        }
+
+
+
+
+        //--------------------------------------
         // Do Speech
         //--------------------------------------
 
@@ -356,6 +422,7 @@ namespace DialogueEditor
 
             // Clear current options
             ClearOptions();
+            m_currentSelectedIndex = 0;
 
             // Set sprite
             if (speech.Icon == null)
@@ -415,7 +482,6 @@ namespace DialogueEditor
             }
 
 
-
             // Call the event
             if (speech.Event != null)
                 speech.Event.Invoke();
@@ -462,6 +528,7 @@ namespace DialogueEditor
                     }
                 }
             }
+            SetSelectedOption(0);
 
             // Set the button sprite and alpha
             for (int i = 0; i < m_uiOptions.Count; i++)
@@ -535,6 +602,27 @@ namespace DialogueEditor
             Color col = graphic.color;
             col.a = a;
             graphic.color = col;
+        }
+
+        private void SetSelectedOption(int index)
+        {
+            if (index < 0)
+                index = 0;
+            if (index > m_uiOptions.Count - 1)
+                index = m_uiOptions.Count - 1;
+
+            if (m_currentSelectedIndex >= 0)
+                m_uiOptions[m_currentSelectedIndex].SetHovering(false);
+            m_currentSelectedIndex = index;
+            m_uiOptions[index].SetHovering(true);
+        }
+
+        private void UnselectOption()
+        {
+            if (m_currentSelectedIndex < 0) { return; }
+
+            m_uiOptions[m_currentSelectedIndex].SetHovering(false);
+            m_currentSelectedIndex = -1;
         }
     }
 }
