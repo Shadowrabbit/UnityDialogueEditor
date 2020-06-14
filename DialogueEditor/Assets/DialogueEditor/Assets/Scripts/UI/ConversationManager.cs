@@ -37,6 +37,7 @@ namespace DialogueEditor
         public bool BackgroundImageSliced;
         public Sprite OptionImage;
         public bool OptionImageSliced;
+        public bool AllowMouseInteraction;
 
         // Non-User facing 
         // Not exposed via custom inspector

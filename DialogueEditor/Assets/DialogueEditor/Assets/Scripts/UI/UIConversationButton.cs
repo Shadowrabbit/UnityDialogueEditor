@@ -29,6 +29,11 @@ namespace DialogueEditor
         private bool Hovering { get { return (m_hoverState == eHoverState.animatingOn || m_hoverState == eHoverState.animatingOff); } }
         private Vector3 BigSize { get { return Vector3.one * 1.2f; } }
 
+
+        //--------------------------------------
+        // MonoBehaviour
+        //--------------------------------------
+
         private void Awake()
         {
             m_rect = GetComponent<RectTransform>();
@@ -70,6 +75,43 @@ namespace DialogueEditor
         }
 
 
+
+
+        //--------------------------------------
+        // Input Events
+        //--------------------------------------
+
+        public void OnHover(bool hovering)
+        {
+            if (!ConversationManager.Instance.AllowMouseInteraction) { return; }
+
+            if (hovering)
+            {
+                ConversationManager.Instance.AlertHover(this);
+            }
+            else
+            {
+                ConversationManager.Instance.AlertHover(null);
+            }
+        }
+
+        public void OnClick()
+        {
+            if (!ConversationManager.Instance.AllowMouseInteraction) { return; }
+
+            if (m_action != null)
+                ConversationManager.Instance.DoSpeech(m_action);
+            else
+                ConversationManager.Instance.OptionSelected(m_option);
+        }
+
+
+
+
+        //--------------------------------------
+        // Public calls
+        //--------------------------------------
+
         public void SetHovering(bool selected)
         {
             if (selected && (m_hoverState == eHoverState.animatingOn || m_hoverState == eHoverState.idleOn)) { return; }
@@ -80,18 +122,6 @@ namespace DialogueEditor
             else
                 m_hoverState = eHoverState.animatingOff;
             m_hoverT = 0f;
-        }
-
-        public void OnHover(bool hovering)
-        {
-            if (hovering)
-            {
-                ConversationManager.Instance.AlertHover(this);
-            }
-            else
-            {
-                ConversationManager.Instance.AlertHover(null);
-            }
         }
 
         public void SetImage(Sprite sprite, bool sliced)
@@ -148,13 +178,12 @@ namespace DialogueEditor
             TextMesh.text = "End.";
         }
 
-        public void OnOptionSelected()
-        {
-            if (m_action != null)
-                ConversationManager.Instance.DoSpeech(m_action);
-            else
-                ConversationManager.Instance.OptionSelected(m_option);
-        }
+
+
+
+        //--------------------------------------
+        // Util
+        //--------------------------------------
 
         private static float EaseOutQuart(float normalized)
         {

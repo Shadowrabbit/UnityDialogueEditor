@@ -48,6 +48,11 @@ namespace DialogueEditor
             t.ScrollText = EditorGUILayout.Toggle("Scroll Text", t.ScrollText);
             if (t.ScrollText)
                 t.ScrollSpeed = EditorGUILayout.FloatField("Scroll Speed", t.ScrollSpeed);
+            EditorGUILayout.Space();
+
+            // Interaction options
+            GUILayout.Label("Interaction options", EditorStyles.boldLabel);
+            t.AllowMouseInteraction = EditorGUILayout.Toggle("Allow Mouse Interaction", t.AllowMouseInteraction);
         }
 
         private void RenderPreviewImage(ConversationManager t)
@@ -93,7 +98,7 @@ namespace DialogueEditor
             EditorGUI.DrawRect(iconRect, Color.white);
             Rect tmpt = new Rect(iconRect);
             tmpt.x += 2f;
-            tmpt.y += ICON_SIZE * 0.35f;
+            tmpt.y += ICON_SIZE * 0.1f;
             EditorGUI.LabelField(tmpt, "<Icon>");
 
             // Draw text
