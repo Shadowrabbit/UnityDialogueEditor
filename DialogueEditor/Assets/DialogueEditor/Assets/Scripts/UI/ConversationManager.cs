@@ -393,7 +393,7 @@ namespace DialogueEditor
         {
             for (int i = 0; i < m_uiOptions.Count; i++)
             {
-                if (m_uiOptions[i] == button)
+                if (m_uiOptions[i] == button && m_currentSelectedIndex != i)
                 {
                     SetSelectedOption(i);
                     return;

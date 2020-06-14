@@ -14,8 +14,30 @@ namespace DialogueEditor
         private const float OPTION_BUFFER = 5;
         private const float OPTION_TEXT_BUF_Y = 10;
 
+
+        SerializedProperty BackgroundImageProperty;
+        SerializedProperty BackgroundImageSlicedProperty;
+        SerializedProperty OptionImageProperty;
+        SerializedProperty OptionImageSlicedProperty;
+        SerializedProperty ScrollTextProperty;
+        SerializedProperty ScrollTextSpeedProperty;
+        SerializedProperty AllowMouseInteractionProperty;
+
+        private void OnEnable()
+        {
+            BackgroundImageProperty = serializedObject.FindProperty("BackgroundImage");
+            BackgroundImageSlicedProperty = serializedObject.FindProperty("BackgroundImageSliced");
+            OptionImageProperty = serializedObject.FindProperty("OptionImage");
+            OptionImageSlicedProperty = serializedObject.FindProperty("OptionImageSliced");
+            ScrollTextProperty = serializedObject.FindProperty("ScrollText");
+            ScrollTextSpeedProperty = serializedObject.FindProperty("ScrollSpeed");
+            AllowMouseInteractionProperty = serializedObject.FindProperty("AllowMouseInteraction");
+        }
+
         public override void OnInspectorGUI()
         {
+            // Update the serializedProperty - always do this in the beginning of OnInspectorGUI.
+            serializedObject.Update();
             ConversationManager t = (ConversationManager)target;
 
             RenderPreviewImage(t);
@@ -27,32 +49,29 @@ namespace DialogueEditor
 
             // Background image
             GUILayout.Label("Dialogue Image Options", EditorStyles.boldLabel);
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PrefixLabel("Dialogue Background Sprite");
-            t.BackgroundImage = (Sprite)EditorGUILayout.ObjectField(t.BackgroundImage, typeof(Sprite), allowSceneObjects: false);
-            EditorGUILayout.EndHorizontal();
-            t.BackgroundImageSliced = EditorGUILayout.Toggle("Sliced image", t.BackgroundImageSliced);
+            EditorGUILayout.PropertyField(BackgroundImageProperty);
+            EditorGUILayout.PropertyField(BackgroundImageSlicedProperty); 
             EditorGUILayout.Space();
 
             // Option image
             GUILayout.Label("Dialogue Image Options", EditorStyles.boldLabel);
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PrefixLabel("Option Background Sprite");
-            t.OptionImage = (Sprite)EditorGUILayout.ObjectField(t.OptionImage, typeof(Sprite), allowSceneObjects: false);
-            EditorGUILayout.EndHorizontal();
-            t.OptionImageSliced = EditorGUILayout.Toggle("Sliced image", t.OptionImageSliced);
+            EditorGUILayout.PropertyField(OptionImageProperty);
+            EditorGUILayout.PropertyField(OptionImageSlicedProperty);
             EditorGUILayout.Space();
 
             // Text
             GUILayout.Label("Text options", EditorStyles.boldLabel);
-            t.ScrollText = EditorGUILayout.Toggle("Scroll Text", t.ScrollText);
+            EditorGUILayout.PropertyField(ScrollTextProperty);
             if (t.ScrollText)
-                t.ScrollSpeed = EditorGUILayout.FloatField("Scroll Speed", t.ScrollSpeed);
+                EditorGUILayout.PropertyField(ScrollTextSpeedProperty);
             EditorGUILayout.Space();
 
             // Interaction options
             GUILayout.Label("Interaction options", EditorStyles.boldLabel);
-            t.AllowMouseInteraction = EditorGUILayout.Toggle("Allow Mouse Interaction", t.AllowMouseInteraction);
+            EditorGUILayout.PropertyField(AllowMouseInteractionProperty);
+
+            // Apply changes to the serializedProperty - always do this in the end of OnInspectorGUI.
+            serializedObject.ApplyModifiedProperties();
         }
 
         private void RenderPreviewImage(ConversationManager t)
