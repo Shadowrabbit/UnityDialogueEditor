@@ -380,6 +380,8 @@ namespace DialogueEditor
         {
             if (m_state != eState.Idle) { return; }
             if (m_currentSelectedIndex < 0) { return; }
+            if (m_currentSelectedIndex >= m_uiOptions.Count) { return; }
+            if (m_uiOptions.Count == 0) { return; }
 
             UIConversationButton button = m_uiOptions[m_currentSelectedIndex];
 
@@ -607,6 +609,8 @@ namespace DialogueEditor
 
         private void SetSelectedOption(int index)
         {
+            if (m_uiOptions.Count == 0) { return; }
+
             if (index < 0)
                 index = 0;
             if (index > m_uiOptions.Count - 1)
