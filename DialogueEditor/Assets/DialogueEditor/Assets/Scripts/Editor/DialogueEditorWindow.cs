@@ -523,43 +523,43 @@ namespace DialogueEditor
 
                 // Parameters
 
-                if (CurrentAsset.Parameters == null)
-                    CurrentAsset.Parameters = new List<EditableParameter>();
+                if (CurrentAsset.ParameterList == null)
+                    CurrentAsset.ParameterList = new List<EditableParameter>();
 
                 GUILayout.Label("Parameters", panelTitleStyle);
                 GUILayout.BeginHorizontal();
                 if (GUILayout.Button("Add bool"))
                 {
-                    CurrentAsset.Parameters.Add(new EditableBoolParameter("Unnamed bool"));
+                    CurrentAsset.ParameterList.Add(new EditableBoolParameter("Unnamed bool"));
                 }
                 if (GUILayout.Button("Add int"))
                 {
-                    CurrentAsset.Parameters.Add(new EditableIntParameter("Unnamed int"));
+                    CurrentAsset.ParameterList.Add(new EditableIntParameter("Unnamed int"));
                 }
                 GUILayout.EndHorizontal();
 
-                for (int i = 0; i < CurrentAsset.Parameters.Count; i++)
+                for (int i = 0; i < CurrentAsset.ParameterList.Count; i++)
                 {
                     GUILayout.BeginHorizontal();
 
                     float paramNameWidth = panelWidth * 0.6f;
-                    CurrentAsset.Parameters[i].ParameterName = 
-                        GUILayout.TextField(CurrentAsset.Parameters[i].ParameterName, GUILayout.Width(paramNameWidth), GUILayout.ExpandWidth(false));
+                    CurrentAsset.ParameterList[i].ParameterName = 
+                        GUILayout.TextField(CurrentAsset.ParameterList[i].ParameterName, GUILayout.Width(paramNameWidth), GUILayout.ExpandWidth(false));
 
-                    if (CurrentAsset.Parameters[i] is EditableBoolParameter)
+                    if (CurrentAsset.ParameterList[i] is EditableBoolParameter)
                     {
-                        EditableBoolParameter param = CurrentAsset.Parameters[i] as EditableBoolParameter;
-                        param.Value = EditorGUILayout.Toggle(param.Value);
+                        EditableBoolParameter param = CurrentAsset.ParameterList[i] as EditableBoolParameter;
+                        param.BoolValue = EditorGUILayout.Toggle(param.BoolValue);
                     }
-                    else if (CurrentAsset.Parameters[i] is EditableIntParameter)
+                    else if (CurrentAsset.ParameterList[i] is EditableIntParameter)
                     {
-                        EditableIntParameter param = CurrentAsset.Parameters[i] as EditableIntParameter;
-                        param.Value = EditorGUILayout.IntField(param.Value);
+                        EditableIntParameter param = CurrentAsset.ParameterList[i] as EditableIntParameter;
+                        param.IntValue = EditorGUILayout.IntField(param.IntValue);
                     }
 
                     if (GUILayout.Button("X"))
                     {
-                        CurrentAsset.Parameters.RemoveAt(i);
+                        CurrentAsset.ParameterList.RemoveAt(i);
                         i--;
                     }
 

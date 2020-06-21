@@ -27,12 +27,12 @@ namespace DialogueEditor
         [SerializeField] public string DefaultName;
         [SerializeField] public Sprite DefaultSprite;
         [SerializeField] public TMPro.TMP_FontAsset DefaultFont;
-        [SerializeField] public List<EditableParameter> Parameters;
         [FormerlySerializedAs("Events")]
         [SerializeField] private List<NodeEventHolder> NodeSerializedDataList;
 
         // Runtime vars
         public UnityEngine.Events.UnityEvent Event;
+        public List<EditableParameter> ParameterList; // Serialized into the json string
 
         public int Version { get { return saveVersion; } }
 
@@ -91,6 +91,7 @@ namespace DialogueEditor
 
         public void Serialize(EditableConversation conversation)
         {
+            conversation.Parameters = this.ParameterList;
             json = Jsonify(conversation);
             saveVersion = CurrentVersion;
         }
@@ -103,6 +104,33 @@ namespace DialogueEditor
 
             // Create a conversation. 
             Conversation conversation = new Conversation();
+
+
+            // Construct the parameters
+            for (int i = 0; i < ec.Parameters.Count; i++)
+            {
+                if (ec.Parameters[i] is EditableBoolParameter)
+                {
+                    EditableBoolParameter editorParam = ec.Parameters[i] as EditableBoolParameter;
+                    BoolParameter boolParam = new BoolParameter();
+                    boolParam.ParameterName = editorParam.ParameterName;
+                    boolParam.BoolValue = editorParam.BoolValue;
+
+                    conversation.Parameters.Add(boolParam);
+                }
+                else if (ec.Parameters[i] is EditableIntParameter)
+                {
+                    EditableIntParameter editorParam = ec.Parameters[i] as EditableIntParameter;
+                    IntParameter intParam = new IntParameter();
+                    intParam.ParameterName = editorParam.ParameterName;
+                    intParam.IntValue = editorParam.IntValue;
+
+                    conversation.Parameters.Add(intParam);
+                }
+            }
+
+
+
             // Create a dictionary to store our created nodes by UID
             Dictionary<int, SpeechNode> dialogues = new Dictionary<int, SpeechNode>();
             Dictionary<int, OptionNode> options = new Dictionary<int, OptionNode>();
@@ -138,6 +166,8 @@ namespace DialogueEditor
                 options.Add(ec.Options[i].ID, node);
             }
 
+
+
             // Now that we have every node in the dictionary, reconstruct the tree 
             // And also look for the root
             for (int i = 0; i < ec.SpeechNodes.Count; i++)
@@ -161,6 +191,7 @@ namespace DialogueEditor
                 }
             }
 
+
             for (int i = 0; i < ec.Options.Count; i++)
             {
                 // Connect option to following dialogue
@@ -177,6 +208,7 @@ namespace DialogueEditor
         {
             // Dejsonify 
             EditableConversation conversation = Dejsonify();
+            this.ParameterList = conversation.Parameters;
 
             if (conversation != null)
             {
@@ -235,7 +267,7 @@ namespace DialogueEditor
     // Parameter 
     //--------------------------------------
 
-    [System.Serializable]
+    [DataContract]
     public abstract class EditableParameter
     {
         public EditableParameter(string name)
@@ -243,11 +275,11 @@ namespace DialogueEditor
             ParameterName = name;
         }
 
-        [SerializeField]
+        [DataMember]
         public string ParameterName;
     }
 
-    [System.Serializable]
+    [DataContract]
     public class EditableBoolParameter : EditableParameter
     {
         public EditableBoolParameter(string name) : base(name)
@@ -255,11 +287,11 @@ namespace DialogueEditor
 
         }
 
-        [SerializeField]
-        public bool Value;
+        [DataMember]
+        public bool BoolValue;
     }
 
-    [System.Serializable]
+    [DataContract]
     public class EditableIntParameter : EditableParameter
     {
         public EditableIntParameter(string name) : base(name)
@@ -267,8 +299,8 @@ namespace DialogueEditor
 
         }
 
-        [SerializeField]
-        public int Value;
+        [DataMember]
+        public int IntValue;
     }
 
 
@@ -279,6 +311,8 @@ namespace DialogueEditor
     //--------------------------------------
 
     [DataContract]
+    [KnownType(typeof(EditableBoolParameter))]
+    [KnownType(typeof(EditableIntParameter))]
     public class EditableConversation
     {
         public const int INVALID_UID = -1;
@@ -294,6 +328,9 @@ namespace DialogueEditor
 
         [DataMember]
         public List<EditableOptionNode> Options;
+
+        [DataMember]
+        public List<EditableParameter> Parameters;
 
         // ----
 
@@ -429,7 +466,7 @@ namespace DialogueEditor
         {
             Options = new List<EditableOptionNode>();
             OptionUIDs = new List<int>();
-            SpeechUID = EditableConversation.INVALID_UID;
+            SpeechUID = EditableConversation.INVALID_UID; ;
         }
 
         [DataMember]

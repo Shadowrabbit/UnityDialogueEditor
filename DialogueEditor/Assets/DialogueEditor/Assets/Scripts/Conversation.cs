@@ -10,7 +10,28 @@ namespace DialogueEditor
 {
     public class Conversation
     {
+        public Conversation()
+        {
+            Parameters = new List<Parameter>();
+        }
+
         public SpeechNode Root;
+        public List<Parameter> Parameters;
+    }
+
+    public abstract class Parameter
+    {
+        public string ParameterName;
+    }
+
+    public class IntParameter : Parameter
+    {
+        public int IntValue;
+    }
+
+    public class BoolParameter : Parameter
+    {
+        public bool BoolValue;
     }
 
     public abstract class ConversationNode
