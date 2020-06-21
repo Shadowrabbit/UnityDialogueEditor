@@ -23,6 +23,7 @@ namespace DialogueEditor
         private const string WINDOW_NAME = "DIALOGUE_EDITOR_WINDOW";
         private const string HELP_URL = "https://josephbarber96.github.io/dialogueeditor.html";
         private const string CONTROL_NAME = "DEFAULT_CONTROL";
+        public const int MIN_PANEL_WIDTH = 180;
 
         // Static properties
         public static bool NodeClickedOnThisUpdate { get; set; }
@@ -504,7 +505,68 @@ namespace DialogueEditor
 
             GUILayout.Space(10);
 
-            if (CurrentlySelectedNode != null)
+            if (CurrentlySelectedNode == null)
+            {
+                GUILayout.Label("Default options", panelTitleStyle);
+
+                // Default options
+                GUILayout.Label("Default name:", EditorStyles.boldLabel);
+                CurrentAsset.DefaultName = EditorGUILayout.TextField(CurrentAsset.DefaultName);
+
+                GUILayout.Label("Default Icon:", EditorStyles.boldLabel);
+                CurrentAsset.DefaultSprite = (Sprite)EditorGUILayout.ObjectField(CurrentAsset.DefaultSprite, typeof(Sprite), false);
+
+                GUILayout.Label("Default font:", EditorStyles.boldLabel);
+                CurrentAsset.DefaultFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(CurrentAsset.DefaultFont, typeof(TMPro.TMP_FontAsset), false);
+
+                GUILayout.Space(10);
+
+                // Parameters
+
+                if (CurrentAsset.Parameters == null)
+                    CurrentAsset.Parameters = new List<EditableParameter>();
+
+                GUILayout.Label("Parameters", panelTitleStyle);
+                GUILayout.BeginHorizontal();
+                if (GUILayout.Button("Add bool"))
+                {
+                    CurrentAsset.Parameters.Add(new EditableBoolParameter("Unnamed bool"));
+                }
+                if (GUILayout.Button("Add int"))
+                {
+                    CurrentAsset.Parameters.Add(new EditableIntParameter("Unnamed int"));
+                }
+                GUILayout.EndHorizontal();
+
+                for (int i = 0; i < CurrentAsset.Parameters.Count; i++)
+                {
+                    GUILayout.BeginHorizontal();
+
+                    float paramNameWidth = panelWidth * 0.6f;
+                    CurrentAsset.Parameters[i].ParameterName = 
+                        GUILayout.TextField(CurrentAsset.Parameters[i].ParameterName, GUILayout.Width(paramNameWidth), GUILayout.ExpandWidth(false));
+
+                    if (CurrentAsset.Parameters[i] is EditableBoolParameter)
+                    {
+                        EditableBoolParameter param = CurrentAsset.Parameters[i] as EditableBoolParameter;
+                        param.Value = EditorGUILayout.Toggle(param.Value);
+                    }
+                    else if (CurrentAsset.Parameters[i] is EditableIntParameter)
+                    {
+                        EditableIntParameter param = CurrentAsset.Parameters[i] as EditableIntParameter;
+                        param.Value = EditorGUILayout.IntField(param.Value);
+                    }
+
+                    if (GUILayout.Button("X"))
+                    {
+                        CurrentAsset.Parameters.RemoveAt(i);
+                        i--;
+                    }
+
+                    GUILayout.EndHorizontal();
+                }
+            }
+            else
             {
                 bool differentNodeSelected = (m_cachedSelectedNode != CurrentlySelectedNode);
                 m_cachedSelectedNode = CurrentlySelectedNode;
@@ -602,19 +664,6 @@ namespace DialogueEditor
                     node.TMPFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(node.TMPFont, typeof(TMPro.TMP_FontAsset), false);
                 }
             }
-            else
-            {
-                GUILayout.Label("Conversation options.", panelTitleStyle);
-
-                GUILayout.Label("Default name:", EditorStyles.boldLabel);
-                CurrentAsset.DefaultName = EditorGUILayout.TextField(CurrentAsset.DefaultName);
-
-                GUILayout.Label("Default Icon:", EditorStyles.boldLabel);
-                CurrentAsset.DefaultSprite = (Sprite)EditorGUILayout.ObjectField(CurrentAsset.DefaultSprite, typeof(Sprite), false);
-
-                GUILayout.Label("Default font:", EditorStyles.boldLabel);
-                CurrentAsset.DefaultFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(CurrentAsset.DefaultFont, typeof(TMPro.TMP_FontAsset), false);
-            }
 
             GUILayout.EndScrollView();
             GUILayout.EndVertical();
@@ -653,8 +702,8 @@ namespace DialogueEditor
 
                 case eInputState.draggingPanel:
                     panelWidth = (position.width - e.mousePosition.x);
-                    if (panelWidth < 100)
-                        panelWidth = 100;
+                    if (panelWidth < MIN_PANEL_WIDTH)
+                        panelWidth = MIN_PANEL_WIDTH;
 
                     if (e.type == EventType.MouseUp && e.button == 0)
                     {

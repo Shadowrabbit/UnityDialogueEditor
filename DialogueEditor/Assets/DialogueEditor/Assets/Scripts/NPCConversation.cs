@@ -27,6 +27,7 @@ namespace DialogueEditor
         [SerializeField] public string DefaultName;
         [SerializeField] public Sprite DefaultSprite;
         [SerializeField] public TMPro.TMP_FontAsset DefaultFont;
+        [SerializeField] public List<EditableParameter> Parameters;
         [FormerlySerializedAs("Events")]
         [SerializeField] private List<NodeEventHolder> NodeSerializedDataList;
 
@@ -226,6 +227,51 @@ namespace DialogueEditor
             return conversation;
         }
     }
+
+
+
+
+    //--------------------------------------
+    // Parameter 
+    //--------------------------------------
+
+    [System.Serializable]
+    public abstract class EditableParameter
+    {
+        public EditableParameter(string name)
+        {
+            ParameterName = name;
+        }
+
+        [SerializeField]
+        public string ParameterName;
+    }
+
+    [System.Serializable]
+    public class EditableBoolParameter : EditableParameter
+    {
+        public EditableBoolParameter(string name) : base(name)
+        {
+
+        }
+
+        [SerializeField]
+        public bool Value;
+    }
+
+    [System.Serializable]
+    public class EditableIntParameter : EditableParameter
+    {
+        public EditableIntParameter(string name) : base(name)
+        {
+
+        }
+
+        [SerializeField]
+        public int Value;
+    }
+
+
 
 
     //--------------------------------------
