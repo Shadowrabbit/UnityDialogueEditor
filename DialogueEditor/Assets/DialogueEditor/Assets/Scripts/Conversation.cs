@@ -17,22 +17,19 @@ namespace DialogueEditor
 
         public SpeechNode Root;
         public List<Parameter> Parameters;
+
+        public Parameter GetParameter(string name)
+        {
+            for (int i = 0; i < Parameters.Count; i++)
+            {
+                if (Parameters[i].ParameterName == name)
+                    return Parameters[i];
+            }
+            return null;
+        }
     }
 
-    public abstract class Parameter
-    {
-        public string ParameterName;
-    }
-
-    public class IntParameter : Parameter
-    {
-        public int IntValue;
-    }
-
-    public class BoolParameter : Parameter
-    {
-        public bool BoolValue;
-    }
+    // ----
 
     public abstract class ConversationNode
     {

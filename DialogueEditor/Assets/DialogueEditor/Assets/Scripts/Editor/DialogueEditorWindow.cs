@@ -204,6 +204,7 @@ namespace DialogueEditor
 
             Recenter();
             Repaint();
+
 #if UNITY_EDITOR
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
 #endif
@@ -494,6 +495,8 @@ namespace DialogueEditor
 
         private void DrawPanel()
         {
+            const int VERTICAL_PADDING = 10;
+
             panelRect = new Rect(position.width - panelWidth, TOOLBAR_HEIGHT, panelWidth, position.height - TOOLBAR_HEIGHT);
             if (panelStyle.normal.background == null)
                 InitGUIStyles();
@@ -519,22 +522,22 @@ namespace DialogueEditor
                 GUILayout.Label("Default font:", EditorStyles.boldLabel);
                 CurrentAsset.DefaultFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(CurrentAsset.DefaultFont, typeof(TMPro.TMP_FontAsset), false);
 
-                GUILayout.Space(10);
+                GUILayout.Space(VERTICAL_PADDING);
 
                 // Parameters
 
                 if (CurrentAsset.ParameterList == null)
-                    CurrentAsset.ParameterList = new List<EditableParameter>();
+                    CurrentAsset.ParameterList = new List<Parameter>();
 
                 GUILayout.Label("Parameters", panelTitleStyle);
                 GUILayout.BeginHorizontal();
                 if (GUILayout.Button("Add bool"))
                 {
-                    CurrentAsset.ParameterList.Add(new EditableBoolParameter("Unnamed bool"));
+                    CurrentAsset.ParameterList.Add(new BoolParameter("Unnamed bool"));
                 }
                 if (GUILayout.Button("Add int"))
                 {
-                    CurrentAsset.ParameterList.Add(new EditableIntParameter("Unnamed int"));
+                    CurrentAsset.ParameterList.Add(new IntParameter("Unnamed int"));
                 }
                 GUILayout.EndHorizontal();
 
@@ -543,17 +546,17 @@ namespace DialogueEditor
                     GUILayout.BeginHorizontal();
 
                     float paramNameWidth = panelWidth * 0.6f;
-                    CurrentAsset.ParameterList[i].ParameterName = 
-                        GUILayout.TextField(CurrentAsset.ParameterList[i].ParameterName, GUILayout.Width(paramNameWidth), GUILayout.ExpandWidth(false));
+                    CurrentAsset.ParameterList[i].ParameterName = GUILayout.TextField(
+                        CurrentAsset.ParameterList[i].ParameterName, GUILayout.Width(paramNameWidth), GUILayout.ExpandWidth(false));
 
-                    if (CurrentAsset.ParameterList[i] is EditableBoolParameter)
+                    if (CurrentAsset.ParameterList[i] is BoolParameter)
                     {
-                        EditableBoolParameter param = CurrentAsset.ParameterList[i] as EditableBoolParameter;
+                        BoolParameter param = CurrentAsset.ParameterList[i] as BoolParameter;
                         param.BoolValue = EditorGUILayout.Toggle(param.BoolValue);
                     }
-                    else if (CurrentAsset.ParameterList[i] is EditableIntParameter)
+                    else if (CurrentAsset.ParameterList[i] is IntParameter)
                     {
-                        EditableIntParameter param = CurrentAsset.ParameterList[i] as EditableIntParameter;
+                        IntParameter param = CurrentAsset.ParameterList[i] as IntParameter;
                         param.IntValue = EditorGUILayout.IntField(param.IntValue);
                     }
 
@@ -662,6 +665,86 @@ namespace DialogueEditor
 
                     GUILayout.Label("TMP Font", EditorStyles.boldLabel);
                     node.TMPFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(node.TMPFont, typeof(TMPro.TMP_FontAsset), false);
+
+                    // Conditions
+                    GUILayout.Space(VERTICAL_PADDING);
+                    GUILayout.Label("Conditions", panelTitleStyle);
+
+                    // Add condition
+                    GUILayout.BeginHorizontal();
+                    if (GUILayout.Button("Add condition"))
+                    {
+                        GenericMenu rightClickMenu = new GenericMenu();
+
+                        for (int i = 0; i < this.CurrentAsset.ParameterList.Count; i++)
+                        {
+                            if (this.CurrentAsset.ParameterList[i] is IntParameter)
+                            {
+                                IntParameter intParam = CurrentAsset.ParameterList[i] as IntParameter;
+                                rightClickMenu.AddItem(new GUIContent(intParam.ParameterName), false, delegate
+                                {
+                                    node.Conditions.Add(new IntCondition(intParam.ParameterName));
+                                });
+                            }
+                            else if (this.CurrentAsset.ParameterList[i] is BoolParameter)
+                            {
+                                BoolParameter boolParam = CurrentAsset.ParameterList[i] as BoolParameter;
+                                rightClickMenu.AddItem(new GUIContent(boolParam.ParameterName), false, delegate
+                                {
+                                    node.Conditions.Add(new BoolCondition(boolParam.ParameterName));
+                                });
+                            }
+                        }
+
+                        rightClickMenu.ShowAsContext();
+                    }
+                    GUILayout.EndHorizontal();
+
+
+                    // Validate conditions
+                    for (int i = 0; i < node.Conditions.Count; i++)
+                    {
+                        if (CurrentAsset.GetParameter(node.Conditions[i].ParameterName) == null)
+                        {
+                            node.Conditions.RemoveAt(i);
+                            i--;
+                        }
+                    }
+
+
+                    // Draw conditions
+                    float conditionNameWidth = panelWidth * 0.4f;
+                    for (int i = 0; i < node.Conditions.Count; i++)
+                    {
+                        GUILayout.BeginHorizontal();
+
+                        string name = node.Conditions[i].ParameterName;
+                        GUILayout.Label(name, EditorStyles.boldLabel, GUILayout.MinWidth(conditionNameWidth), GUILayout.MaxWidth(conditionNameWidth));
+
+                        if (node.Conditions[i] is IntCondition)
+                        {
+                            IntCondition intCond = node.Conditions[i] as IntCondition;
+
+                            intCond.CheckType = (IntCondition.eCheckType)EditorGUILayout.EnumPopup(intCond.CheckType);
+                            intCond.RequiredValue = EditorGUILayout.IntField(intCond.RequiredValue);
+
+                        }
+                        else if (node.Conditions[i] is BoolCondition)
+                        {
+                            BoolCondition boolCond = node.Conditions[i] as BoolCondition;
+
+                            boolCond.CheckType = (BoolCondition.eCheckType)EditorGUILayout.EnumPopup(boolCond.CheckType);
+                            boolCond.RequiredValue = EditorGUILayout.Toggle(boolCond.RequiredValue);
+                        }
+
+                        if (GUILayout.Button("X"))
+                        {
+                            node.Conditions.RemoveAt(i);
+                            i--;
+                        }
+
+                        GUILayout.EndHorizontal();
+                    }
                 }
             }
 
