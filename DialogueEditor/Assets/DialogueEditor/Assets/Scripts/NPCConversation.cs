@@ -7,6 +7,13 @@ using System.Runtime.Serialization.Json;
 
 namespace DialogueEditor
 {
+    public enum eSaveVersion
+    {
+        V1_03 = 103,
+        V1_10 = 110,
+    }
+    
+
     //--------------------------------------
     // Conversation Monobehaviour (Serialized)
     //--------------------------------------
@@ -15,8 +22,8 @@ namespace DialogueEditor
     [DisallowMultipleComponent]
     public class NPCConversation : MonoBehaviour
     {
-        /// <summary> Version 1.03 </summary>
-        public const int CurrentVersion = 103;
+        /// <summary> Version 1.10 </summary>
+        public const int CurrentVersion = (int)eSaveVersion.V1_10;
 
         private readonly string CHILD_NAME = "ConversationEventInfo";
 
@@ -103,9 +110,10 @@ namespace DialogueEditor
 
         public void Serialize(EditableConversation conversation)
         {
+            saveVersion = CurrentVersion;
+
             conversation.Parameters = this.ParameterList;
             json = Jsonify(conversation);
-            saveVersion = CurrentVersion;
         }
 
         public Conversation Deserialize()
@@ -205,27 +213,32 @@ namespace DialogueEditor
             return conversation;
         }
 
-
-
         public EditableConversation DeserializeForEditor()
         {
             // Dejsonify 
             EditableConversation conversation = Dejsonify();
-            this.ParameterList = conversation.Parameters;
-
+            
             if (conversation != null)
             {
+                this.ParameterList = conversation.Parameters;
+
                 // Deserialize the indivudual nodes
                 {
                     if (conversation.SpeechNodes != null)
                         for (int i = 0; i < conversation.SpeechNodes.Count; i++)
-                            conversation.SpeechNodes[i].Deserialize(this);
+                            conversation.SpeechNodes[i].DeserializeAssetData(this);
 
                     if (conversation.Options != null)
                         for (int i = 0; i < conversation.Options.Count; i++)
-                            conversation.Options[i].Deserialize(this);
+                            conversation.Options[i].DeserializeAssetData(this);
                 }
             }
+            else
+            {
+                conversation = new EditableConversation();
+            }
+
+            conversation.SaveVersion = this.saveVersion;
 
             // Clear our dummy event
             Event = new UnityEngine.Events.UnityEvent();

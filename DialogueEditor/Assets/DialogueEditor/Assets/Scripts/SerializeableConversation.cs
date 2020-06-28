@@ -18,14 +18,11 @@ namespace DialogueEditor
             Options = new List<EditableOptionNode>();
         }
 
-        [DataMember]
-        public List<EditableSpeechNode> SpeechNodes;
+        [DataMember] public List<EditableSpeechNode> SpeechNodes;
+        [DataMember] public List<EditableOptionNode> Options;
+        [DataMember] public List<Parameter> Parameters;
 
-        [DataMember]
-        public List<EditableOptionNode> Options;
-
-        [DataMember]
-        public List<Parameter> Parameters;
+        public int SaveVersion;
 
         // ----
 

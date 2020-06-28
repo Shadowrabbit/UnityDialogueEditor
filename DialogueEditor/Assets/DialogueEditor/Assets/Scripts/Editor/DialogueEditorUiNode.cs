@@ -117,6 +117,48 @@ namespace DialogueEditor
             GUI.Box(internalText, text, textStyle);
         }
 
+        public void DrawConnections()
+        {
+            Vector2 start = Vector2.zero;
+            Vector2 end = Vector2.zero;
+            float xPos = 0;
+            float yPos = 0;
+
+            for (int i = 0; i < Info.Connections.Count; i++)
+            {
+                bool connectingToOption = false;
+
+                if (Info.Connections[i] is SpeechConnection)
+                {
+                    SpeechConnection connection = Info.Connections[i] as SpeechConnection;
+
+                    DialogueEditorUtil.GetConnectionDrawInfo(rect, connection.Speech, out start, out end);
+                    xPos = connection.Speech.EditorInfo.xPos;
+                    yPos = connection.Speech.EditorInfo.yPos;
+                }
+                else if (Info.Connections[i] is OptionConnection)
+                {
+                    OptionConnection connection = Info.Connections[i] as OptionConnection;
+
+                    DialogueEditorUtil.GetConnectionDrawInfo(rect, connection.Option, out start, out end);
+                    xPos = connection.Option.EditorInfo.xPos;
+                    yPos = connection.Option.EditorInfo.yPos;
+
+                    connectingToOption = true;
+                }
+
+                Vector2 toStart = (start - end).normalized;
+                Vector2 toEnd = (end - start).normalized;
+                Handles.DrawBezier(start, end, start + toStart, end + toEnd, DefaultColor, null, LINE_WIDTH);
+
+                Vector2 intersection;
+                Vector2 boxPos = new Vector2(xPos, yPos);
+                if (DialogueEditorUtil.DoesLineIntersectWithBox(start, end, boxPos, connectingToOption, out intersection))
+                {
+                    DialogueEditorUtil.DrawArrowTip(intersection, toEnd, DefaultColor);
+                }
+            }
+        }
 
 
         //---------------------------------
@@ -213,7 +255,6 @@ namespace DialogueEditor
         //---------------------------------
 
         public abstract void OnDraw();
-        public abstract void DrawConnections();
         protected abstract void ProcessContextMenu();
         protected abstract void OnSetSelected(bool selected);
     }
@@ -305,46 +346,6 @@ namespace DialogueEditor
 
             // Text
             DrawInternalText(SpeechNode.Text, SPRITE_SZ + 5, NAME_HEIGHT + NAME_PADDING);
-        }
-
-        public override void DrawConnections()
-        {
-            if (SpeechNode.Options != null && SpeechNode.Options.Count > 0)
-            {
-                Vector2 start, end;
-                for (int i = 0; i < SpeechNode.Options.Count; i++)
-                {
-                    DialogueEditorUtil.GetConnectionDrawInfo(rect, SpeechNode.Options[i], out start, out end);
-
-                    Vector2 toStart = (start - end).normalized;
-                    Vector2 toEnd = (end - start).normalized;
-                    Handles.DrawBezier(start, end, start + toStart, end + toEnd, DefaultColor, null, LINE_WIDTH);
-
-                    Vector2 intersection;
-                    Vector2 boxPos = new Vector2(SpeechNode.Options[i].EditorInfo.xPos, SpeechNode.Options[i].EditorInfo.yPos);
-                    if (DialogueEditorUtil.DoesLineIntersectWithBox(start, end, boxPos, true, out intersection))
-                    {
-                        DialogueEditorUtil.DrawArrowTip(intersection, toEnd, DefaultColor);
-                    }
-                }
-            }
-            else if (SpeechNode.Speech != null)
-            {
-                Vector2 start, end;
-                DialogueEditorUtil.GetConnectionDrawInfo(rect, SpeechNode.Speech, out start, out end);
-
-                Vector2 toStart = (start - end).normalized;
-                Vector2 toEnd = (end - start).normalized;
-                Handles.DrawBezier(start, end, start + toStart, end + toEnd, DefaultColor, null, LINE_WIDTH);
-
-                Vector2 intersection;
-                Vector2 boxPos = new Vector2(SpeechNode.Speech.EditorInfo.xPos, SpeechNode.Speech.EditorInfo.yPos);
-                if (DialogueEditorUtil.DoesLineIntersectWithBox(start, end, boxPos, false, out intersection))
-                {
-                    DialogueEditorUtil.DrawArrowTip(intersection, toEnd, DefaultColor);
-                }
-            }
-
         }
 
 
@@ -441,26 +442,6 @@ namespace DialogueEditor
         {
             DrawTitle( isSelected ? "Option node (selected)." : "Option node.");
             DrawInternalText(OptionNode.Text);
-        }
-
-        public override void DrawConnections()
-        {
-            if (OptionNode.Speech != null)
-            {
-                Vector2 start, end;
-                DialogueEditorUtil.GetConnectionDrawInfo(rect, OptionNode.Speech, out start, out end);
-
-                Vector2 toStart = (start - end).normalized;
-                Vector2 toEnd = (end - start).normalized;
-                Handles.DrawBezier(start, end, start + toStart, end + toEnd, DefaultColor, null, LINE_WIDTH);
-
-                Vector2 intersection;
-                Vector2 boxPos = new Vector2(OptionNode.Speech.EditorInfo.xPos, OptionNode.Speech.EditorInfo.yPos);
-                if (DialogueEditorUtil.DoesLineIntersectWithBox(start, end, boxPos, false, out intersection))
-                {
-                    DialogueEditorUtil.DrawArrowTip(intersection, toEnd, DefaultColor);
-                }
-            }
         }
 
 

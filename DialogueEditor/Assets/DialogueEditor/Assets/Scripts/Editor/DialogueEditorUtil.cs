@@ -12,59 +12,40 @@ namespace DialogueEditor
         {
             par = null;
             child = null;
-            UISpeechNode speech;
-            UIOptionNode option;
             Vector2 start, end;           
             float minDistance = float.MaxValue;
             const float MIN_DIST = 6;
 
             for (int i = 0; i < uiNodes.Count; i++)
             {
-                if (uiNodes[i] is UISpeechNode)
+                List<Connection> connections = uiNodes[i].Info.Connections;
+
+                for (int j = 0; j < connections.Count; j++)
                 {
-                    speech = uiNodes[i] as UISpeechNode;
-
-                    if (speech.SpeechNode.Options != null && speech.SpeechNode.Options.Count > 0)
+                    if (connections[j] is SpeechConnection)
                     {
-                        for (int j = 0; j < speech.SpeechNode.Options.Count; j++)
-                        {
-                            GetConnectionDrawInfo(speech.rect, speech.SpeechNode.Options[j], out start, out end);
-
-                            float distance = MinimumDistanceBetweenPointAndLine(start, end, mousePos);
-                            if (distance < minDistance)
-                            {
-                                minDistance = distance;
-                                par = speech.SpeechNode;
-                                child = speech.SpeechNode.Options[j];
-                            }
-                        }
-                    }
-                    else if (speech.SpeechNode.Speech != null)
-                    {
-                        GetConnectionDrawInfo(speech.rect, speech.SpeechNode.Speech, out start, out end);
-                        float distance = MinimumDistanceBetweenPointAndLine(start, end, mousePos);
-                        if (distance < minDistance)
-                        {
-                            minDistance = distance;
-                            par = speech.SpeechNode;
-                            child = speech.SpeechNode.Speech;
-                        }
-                    }
-                }
-                else if (uiNodes[i] is UIOptionNode)
-                {
-                    option = uiNodes[i] as UIOptionNode;
-
-                    if (option.OptionNode.Speech != null)
-                    {
-                        GetConnectionDrawInfo(option.rect, option.OptionNode.Speech, out start, out end);
+                        SpeechConnection speechCon = connections[j] as SpeechConnection;
+                        GetConnectionDrawInfo(uiNodes[i].rect, speechCon.Speech, out start, out end);
 
                         float distance = MinimumDistanceBetweenPointAndLine(start, end, mousePos);
                         if (distance < minDistance)
                         {
                             minDistance = distance;
-                            par = option.OptionNode;
-                            child = option.OptionNode.Speech;
+                            par = uiNodes[i].Info;
+                            child = speechCon.Speech;
+                        }
+                    }
+                    else if (connections[j] is OptionConnection)
+                    {
+                        OptionConnection optionCon = connections[j] as OptionConnection;
+                        GetConnectionDrawInfo(uiNodes[i].rect, optionCon.Option, out start, out end);
+
+                        float distance = MinimumDistanceBetweenPointAndLine(start, end, mousePos);
+                        if (distance < minDistance)
+                        {
+                            minDistance = distance;
+                            par = uiNodes[i].Info;
+                            child = optionCon.Option;
                         }
                     }
                 }

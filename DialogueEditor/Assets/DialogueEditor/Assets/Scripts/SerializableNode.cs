@@ -8,59 +8,132 @@ using System.Runtime.Serialization.Json;
 namespace DialogueEditor
 {
     [DataContract]
+    [KnownType(typeof(SpeechConnection))]
+    [KnownType(typeof(OptionConnection))]
     public abstract class EditableConversationNode
     {
         /// <summary> Info used internally by the editor window. </summary>
         [DataContract]
         public class EditorArgs
         {
-            [DataMember]
-            public float xPos;
-
-            [DataMember]
-            public float yPos;
-
-            [DataMember]
-            public bool isRoot;
+            [DataMember] public float xPos;
+            [DataMember] public float yPos;
+            [DataMember] public bool isRoot;
         }
 
         public EditableConversationNode()
         {
             parents = new List<EditableConversationNode>();
+            Connections = new List<Connection>();
             parentUIDs = new List<int>();
             EditorInfo = new EditorArgs { xPos = 0, yPos = 0, isRoot = false };
         }
 
-        /// <summary> Info used internally by the editor window. </summary>
-        [DataMember]
-        public EditorArgs EditorInfo;
+        // ----
+        // Serialized Editor vars
+        [DataMember] public EditorArgs EditorInfo;
+        [DataMember] public int ID;
 
-        [DataMember]
-        public int ID;
+        // ----
+        // Serialized Node data
+        [DataMember] public string Text;
+        [DataMember] public List<Connection> Connections;
+        [DataMember] public List<int> parentUIDs;
+        /// <summary> Deprecated as of V1.03 </summary>
+        [DataMember] public string TMPFontGUID;
 
-        [DataMember]
-        public string Text;
-
-        /// <summary> TextMeshPro font </summary>
+        // ----
+        // Volatile
         public TMPro.TMP_FontAsset TMPFont;
-        [DataMember]
-        public string TMPFontGUID;
-
-        [DataMember]
-        public List<int> parentUIDs;
         public List<EditableConversationNode> parents;
+
 
         // ------------------------
 
-        public abstract void RemoveSelfFromTree();
-        public abstract void RegisterUIDs();
+        public void RegisterUIDs()
+        {
+            if (parentUIDs != null)
+                parentUIDs.Clear();
 
-        public virtual void PrepareForSerialization(NPCConversation conversation)
+            parentUIDs = new List<int>();
+
+            for (int i = 0; i < parents.Count; i++)
+            {
+                parentUIDs.Add(parents[i].ID);
+            }
+        }
+
+        public void RemoveSelfFromTree()
+        {
+            Debug.Log("Removing Node_Id_" + this.ID + " from tree.");
+
+            // This speech is no longer the parent of any children
+            for (int i = 0; i < Connections.Count; i++)
+            {
+                if (Connections[i] is SpeechConnection)
+                {
+                    SpeechConnection speechCon = Connections[i] as SpeechConnection;
+                    Debug.Log("----Child_" + speechCon.Speech.ID + " parents count before = " + speechCon.Speech.parents.Count);
+                    speechCon.Speech.parents.Remove(this);
+                    Debug.Log("----Child_" + speechCon.Speech.ID + " parents count after = " + speechCon.Speech.parents.Count);
+                }
+                else if (Connections[i] is OptionConnection)
+                {
+                    OptionConnection optionCon = Connections[i] as OptionConnection;
+                    Debug.Log("----Child_" + optionCon.Option.ID + " parents count before = " + optionCon.Option.parents.Count);
+                    optionCon.Option.parents.Remove(this);
+                    Debug.Log("----Child_" + optionCon.Option.ID + " parents count after = " + optionCon.Option.parents.Count);
+                }
+            }
+
+            // This speech is no longer any of my parents child speech 
+            for (int i = 0; i < parents.Count; i++)
+            {
+                parents[i].DeleteConnectionChild(this);
+            }
+        }    
+
+        public void DeleteConnectionChild(EditableConversationNode node)
+        {
+            if (Connections.Count == 0)
+                return;
+
+            if (node is EditableSpeechNode && Connections[0] is SpeechConnection)
+            {
+                EditableSpeechNode toRemove = node as EditableSpeechNode;
+
+                for (int i = 0; i < Connections.Count; i++)
+                {
+                    SpeechConnection con = Connections[i] as SpeechConnection;
+                    if (con.Speech == toRemove)
+                    {
+                        Connections.RemoveAt(i);
+                        return;
+                    }
+                }
+            }
+            else if (node is EditableOptionNode && Connections[0] is OptionConnection)
+            {
+                EditableOptionNode toRemove = node as EditableOptionNode;
+
+                for (int i = 0; i < Connections.Count; i++)
+                {
+                    OptionConnection con = Connections[i] as OptionConnection;
+                    if (con.Option == toRemove)
+                    {
+                        Connections.RemoveAt(i);
+                        return;
+                    }
+                }
+            }
+        }
+
+        public virtual void SerializeAssetData(NPCConversation conversation)
         {
             conversation.GetNodeData(this.ID).TMPFont = this.TMPFont;
         }
 
-        public virtual void Deserialize(NPCConversation conversation)
+        public virtual void DeserializeAssetData(NPCConversation conversation)
         {
             this.TMPFont = conversation.GetNodeData(this.ID).TMPFont;
 
@@ -74,7 +147,6 @@ namespace DialogueEditor
                     {
                         string path = UnityEditor.AssetDatabase.GUIDToAssetPath(TMPFontGUID);
                         this.TMPFont = (TMPro.TMP_FontAsset)UnityEditor.AssetDatabase.LoadAssetAtPath(path, typeof(TMPro.TMP_FontAsset));
-
                     }
                 }
             }
@@ -90,36 +162,29 @@ namespace DialogueEditor
     {
         public EditableSpeechNode() : base()
         {
-            Options = new List<EditableOptionNode>();
-            OptionUIDs = new List<int>();
-            SpeechUID = EditableConversation.INVALID_UID; ;
+
         }
 
-        [DataMember]
-        public string Name;
+        // ----
+        // Serialized Node data
 
         /// <summary>
-        /// The selectable options of this Speech.
+        /// The NPC Name
         /// </summary>
-        public List<EditableOptionNode> Options;
-        [DataMember] public List<int> OptionUIDs;
-
-        /// <summary>
-        /// The Speech this Speech leads onto (if no options).
-        /// </summary>
-        public EditableSpeechNode Speech;
-        [DataMember] public int SpeechUID;
+        [DataMember] public string Name;
 
         /// <summary>
         /// The NPC Icon
         /// </summary>
         public Sprite Icon;
+        /// <summary> Deprecated as of V1.03 </summary>
         [DataMember] public string IconGUID;
 
         /// <summary>
         /// The Audio Clip acompanying this Speech.
         /// </summary>
         public AudioClip Audio;
+        /// <summary> Deprecated as of V1.03 </summary>
         [DataMember] public string AudioGUID;
 
         /// <summary>
@@ -144,125 +209,99 @@ namespace DialogueEditor
         /// </summary>
         [DataMember] public float TimeUntilAdvance;
 
+
+        //--------
+        // Deprecated
+
+        /// <summary> Deprecated as of V1.1 </summary>
+        public List<EditableOptionNode> Options;
+        /// <summary> Deprecated as of V1.1 </summary>
+        [DataMember] public List<int> OptionUIDs;
+        /// <summary> Deprecated as of V1.1 </summary>
+        public EditableSpeechNode Speech;
+        /// <summary> Deprecated as of V1.1 </summary>
+        [DataMember] public int SpeechUID;
+
+
         // ------------------------------
 
         public void AddOption(EditableOptionNode newOption)
         {
-            if (Options == null)
-                Options = new List<EditableOptionNode>();
-
-            if (Options.Contains(newOption))
-                return;
-
-            // Delete the speech I point to, if any
-            if (this.Speech != null)
+            // Remove any speech connections I may have
+            if (this.Connections.Count > 0 && this.Connections[0] is SpeechConnection)
             {
-                this.Speech.parents.Remove(this);
+                // I am no longer a parent of these speechs'
+                for (int i = 0; i < Connections.Count; i++)
+                {
+                    (Connections[0] as SpeechConnection).Speech.parents.Remove(this);
+                }
+                Connections.Clear();
             }
-            this.Speech = null;
+
+            // Connection to this option already exists
+            if (Connections.Count > 0 && Connections[0] is OptionConnection)
+            {
+                for (int i = 0; i < Connections.Count; i++)
+                {
+                    if ((Connections[0] as OptionConnection).Option == newOption)
+                        return;
+                }
+            }
 
             // Setup option connection
+            this.Connections.Add(new OptionConnection(newOption));
             if (!newOption.parents.Contains(this))
                 newOption.parents.Add(this);
-            Options.Add(newOption);
         }
 
-        public void SetSpeech(EditableSpeechNode newSpeech)
+        public void AddSpeech(EditableSpeechNode newSpeech)
         {
-            // Remove myself as a parent from the speech I was previously pointing to
-            if (this.Speech != null)
+            // Remove any option connections I may have
+            if (this.Connections.Count > 0 && this.Connections[0] is OptionConnection)
             {
-                this.Speech.parents.Remove(this);
-            }
-
-            // Remove any options I may have
-            if (Options != null)
-            {
-                for (int i = 0; i < Options.Count; i++)
+                // I am no longer a parent of these speechs'
+                for (int i = 0; i < Connections.Count; i++)
                 {
-                    // I am no longer the parents of these options
-                    Options[i].parents.Remove(this);
+                    (Connections[0] as OptionConnection).Option.parents.Remove(this);
                 }
-                Options.Clear();
+                Connections.Clear();
             }
 
-            this.Speech = newSpeech;
+            // Connection to this speech already exists
+            if (Connections.Count > 0 && Connections[0] is SpeechConnection)
+            {
+                for (int i = 0; i < Connections.Count; i++)
+                {
+                    if ((Connections[0] as SpeechConnection).Speech == newSpeech)
+                        return;
+                }
+            }
+
+            // If a relationship the other-way-around between these speechs already exists, swap it. 
+            // A 2way speech<->speech relationship cannot exist.
+            if (this.parents.Contains(newSpeech))
+            {
+                this.parents.Remove(newSpeech);
+                newSpeech.DeleteConnectionChild(this);
+            }
+
+            // Setup option connection
+            this.Connections.Add(new SpeechConnection(newSpeech));
             if (!newSpeech.parents.Contains(this))
                 newSpeech.parents.Add(this);
         }
 
-        public override void RemoveSelfFromTree()
+        public override void SerializeAssetData(NPCConversation conversation)
         {
-            // This speech is no longer the parents resulting speech
-            for (int i = 0; i < parents.Count; i++)
-            {
-                if (parents[i] != null)
-                {
-                    if (parents[i] is EditableOptionNode)
-                    {
-                        (parents[i] as EditableOptionNode).Speech = null;
-                    }
-                    else if (parents[i] is EditableSpeechNode)
-                    {
-                        (parents[i] as EditableSpeechNode).Speech = null;
-                    }
-                }
-            }
-
-            // This speech is no longer the parent of any children options
-            if (Options != null)
-            {
-                for (int i = 0; i < Options.Count; i++)
-                {
-                    Options[i].parents.Clear();
-                }
-            }
-
-            // This speech is no longer the parent of any speech nodes
-            if (this.Speech != null)
-            {
-                this.Speech.parents.Remove(this);
-            }
-        }
-
-        public override void RegisterUIDs()
-        {
-            if (parentUIDs != null)
-                parentUIDs.Clear();
-            parentUIDs = new List<int>();
-            for (int i = 0; i < parents.Count; i++)
-            {
-                parentUIDs.Add(parents[i].ID);
-            }
-
-            if (OptionUIDs != null)
-                OptionUIDs.Clear();
-            OptionUIDs = new List<int>();
-            if (Options != null)
-            {
-                for (int i = 0; i < Options.Count; i++)
-                {
-                    OptionUIDs.Add(Options[i].ID);
-                }
-            }
-
-            if (Speech != null)
-                SpeechUID = Speech.ID;
-            else
-                SpeechUID = EditableConversation.INVALID_UID;
-        }
-
-        public override void PrepareForSerialization(NPCConversation conversation)
-        {
-            base.PrepareForSerialization(conversation);
+            base.SerializeAssetData(conversation);
 
             conversation.GetNodeData(this.ID).Audio = this.Audio;
             conversation.GetNodeData(this.ID).Icon = this.Icon;
         }
 
-        public override void Deserialize(NPCConversation conversation)
+        public override void DeserializeAssetData(NPCConversation conversation)
         {
-            base.Deserialize(conversation);
+            base.DeserializeAssetData(conversation);
 
             this.Audio = conversation.GetNodeData(this.ID).Audio;
             this.Icon = conversation.GetNodeData(this.ID).Icon;
@@ -297,62 +336,27 @@ namespace DialogueEditor
 
 
     [DataContract]
-    [KnownType(typeof(IntCondition))]
-    [KnownType(typeof(BoolCondition))]
     public class EditableOptionNode : EditableConversationNode
     {
         public EditableOptionNode() : base()
         {
             SpeechUID = EditableConversation.INVALID_UID;
-            this.Conditions = new List<Condition>();
         }
 
-        /// <summary> The Speech this option leads to. </summary>
-        public EditableSpeechNode Speech;      
+
+        /// <summary> Deprecated as of V1.1 </summary>
+        public EditableSpeechNode Speech;
+        /// <summary> Deprecated as of V1.1 </summary>
         [DataMember] public int SpeechUID;
-        [DataMember] public List<Condition> Conditions;
 
-        public void SetSpeech(EditableSpeechNode newSpeech)
+
+        // ------------------------------
+
+        public void AddSpeech(EditableSpeechNode newSpeech)
         {
-            // Remove myself as a parent from the speech I was previously pointing to
-            if (this.Speech != null)
-            {
-                this.Speech.parents.Remove(this);
-            }
-
-            this.Speech = newSpeech;
-            if (!newSpeech.parents.Contains(this))
-                newSpeech.parents.Add(this);
-        }
-
-        public override void RemoveSelfFromTree()
-        {
-            // This option is no longer part of any parents speechs possible options
-            for (int i = 0; i < parents.Count; i++)
-            {
-                (parents[i] as EditableSpeechNode).Options.Remove(this);
-            }
-
-            // This option is no longer the parent to its child speech
-            if (Speech != null)
-            {
-                Speech.parents.Remove(this);
-            }
-        }
-
-        public override void RegisterUIDs()
-        {
-            if (parentUIDs != null)
-                parentUIDs.Clear();
-            parentUIDs = new List<int>();
-            for (int i = 0; i < parents.Count; i++)
-            {
-                parentUIDs.Add(parents[i].ID);
-            }
-
-            SpeechUID = EditableConversation.INVALID_UID;
-            if (Speech != null)
-                SpeechUID = Speech.ID;
+            // Add new speech connection
+            this.Connections.Add(new SpeechConnection(newSpeech));
+            newSpeech.parents.Add(this);
         }
     }
 }
