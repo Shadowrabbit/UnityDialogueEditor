@@ -7,6 +7,39 @@ namespace DialogueEditor
 {
     public class DialogueEditorWindow : EditorWindow
     {
+        public abstract class SelectableUI
+        {
+            public enum eType
+            {
+                Node,
+                Connection
+            }
+
+            public abstract eType Type { get; }           
+        }
+
+        public class SelectableUINode : SelectableUI
+        {
+            public SelectableUINode(UINode node)
+            {
+                this.Node = node;
+            }
+
+            public override eType Type { get { return eType.Node; } }
+            public UINode Node { get; private set; }
+        }
+
+        public class SelectableUIConnection : SelectableUI
+        {
+            public SelectableUIConnection(EditableConnection connection)
+            {
+                this.Connection = connection;
+            }
+
+            public override eType Type { get { return eType.Connection; } }
+            public EditableConnection Connection { get; private set; }
+        }
+
         public enum eInputState
         {
             Regular,
@@ -26,8 +59,8 @@ namespace DialogueEditor
         public const int MIN_PANEL_WIDTH = 180;
 
         // Static properties
-        public static bool NodeClickedOnThisUpdate { get; set; }
-        private static UINode CurrentlySelectedNode { get; set; }
+        public static bool SelectableClickedOnThisUpdate { get; set; }
+        private static SelectableUI CurrentlySelectedObject { get; set; }
 
         // Private variables:     
         private NPCConversation CurrentAsset;           // The Conversation scriptable object that is currently being viewed/edited
@@ -46,7 +79,7 @@ namespace DialogueEditor
         private GUIStyle panelPropertyStyle;
         private Rect panelResizerRect;
         private GUIStyle resizerStyle;
-        private UINode m_cachedSelectedNode;
+        private SelectableUI m_cachedSelectedObject;
 
         // Dragging information
         private bool dragging;
@@ -166,7 +199,7 @@ namespace DialogueEditor
                     // Construct Connections from the OptionUIDs and SpeechUIDs (which are now deprecated)
                     // This supports upgrading from V1.03 +
 
-                    if (allNodes[i] is EditableSpeechNode)
+                    if (allNodes[i].NodeType == EditableConversationNode.eNodeType.Speech)
                     {
                         // Speech options
                         int count = (allNodes[i] as EditableSpeechNode).OptionUIDs.Count;
@@ -175,7 +208,7 @@ namespace DialogueEditor
                             int optionUID = (allNodes[i] as EditableSpeechNode).OptionUIDs[j];
                             EditableOptionNode option = conversation.GetOptionByUID(optionUID);
 
-                            allNodes[i].Connections.Add(new OptionConnection(option));
+                            allNodes[i].Connections.Add(new EditableOptionConnection(option));
                         }
 
                         // Speech following speech
@@ -185,7 +218,7 @@ namespace DialogueEditor
 
                             if (speech != null)
                             {
-                                allNodes[i].Connections.Add(new SpeechConnection(speech));
+                                allNodes[i].Connections.Add(new EditableSpeechConnection(speech));
                             }
                         }
                     }
@@ -196,7 +229,7 @@ namespace DialogueEditor
                         
                         if (speech != null)
                         {
-                            allNodes[i].Connections.Add(new SpeechConnection(speech));
+                            allNodes[i].Connections.Add(new EditableSpeechConnection(speech));
                         }
                     }
                 }
@@ -207,15 +240,15 @@ namespace DialogueEditor
                     // For each node..  Reconstruct the connections
                     for (int j = 0; j < allNodes[i].Connections.Count; j++)
                     {
-                        if (allNodes[i].Connections[j] is SpeechConnection)
+                        if (allNodes[i].Connections[j] is EditableSpeechConnection)
                         {
                             EditableSpeechNode speech = conversation.GetSpeechByUID(allNodes[i].Connections[j].NodeUID);
-                            (allNodes[i].Connections[j] as SpeechConnection).Speech = speech;
+                            (allNodes[i].Connections[j] as EditableSpeechConnection).Speech = speech;
                         }
-                        else if (allNodes[i].Connections[j] is OptionConnection)
+                        else if (allNodes[i].Connections[j] is EditableOptionConnection)
                         {
                             EditableOptionNode option = conversation.GetOptionByUID(allNodes[i].Connections[j].NodeUID);
-                            (allNodes[i].Connections[j] as OptionConnection).Option = option;
+                            (allNodes[i].Connections[j] as EditableOptionConnection).Option = option;
                         }
                     }
                 }
@@ -229,12 +262,12 @@ namespace DialogueEditor
                 EditableConversationNode thisNode = allNodes[i];
 
                 // 1
-                if (thisNode is EditableSpeechNode)
+                if (thisNode.NodeType == EditableConversationNode.eNodeType.Speech)
                 {
                     UISpeechNode uiNode = new UISpeechNode(thisNode, new Vector2(thisNode.EditorInfo.xPos, thisNode.EditorInfo.yPos));
                     uiNodes.Add(uiNode);
                 }
-                else if (thisNode is EditableOptionNode)
+                else if (thisNode.NodeType == EditableConversationNode.eNodeType.Option)
                 {
                     UIOptionNode uiNode = new UIOptionNode(thisNode, new Vector2(thisNode.EditorInfo.xPos, thisNode.EditorInfo.yPos));
                     uiNodes.Add(uiNode);
@@ -243,13 +276,13 @@ namespace DialogueEditor
                 // 2
                 for (int j = 0; j < thisNode.Connections.Count; j++)
                 {
-                    if (thisNode.Connections[j] is SpeechConnection)
+                    if (thisNode.Connections[j] is EditableSpeechConnection)
                     {
-                        (thisNode.Connections[j] as SpeechConnection).Speech.parents.Add(thisNode);
+                        (thisNode.Connections[j] as EditableSpeechConnection).Speech.parents.Add(thisNode);
                     }
-                    else if (thisNode.Connections[j] is OptionConnection)
+                    else if (thisNode.Connections[j] is EditableOptionConnection)
                     {
-                        (thisNode.Connections[j] as OptionConnection).Option.parents.Add(thisNode);
+                        (thisNode.Connections[j] as EditableOptionConnection).Option.parents.Add(thisNode);
                     }
                 }
             }
@@ -560,7 +593,7 @@ namespace DialogueEditor
 
             GUILayout.Space(10);
 
-            if (CurrentlySelectedNode == null)
+            if (CurrentlySelectedObject == null)
             {
                 GUILayout.Label("Default options", panelTitleStyle);
 
@@ -623,183 +656,212 @@ namespace DialogueEditor
             }
             else
             {
-                bool differentNodeSelected = (m_cachedSelectedNode != CurrentlySelectedNode);
-                m_cachedSelectedNode = CurrentlySelectedNode;
+                bool differentNodeSelected = (m_cachedSelectedObject != CurrentlySelectedObject);
+                m_cachedSelectedObject = CurrentlySelectedObject;
                 if (differentNodeSelected)
                 {
                     GUI.FocusControl(CONTROL_NAME);
                 }
 
-                if (CurrentlySelectedNode is UISpeechNode)
+                if (CurrentlySelectedObject.Type == SelectableUI.eType.Node)
                 {
-                    EditableSpeechNode node = (CurrentlySelectedNode.Info as EditableSpeechNode);
-                    GUILayout.Label("[" + node.ID + "] NPC Dialogue Node.", panelTitleStyle);
-                    EditorGUILayout.Space();
+                    UINode selectedNode = (CurrentlySelectedObject as SelectableUINode).Node;
 
-                    GUILayout.Label("Character Name", EditorStyles.boldLabel);
-                    GUI.SetNextControlName(CONTROL_NAME);
-                    node.Name = GUILayout.TextField(node.Name);
-                    EditorGUILayout.Space();
-
-                    GUILayout.Label("Dialogue", EditorStyles.boldLabel);
-                    node.Text = GUILayout.TextArea(node.Text);
-                    EditorGUILayout.Space();
-
-                    // Advance
-                    if (node.Connections.Count > 0 && node.Connections[0] is SpeechConnection) 
+                    if (selectedNode is UISpeechNode)
                     {
-                        GUILayout.Label("Auto-Advance options", EditorStyles.boldLabel);
-                        node.AdvanceDialogueAutomatically = EditorGUILayout.Toggle("Automatically Advance", node.AdvanceDialogueAutomatically);
-                        if (node.AdvanceDialogueAutomatically)
-                        {
-                            node.AutoAdvanceShouldDisplayOption = EditorGUILayout.Toggle("Display continue option", node.AutoAdvanceShouldDisplayOption);
-                            node.TimeUntilAdvance = EditorGUILayout.FloatField("Dialogue Time", node.TimeUntilAdvance);
-                            if (node.TimeUntilAdvance < 0.1f)
-                                node.TimeUntilAdvance = 0.1f;
-                        }
+                        EditableSpeechNode node = (selectedNode.Info as EditableSpeechNode);
+                        GUILayout.Label("[" + node.ID + "] NPC Dialogue Node.", panelTitleStyle);
                         EditorGUILayout.Space();
+
+                        GUILayout.Label("Character Name", EditorStyles.boldLabel);
+                        GUI.SetNextControlName(CONTROL_NAME);
+                        node.Name = GUILayout.TextField(node.Name);
+                        EditorGUILayout.Space();
+
+                        GUILayout.Label("Dialogue", EditorStyles.boldLabel);
+                        node.Text = GUILayout.TextArea(node.Text);
+                        EditorGUILayout.Space();
+
+                        // Advance
+                        if (node.Connections.Count > 0 && node.Connections[0] is EditableSpeechConnection)
+                        {
+                            GUILayout.Label("Auto-Advance options", EditorStyles.boldLabel);
+                            node.AdvanceDialogueAutomatically = EditorGUILayout.Toggle("Automatically Advance", node.AdvanceDialogueAutomatically);
+                            if (node.AdvanceDialogueAutomatically)
+                            {
+                                node.AutoAdvanceShouldDisplayOption = EditorGUILayout.Toggle("Display continue option", node.AutoAdvanceShouldDisplayOption);
+                                node.TimeUntilAdvance = EditorGUILayout.FloatField("Dialogue Time", node.TimeUntilAdvance);
+                                if (node.TimeUntilAdvance < 0.1f)
+                                    node.TimeUntilAdvance = 0.1f;
+                            }
+                            EditorGUILayout.Space();
+                        }
+
+                        GUILayout.Label("Icon", EditorStyles.boldLabel);
+                        node.Icon = (Sprite)EditorGUILayout.ObjectField(node.Icon, typeof(Sprite), false, GUILayout.ExpandWidth(true));
+                        EditorGUILayout.Space();
+
+                        GUILayout.Label("Audio Options", EditorStyles.boldLabel);
+                        GUILayout.Label("Audio");
+                        node.Audio = (AudioClip)EditorGUILayout.ObjectField(node.Audio, typeof(AudioClip), false);
+
+                        GUILayout.Label("Audio Volume");
+                        node.Volume = EditorGUILayout.Slider(node.Volume, 0, 1);
+                        EditorGUILayout.Space();
+
+                        GUILayout.Label("TMP Font", EditorStyles.boldLabel);
+                        node.TMPFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(node.TMPFont, typeof(TMPro.TMP_FontAsset), false);
+                        EditorGUILayout.Space();
+
+                        // Events
+                        {
+                            NodeEventHolder NodeEvent = CurrentAsset.GetNodeData(node.ID);
+                            if (differentNodeSelected)
+                            {
+                                CurrentAsset.Event = NodeEvent.Event;
+                            }
+
+                            if (NodeEvent != null && NodeEvent.Event != null)
+                            {
+                                // Load the object and property of the node
+                                SerializedObject o = new SerializedObject(NodeEvent);
+                                SerializedProperty p = o.FindProperty("Event");
+
+                                // Load the dummy event
+                                SerializedObject o2 = new SerializedObject(CurrentAsset);
+                                SerializedProperty p2 = o2.FindProperty("Event");
+
+                                // Draw dummy event
+                                GUILayout.Label("Events:", EditorStyles.boldLabel);
+                                EditorGUILayout.PropertyField(p2);
+
+                                // Apply changes to dummy
+                                o2.ApplyModifiedProperties();
+
+                                // Copy dummy changes onto the nodes event
+                                p = p2;
+                                o.ApplyModifiedProperties();
+                            }
+                        }
                     }
-
-                    GUILayout.Label("Icon", EditorStyles.boldLabel);
-                    node.Icon = (Sprite)EditorGUILayout.ObjectField(node.Icon, typeof(Sprite), false, GUILayout.ExpandWidth(true));
-                    EditorGUILayout.Space();
-
-                    GUILayout.Label("Audio Options", EditorStyles.boldLabel);
-                    GUILayout.Label("Audio");
-                    node.Audio = (AudioClip)EditorGUILayout.ObjectField(node.Audio, typeof(AudioClip), false);
-
-                    GUILayout.Label("Audio Volume");
-                    node.Volume = EditorGUILayout.Slider(node.Volume, 0, 1);
-                    EditorGUILayout.Space();
-
-                    GUILayout.Label("TMP Font", EditorStyles.boldLabel);
-                    node.TMPFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(node.TMPFont, typeof(TMPro.TMP_FontAsset), false);
-                    EditorGUILayout.Space();
-
-                    // Events
+                    else if (selectedNode is UIOptionNode)
                     {
-                        NodeEventHolder NodeEvent = CurrentAsset.GetNodeData(node.ID);
-                        if (differentNodeSelected)
-                        {
-                            CurrentAsset.Event = NodeEvent.Event;
-                        }
+                        EditableOptionNode node = (selectedNode.Info as EditableOptionNode);
+                        GUILayout.Label("[" + node.ID + "] Option Node.", panelTitleStyle);
 
-                        if (NodeEvent != null && NodeEvent.Event != null)
-                        {
-                            // Load the object and property of the node
-                            SerializedObject o = new SerializedObject(NodeEvent);
-                            SerializedProperty p = o.FindProperty("Event");
+                        GUILayout.Label("Option text:", EditorStyles.boldLabel);
+                        node.Text = GUILayout.TextArea(node.Text);
 
-                            // Load the dummy event
-                            SerializedObject o2 = new SerializedObject(CurrentAsset);
-                            SerializedProperty p2 = o2.FindProperty("Event");
+                        GUILayout.Label("TMP Font", EditorStyles.boldLabel);
+                        node.TMPFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(node.TMPFont, typeof(TMPro.TMP_FontAsset), false);
 
-                            // Draw dummy event
-                            GUILayout.Label("Events:", EditorStyles.boldLabel);
-                            EditorGUILayout.PropertyField(p2);
-
-                            // Apply changes to dummy
-                            o2.ApplyModifiedProperties();
-
-                            // Copy dummy changes onto the nodes event
-                            p = p2;
-                            o.ApplyModifiedProperties();
-                        }
+                        // Conditions
+                        GUILayout.Space(VERTICAL_PADDING);
+                        GUILayout.Label("Conditions", panelTitleStyle);
                     }
                 }
-                else if (CurrentlySelectedNode is UIOptionNode)
+                else if (CurrentlySelectedObject.Type == SelectableUI.eType.Connection)
                 {
-                    EditableOptionNode node = (CurrentlySelectedNode.Info as EditableOptionNode);
-                    GUILayout.Label("[" + node.ID + "] Option Node.", panelTitleStyle);                   
 
-                    GUILayout.Label("Option text:", EditorStyles.boldLabel);
-                    node.Text = GUILayout.TextArea(node.Text);
+                    EditableConnection connection = (CurrentlySelectedObject as SelectableUIConnection).Connection;
 
-                    GUILayout.Label("TMP Font", EditorStyles.boldLabel);
-                    node.TMPFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(node.TMPFont, typeof(TMPro.TMP_FontAsset), false);
+                    GUILayout.Label("Connection selected");
 
-                    // Conditions
-                    GUILayout.Space(VERTICAL_PADDING);
-                    GUILayout.Label("Conditions", panelTitleStyle);
+                    if (connection.ConnectionType == EditableConnection.eConnectiontype.Speech)
+                    {
+                        GUILayout.Label("Type: node-> Speech");
+                    }
+                    else if (connection.ConnectionType == EditableConnection.eConnectiontype.Option)
+                    {
+                        GUILayout.Label("Type: node-> Option");
+                    }
+
+                    GUILayout.Label("----");
+                    GUILayout.Label("TODO: conditions.");
+
 
                     /*
-                    // Add condition
-                    GUILayout.BeginHorizontal();
-                    if (GUILayout.Button("Add condition"))
-                    {
-                        GenericMenu rightClickMenu = new GenericMenu();
+// Add condition
+GUILayout.BeginHorizontal();
+if (GUILayout.Button("Add condition"))
+{
+    GenericMenu rightClickMenu = new GenericMenu();
 
-                        for (int i = 0; i < this.CurrentAsset.ParameterList.Count; i++)
-                        {
-                            if (this.CurrentAsset.ParameterList[i] is IntParameter)
-                            {
-                                IntParameter intParam = CurrentAsset.ParameterList[i] as IntParameter;
-                                rightClickMenu.AddItem(new GUIContent(intParam.ParameterName), false, delegate
-                                {
-                                    node.Conditions.Add(new IntCondition(intParam.ParameterName));
-                                });
-                            }
-                            else if (this.CurrentAsset.ParameterList[i] is BoolParameter)
-                            {
-                                BoolParameter boolParam = CurrentAsset.ParameterList[i] as BoolParameter;
-                                rightClickMenu.AddItem(new GUIContent(boolParam.ParameterName), false, delegate
-                                {
-                                    node.Conditions.Add(new BoolCondition(boolParam.ParameterName));
-                                });
-                            }
-                        }
+    for (int i = 0; i < this.CurrentAsset.ParameterList.Count; i++)
+    {
+        if (this.CurrentAsset.ParameterList[i] is IntParameter)
+        {
+            IntParameter intParam = CurrentAsset.ParameterList[i] as IntParameter;
+            rightClickMenu.AddItem(new GUIContent(intParam.ParameterName), false, delegate
+            {
+                node.Conditions.Add(new IntCondition(intParam.ParameterName));
+            });
+        }
+        else if (this.CurrentAsset.ParameterList[i] is BoolParameter)
+        {
+            BoolParameter boolParam = CurrentAsset.ParameterList[i] as BoolParameter;
+            rightClickMenu.AddItem(new GUIContent(boolParam.ParameterName), false, delegate
+            {
+                node.Conditions.Add(new BoolCondition(boolParam.ParameterName));
+            });
+        }
+    }
 
-                        rightClickMenu.ShowAsContext();
-                    }
-                    GUILayout.EndHorizontal();
-
-
-                    // Validate conditions
-                    for (int i = 0; i < node.Conditions.Count; i++)
-                    {
-                        if (CurrentAsset.GetParameter(node.Conditions[i].ParameterName) == null)
-                        {
-                            node.Conditions.RemoveAt(i);
-                            i--;
-                        }
-                    }
+    rightClickMenu.ShowAsContext();
+}
+GUILayout.EndHorizontal();
 
 
-                    // Draw conditions
-                    float conditionNameWidth = panelWidth * 0.4f;
-                    for (int i = 0; i < node.Conditions.Count; i++)
-                    {
-                        GUILayout.BeginHorizontal();
+// Validate conditions
+for (int i = 0; i < node.Conditions.Count; i++)
+{
+    if (CurrentAsset.GetParameter(node.Conditions[i].ParameterName) == null)
+    {
+        node.Conditions.RemoveAt(i);
+        i--;
+    }
+}
 
-                        string name = node.Conditions[i].ParameterName;
-                        GUILayout.Label(name, EditorStyles.boldLabel, GUILayout.MinWidth(conditionNameWidth), GUILayout.MaxWidth(conditionNameWidth));
 
-                        if (node.Conditions[i] is IntCondition)
-                        {
-                            IntCondition intCond = node.Conditions[i] as IntCondition;
+// Draw conditions
+float conditionNameWidth = panelWidth * 0.4f;
+for (int i = 0; i < node.Conditions.Count; i++)
+{
+    GUILayout.BeginHorizontal();
 
-                            intCond.CheckType = (IntCondition.eCheckType)EditorGUILayout.EnumPopup(intCond.CheckType);
-                            intCond.RequiredValue = EditorGUILayout.IntField(intCond.RequiredValue);
+    string name = node.Conditions[i].ParameterName;
+    GUILayout.Label(name, EditorStyles.boldLabel, GUILayout.MinWidth(conditionNameWidth), GUILayout.MaxWidth(conditionNameWidth));
 
-                        }
-                        else if (node.Conditions[i] is BoolCondition)
-                        {
-                            BoolCondition boolCond = node.Conditions[i] as BoolCondition;
+    if (node.Conditions[i] is IntCondition)
+    {
+        IntCondition intCond = node.Conditions[i] as IntCondition;
 
-                            boolCond.CheckType = (BoolCondition.eCheckType)EditorGUILayout.EnumPopup(boolCond.CheckType);
-                            boolCond.RequiredValue = EditorGUILayout.Toggle(boolCond.RequiredValue);
-                        }
+        intCond.CheckType = (IntCondition.eCheckType)EditorGUILayout.EnumPopup(intCond.CheckType);
+        intCond.RequiredValue = EditorGUILayout.IntField(intCond.RequiredValue);
 
-                        if (GUILayout.Button("X"))
-                        {
-                            node.Conditions.RemoveAt(i);
-                            i--;
-                        }
+    }
+    else if (node.Conditions[i] is BoolCondition)
+    {
+        BoolCondition boolCond = node.Conditions[i] as BoolCondition;
 
-                        GUILayout.EndHorizontal();
-                    }
-                    */
+        boolCond.CheckType = (BoolCondition.eCheckType)EditorGUILayout.EnumPopup(boolCond.CheckType);
+        boolCond.RequiredValue = EditorGUILayout.Toggle(boolCond.RequiredValue);
+    }
+
+    if (GUILayout.Button("X"))
+    {
+        node.Conditions.RemoveAt(i);
+        i--;
+    }
+
+    GUILayout.EndHorizontal();
+}
+*/
                 }
+
+
+
+
             }
 
             GUILayout.EndScrollView();
@@ -833,7 +895,9 @@ namespace DialogueEditor
             {
                 case eInputState.Regular:
                     bool inPanel = panelRect.Contains(e.mousePosition) || e.mousePosition.y < TOOLBAR_HEIGHT;
+                    SelectableClickedOnThisUpdate = false;
                     ProcessNodeEvents(e, inPanel);
+                    ProcessConnectionEvents(e, inPanel);
                     ProcessEvents(e);
                     break;
 
@@ -960,9 +1024,9 @@ namespace DialogueEditor
                         else if (e.mousePosition.y > TOOLBAR_HEIGHT)
                         {
                             clickInBox = false;
-                            if (!DialogueEditorWindow.NodeClickedOnThisUpdate)
+                            if (!DialogueEditorWindow.SelectableClickedOnThisUpdate)
                             {
-                                UnselectNode();
+                                UnselectObject();
                                 e.Use();
                             }
                         }
@@ -1001,13 +1065,26 @@ namespace DialogueEditor
         {
             if (uiNodes != null)
             {
-                NodeClickedOnThisUpdate = false;
-
                 for (int i = 0; i < uiNodes.Count; i++)
                 {
                     bool guiChanged = uiNodes[i].ProcessEvents(e, inPanel);
                     if (guiChanged)
                         GUI.changed = true;
+                }
+            }
+        }
+
+        private void ProcessConnectionEvents(Event e, bool inPanel)
+        {
+            if (uiNodes != null && !inPanel && e.type == EventType.MouseDown && e.button == 0)
+            {
+                EditableConnection selectedConnection;
+                bool success = DialogueEditorUtil.IsPointerNearConnection(uiNodes, e.mousePosition, out selectedConnection);
+
+                if (success)
+                {
+                    SelectableClickedOnThisUpdate = true;
+                    SelectConnection(selectedConnection, true);
                 }
             }
         }
@@ -1118,7 +1195,7 @@ namespace DialogueEditor
             node = null;
 
             // "Unselect" what we were looking at.
-            CurrentlySelectedNode = null;
+            CurrentlySelectedObject = null;
         }
 
         /* -- Deleting connection -- */
@@ -1135,14 +1212,14 @@ namespace DialogueEditor
                 // Remove the connection if it points to the child
                 for (int i = 0; i < m_connectionDeleteParent.Connections.Count; i++)
                 {
-                    Connection connection = m_connectionDeleteParent.Connections[i];
+                    EditableConnection connection = m_connectionDeleteParent.Connections[i];
 
-                    if (connection is SpeechConnection && (connection as SpeechConnection).Speech == m_connectionDeleteChild)
+                    if (connection is EditableSpeechConnection && (connection as EditableSpeechConnection).Speech == m_connectionDeleteChild)
                     {
                         m_connectionDeleteParent.Connections.RemoveAt(i);
                         i--;
                     }
-                    else if (connection is OptionConnection && (connection as OptionConnection).Option == m_connectionDeleteChild)
+                    else if (connection is EditableOptionConnection && (connection as EditableOptionConnection).Option == m_connectionDeleteChild)
                     {
                         m_connectionDeleteParent.Connections.RemoveAt(i);
                         i--;
@@ -1163,26 +1240,33 @@ namespace DialogueEditor
 
         private void SelectNode(UINode node, bool selected)
         {
+            UnselectObject();
+
             if (selected)
             {
-                if (CurrentlySelectedNode != null)
-                    CurrentlySelectedNode.SetSelected(false);
-
-                CurrentlySelectedNode = node;
-                CurrentlySelectedNode.SetSelected(true);
-            }
-            else
-            {
-                node.SetSelected(false);
-                CurrentlySelectedNode = null;
+                CurrentlySelectedObject = new SelectableUINode(node);
+                node.SetSelected(true);
             }
         }
 
-        private void UnselectNode()
+        public void SelectConnection(EditableConnection connection, bool selected)
         {
-            if (CurrentlySelectedNode != null)
-                CurrentlySelectedNode.SetSelected(false);
-            CurrentlySelectedNode = null;
+            UnselectObject();
+
+            if (selected)
+            {
+                CurrentlySelectedObject = new SelectableUIConnection(connection);
+            }
+        }
+
+        private void UnselectObject()
+        {
+            if (CurrentlySelectedObject != null && CurrentlySelectedObject.Type == SelectableUI.eType.Node)
+            {
+                (CurrentlySelectedObject as SelectableUINode).Node.SetSelected(false);
+            }
+
+            CurrentlySelectedObject = null;
         }
 
         private bool IsANodeSelected()
@@ -1277,7 +1361,7 @@ namespace DialogueEditor
                     CurrentAsset = null;
                     while (uiNodes.Count != 0)
                         uiNodes.RemoveAt(0);
-                    CurrentlySelectedNode = null;
+                    CurrentlySelectedObject = null;
                 }
 
 #if UNITY_EDITOR

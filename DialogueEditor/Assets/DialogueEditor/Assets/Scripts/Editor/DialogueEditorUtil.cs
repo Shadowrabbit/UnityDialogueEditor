@@ -18,13 +18,13 @@ namespace DialogueEditor
 
             for (int i = 0; i < uiNodes.Count; i++)
             {
-                List<Connection> connections = uiNodes[i].Info.Connections;
+                List<EditableConnection> connections = uiNodes[i].Info.Connections;
 
                 for (int j = 0; j < connections.Count; j++)
                 {
-                    if (connections[j] is SpeechConnection)
+                    if (connections[j] is EditableSpeechConnection)
                     {
-                        SpeechConnection speechCon = connections[j] as SpeechConnection;
+                        EditableSpeechConnection speechCon = connections[j] as EditableSpeechConnection;
                         GetConnectionDrawInfo(uiNodes[i].rect, speechCon.Speech, out start, out end);
 
                         float distance = MinimumDistanceBetweenPointAndLine(start, end, mousePos);
@@ -35,9 +35,9 @@ namespace DialogueEditor
                             child = speechCon.Speech;
                         }
                     }
-                    else if (connections[j] is OptionConnection)
+                    else if (connections[j] is EditableOptionConnection)
                     {
-                        OptionConnection optionCon = connections[j] as OptionConnection;
+                        EditableOptionConnection optionCon = connections[j] as EditableOptionConnection;
                         GetConnectionDrawInfo(uiNodes[i].rect, optionCon.Option, out start, out end);
 
                         float distance = MinimumDistanceBetweenPointAndLine(start, end, mousePos);
@@ -63,6 +63,41 @@ namespace DialogueEditor
             }
         }
 
+        public static bool IsPointerNearConnection(List<UINode> uiNodes, Vector2 mousePos, out EditableConnection connection)
+        {
+            EditableConversationNode parent = null;
+            EditableConversationNode child = null;
+     
+            if (IsPointerNearConnection(uiNodes, mousePos, out parent, out child))
+            {
+                EditableConversationNode.eNodeType type = child.NodeType;
+                for (int i = 0; i < parent.Connections.Count; i++)
+                {
+                    if (type == EditableConversationNode.eNodeType.Speech)
+                    {
+                        EditableSpeechConnection con = parent.Connections[i] as EditableSpeechConnection;
+                        if (con.Speech == child)
+                        {
+                            connection = parent.Connections[i];
+                            return true;
+                        }
+                    }
+                    else if (type == EditableConversationNode.eNodeType.Option)
+                    {
+                        EditableOptionConnection con = parent.Connections[i] as EditableOptionConnection;
+                        if (con.Option == child)
+                        {
+                            connection = parent.Connections[i];
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            connection = null;
+            return false;
+        }
+
         // Translated into UnityC# from C++ 
         // Original Source: https://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
         private static float MinimumDistanceBetweenPointAndLine(Vector2 v, Vector2 w, Vector2 p)
@@ -84,7 +119,7 @@ namespace DialogueEditor
             Vector2 origin = new Vector2(originRect.x + originRect.width / 2, originRect.y + originRect.height / 2);
             Vector2 target;
 
-            if (connectionTarget is EditableSpeechNode)
+            if (connectionTarget.NodeType == EditableConversationNode.eNodeType.Speech)
             {
                 target = new Vector2(
                     connectionTarget.EditorInfo.xPos + UISpeechNode.Width / 2,
@@ -93,7 +128,7 @@ namespace DialogueEditor
                 origin.x -= offset;
                 target.x -= offset;
             }
-            else
+            else if (connectionTarget.NodeType == EditableConversationNode.eNodeType.Option)
             {
                 target = new Vector2(
                     connectionTarget.EditorInfo.xPos + UIOptionNode.Width / 2,
@@ -101,6 +136,10 @@ namespace DialogueEditor
 
                 origin.x += offset;
                 target.x += offset;
+            }
+            else
+            {
+                target = Vector2.zero;
             }
 
             start = origin;

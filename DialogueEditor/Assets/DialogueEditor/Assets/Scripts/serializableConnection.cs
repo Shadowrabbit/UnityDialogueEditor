@@ -8,37 +8,49 @@ namespace DialogueEditor
     [DataContract]
     [KnownType(typeof(IntCondition))]
     [KnownType(typeof(BoolCondition))]
-    public abstract class Connection
+    public abstract class EditableConnection
     {
-        public Connection()
+        public enum eConnectiontype
+        {
+            Speech,
+            Option
+        }
+
+        public EditableConnection()
         {
             Conditions = new List<Condition>();
         }
+
+        public abstract eConnectiontype ConnectionType { get; }
 
         [DataMember] public List<Condition> Conditions;
         [DataMember] public int NodeUID;
     }
 
     [DataContract]
-    public class SpeechConnection : Connection
+    public class EditableSpeechConnection : EditableConnection
     {
-        public SpeechConnection(EditableSpeechNode node) : base()
+        public EditableSpeechConnection(EditableSpeechNode node) : base()
         {
             Speech = node;
             NodeUID = node.ID;
         }
 
+        public override eConnectiontype ConnectionType { get { return eConnectiontype.Speech; } }
+
         public EditableSpeechNode Speech;
     }
 
     [DataContract]
-    public class OptionConnection : Connection
+    public class EditableOptionConnection : EditableConnection
     {
-        public OptionConnection(EditableOptionNode node) : base()
+        public EditableOptionConnection(EditableOptionNode node) : base()
         {
             Option = node;
             NodeUID = node.ID;
         }
+
+        public override eConnectiontype ConnectionType { get { return eConnectiontype.Option; } }
 
         public EditableOptionNode Option;
     }

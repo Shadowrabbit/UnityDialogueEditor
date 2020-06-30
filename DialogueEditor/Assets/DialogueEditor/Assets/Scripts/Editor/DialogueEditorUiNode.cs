@@ -128,17 +128,17 @@ namespace DialogueEditor
             {
                 bool connectingToOption = false;
 
-                if (Info.Connections[i] is SpeechConnection)
+                if (Info.Connections[i] is EditableSpeechConnection)
                 {
-                    SpeechConnection connection = Info.Connections[i] as SpeechConnection;
+                    EditableSpeechConnection connection = Info.Connections[i] as EditableSpeechConnection;
 
                     DialogueEditorUtil.GetConnectionDrawInfo(rect, connection.Speech, out start, out end);
                     xPos = connection.Speech.EditorInfo.xPos;
                     yPos = connection.Speech.EditorInfo.yPos;
                 }
-                else if (Info.Connections[i] is OptionConnection)
+                else if (Info.Connections[i] is EditableOptionConnection)
                 {
-                    OptionConnection connection = Info.Connections[i] as OptionConnection;
+                    EditableOptionConnection connection = Info.Connections[i] as EditableOptionConnection;
 
                     DialogueEditorUtil.GetConnectionDrawInfo(rect, connection.Option, out start, out end);
                     xPos = connection.Option.EditorInfo.xPos;
@@ -196,7 +196,7 @@ namespace DialogueEditor
                     {
                         if (rect.Contains(e.mousePosition) && !inPanel)
                         {
-                            DialogueEditorWindow.NodeClickedOnThisUpdate = true;
+                            DialogueEditorWindow.SelectableClickedOnThisUpdate = true;
                             OnUINodeSelected?.Invoke(this, true);
                             e.Use();
                         }

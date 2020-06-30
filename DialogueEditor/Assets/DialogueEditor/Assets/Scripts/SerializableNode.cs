@@ -8,10 +8,16 @@ using System.Runtime.Serialization.Json;
 namespace DialogueEditor
 {
     [DataContract]
-    [KnownType(typeof(SpeechConnection))]
-    [KnownType(typeof(OptionConnection))]
+    [KnownType(typeof(EditableSpeechConnection))]
+    [KnownType(typeof(EditableOptionConnection))]
     public abstract class EditableConversationNode
     {
+        public enum eNodeType
+        {
+            Speech,
+            Option
+        }
+
         /// <summary> Info used internally by the editor window. </summary>
         [DataContract]
         public class EditorArgs
@@ -24,10 +30,12 @@ namespace DialogueEditor
         public EditableConversationNode()
         {
             parents = new List<EditableConversationNode>();
-            Connections = new List<Connection>();
+            Connections = new List<EditableConnection>();
             parentUIDs = new List<int>();
             EditorInfo = new EditorArgs { xPos = 0, yPos = 0, isRoot = false };
         }
+
+        public abstract eNodeType NodeType { get; }
 
         // ----
         // Serialized Editor vars
@@ -37,7 +45,7 @@ namespace DialogueEditor
         // ----
         // Serialized Node data
         [DataMember] public string Text;
-        [DataMember] public List<Connection> Connections;
+        [DataMember] public List<EditableConnection> Connections;
         [DataMember] public List<int> parentUIDs;
         /// <summary> Deprecated as of V1.03 </summary>
         [DataMember] public string TMPFontGUID;
@@ -70,16 +78,16 @@ namespace DialogueEditor
             // This speech is no longer the parent of any children
             for (int i = 0; i < Connections.Count; i++)
             {
-                if (Connections[i] is SpeechConnection)
+                if (Connections[i] is EditableSpeechConnection)
                 {
-                    SpeechConnection speechCon = Connections[i] as SpeechConnection;
+                    EditableSpeechConnection speechCon = Connections[i] as EditableSpeechConnection;
                     Debug.Log("----Child_" + speechCon.Speech.ID + " parents count before = " + speechCon.Speech.parents.Count);
                     speechCon.Speech.parents.Remove(this);
                     Debug.Log("----Child_" + speechCon.Speech.ID + " parents count after = " + speechCon.Speech.parents.Count);
                 }
-                else if (Connections[i] is OptionConnection)
+                else if (Connections[i] is EditableOptionConnection)
                 {
-                    OptionConnection optionCon = Connections[i] as OptionConnection;
+                    EditableOptionConnection optionCon = Connections[i] as EditableOptionConnection;
                     Debug.Log("----Child_" + optionCon.Option.ID + " parents count before = " + optionCon.Option.parents.Count);
                     optionCon.Option.parents.Remove(this);
                     Debug.Log("----Child_" + optionCon.Option.ID + " parents count after = " + optionCon.Option.parents.Count);
@@ -98,13 +106,13 @@ namespace DialogueEditor
             if (Connections.Count == 0)
                 return;
 
-            if (node is EditableSpeechNode && Connections[0] is SpeechConnection)
+            if (node.NodeType == eNodeType.Speech && Connections[0] is EditableSpeechConnection)
             {
                 EditableSpeechNode toRemove = node as EditableSpeechNode;
 
                 for (int i = 0; i < Connections.Count; i++)
                 {
-                    SpeechConnection con = Connections[i] as SpeechConnection;
+                    EditableSpeechConnection con = Connections[i] as EditableSpeechConnection;
                     if (con.Speech == toRemove)
                     {
                         Connections.RemoveAt(i);
@@ -112,13 +120,13 @@ namespace DialogueEditor
                     }
                 }
             }
-            else if (node is EditableOptionNode && Connections[0] is OptionConnection)
+            else if (node is EditableOptionNode && Connections[0] is EditableOptionConnection)
             {
                 EditableOptionNode toRemove = node as EditableOptionNode;
 
                 for (int i = 0; i < Connections.Count; i++)
                 {
-                    OptionConnection con = Connections[i] as OptionConnection;
+                    EditableOptionConnection con = Connections[i] as EditableOptionConnection;
                     if (con.Option == toRemove)
                     {
                         Connections.RemoveAt(i);
@@ -139,7 +147,7 @@ namespace DialogueEditor
 
 #if UNITY_EDITOR
             // If under V1.03, Load from database via GUID, so data is not lost for people who are upgrading
-            if (conversation.Version < 103)
+            if (conversation.Version < (int)eSaveVersion.V1_03)
             {
                 if (this.TMPFont == null)
                 {
@@ -164,6 +172,8 @@ namespace DialogueEditor
         {
 
         }
+
+        public override eNodeType NodeType { get { return eNodeType.Speech; } }
 
         // ----
         // Serialized Node data
@@ -228,28 +238,28 @@ namespace DialogueEditor
         public void AddOption(EditableOptionNode newOption)
         {
             // Remove any speech connections I may have
-            if (this.Connections.Count > 0 && this.Connections[0] is SpeechConnection)
+            if (this.Connections.Count > 0 && this.Connections[0] is EditableSpeechConnection)
             {
                 // I am no longer a parent of these speechs'
                 for (int i = 0; i < Connections.Count; i++)
                 {
-                    (Connections[0] as SpeechConnection).Speech.parents.Remove(this);
+                    (Connections[0] as EditableSpeechConnection).Speech.parents.Remove(this);
                 }
                 Connections.Clear();
             }
 
             // Connection to this option already exists
-            if (Connections.Count > 0 && Connections[0] is OptionConnection)
+            if (Connections.Count > 0 && Connections[0] is EditableOptionConnection)
             {
                 for (int i = 0; i < Connections.Count; i++)
                 {
-                    if ((Connections[0] as OptionConnection).Option == newOption)
+                    if ((Connections[0] as EditableOptionConnection).Option == newOption)
                         return;
                 }
             }
 
             // Setup option connection
-            this.Connections.Add(new OptionConnection(newOption));
+            this.Connections.Add(new EditableOptionConnection(newOption));
             if (!newOption.parents.Contains(this))
                 newOption.parents.Add(this);
         }
@@ -257,22 +267,22 @@ namespace DialogueEditor
         public void AddSpeech(EditableSpeechNode newSpeech)
         {
             // Remove any option connections I may have
-            if (this.Connections.Count > 0 && this.Connections[0] is OptionConnection)
+            if (this.Connections.Count > 0 && this.Connections[0] is EditableOptionConnection)
             {
                 // I am no longer a parent of these speechs'
                 for (int i = 0; i < Connections.Count; i++)
                 {
-                    (Connections[0] as OptionConnection).Option.parents.Remove(this);
+                    (Connections[0] as EditableOptionConnection).Option.parents.Remove(this);
                 }
                 Connections.Clear();
             }
 
             // Connection to this speech already exists
-            if (Connections.Count > 0 && Connections[0] is SpeechConnection)
+            if (Connections.Count > 0 && Connections[0] is EditableSpeechConnection)
             {
                 for (int i = 0; i < Connections.Count; i++)
                 {
-                    if ((Connections[0] as SpeechConnection).Speech == newSpeech)
+                    if ((Connections[0] as EditableSpeechConnection).Speech == newSpeech)
                         return;
                 }
             }
@@ -286,7 +296,7 @@ namespace DialogueEditor
             }
 
             // Setup option connection
-            this.Connections.Add(new SpeechConnection(newSpeech));
+            this.Connections.Add(new EditableSpeechConnection(newSpeech));
             if (!newSpeech.parents.Contains(this))
                 newSpeech.parents.Add(this);
         }
@@ -308,7 +318,7 @@ namespace DialogueEditor
 
 #if UNITY_EDITOR
             // If under V1.03, Load from database via GUID, so data is not lost for people who are upgrading
-            if (conversation.Version < 103)
+            if (conversation.Version < (int)eSaveVersion.V1_03)
             {
                 if (this.Audio == null)
                 {
@@ -335,6 +345,8 @@ namespace DialogueEditor
     }
 
 
+
+
     [DataContract]
     public class EditableOptionNode : EditableConversationNode
     {
@@ -342,6 +354,8 @@ namespace DialogueEditor
         {
             SpeechUID = EditableConversation.INVALID_UID;
         }
+
+        public override eNodeType NodeType { get { return eNodeType.Option; } }
 
 
         /// <summary> Deprecated as of V1.1 </summary>
@@ -355,7 +369,7 @@ namespace DialogueEditor
         public void AddSpeech(EditableSpeechNode newSpeech)
         {
             // Add new speech connection
-            this.Connections.Add(new SpeechConnection(newSpeech));
+            this.Connections.Add(new EditableSpeechConnection(newSpeech));
             newSpeech.parents.Add(this);
         }
     }
