@@ -117,7 +117,7 @@ namespace DialogueEditor
             GUI.Box(internalText, text, textStyle);
         }
 
-        public void DrawConnections()
+        public void DrawConnections(EditableConnection currentlySelected)
         {
             Vector2 start = Vector2.zero;
             Vector2 end = Vector2.zero;
@@ -128,7 +128,7 @@ namespace DialogueEditor
             {
                 bool connectingToOption = false;
 
-                if (Info.Connections[i] is EditableSpeechConnection)
+                if (Info.Connections[i].ConnectionType == EditableConnection.eConnectiontype.Speech)
                 {
                     EditableSpeechConnection connection = Info.Connections[i] as EditableSpeechConnection;
 
@@ -136,7 +136,7 @@ namespace DialogueEditor
                     xPos = connection.Speech.EditorInfo.xPos;
                     yPos = connection.Speech.EditorInfo.yPos;
                 }
-                else if (Info.Connections[i] is EditableOptionConnection)
+                else if (Info.Connections[i].ConnectionType == EditableConnection.eConnectiontype.Option)
                 {
                     EditableOptionConnection connection = Info.Connections[i] as EditableOptionConnection;
 
@@ -147,14 +147,21 @@ namespace DialogueEditor
                     connectingToOption = true;
                 }
 
+                bool selected = (currentlySelected != null && currentlySelected == Info.Connections[i]);
+
+
                 Vector2 toStart = (start - end).normalized;
                 Vector2 toEnd = (end - start).normalized;
+                if (selected)
+                    Handles.DrawBezier(start, end, start + toStart, end + toEnd, SelectedColor, null, LINE_WIDTH * 3);
                 Handles.DrawBezier(start, end, start + toStart, end + toEnd, DefaultColor, null, LINE_WIDTH);
 
                 Vector2 intersection;
                 Vector2 boxPos = new Vector2(xPos, yPos);
                 if (DialogueEditorUtil.DoesLineIntersectWithBox(start, end, boxPos, connectingToOption, out intersection))
                 {
+                    if (selected)
+                        DialogueEditorUtil.DrawArrowTip(intersection, toEnd, SelectedColor, LINE_WIDTH * 3);
                     DialogueEditorUtil.DrawArrowTip(intersection, toEnd, DefaultColor);
                 }
             }

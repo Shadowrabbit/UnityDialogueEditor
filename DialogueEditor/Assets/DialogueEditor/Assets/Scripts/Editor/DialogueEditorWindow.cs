@@ -511,10 +511,19 @@ namespace DialogueEditor
 
         private void DrawConnections()
         {
+            EditableConnection selectedConnection = null;
+            if (CurrentlySelectedObject != null && CurrentlySelectedObject.Type == SelectableUI.eType.Connection)
+            {
+                selectedConnection = (CurrentlySelectedObject as SelectableUIConnection).Connection;
+
+            }
+
             for (int i = 0; i < uiNodes.Count; i++)
             {
-                uiNodes[i].DrawConnections();
+                uiNodes[i].DrawConnections(selectedConnection);
             }
+
+            //----
 
             if (m_inputState == eInputState.ConnectingNode)
             {
@@ -580,7 +589,7 @@ namespace DialogueEditor
 
         private void DrawPanel()
         {
-            const int VERTICAL_PADDING = 10;
+            const int VERTICAL_PADDING = 20;
 
             panelRect = new Rect(position.width - panelWidth, TOOLBAR_HEIGHT, panelWidth, position.height - TOOLBAR_HEIGHT);
             if (panelStyle.normal.background == null)
@@ -762,101 +771,86 @@ namespace DialogueEditor
                 }
                 else if (CurrentlySelectedObject.Type == SelectableUI.eType.Connection)
                 {
+                    GUILayout.Label("Connection.", panelTitleStyle);
+                    GUILayout.Space(VERTICAL_PADDING);
 
                     EditableConnection connection = (CurrentlySelectedObject as SelectableUIConnection).Connection;
 
-                    GUILayout.Label("Connection selected");
-
-                    if (connection.ConnectionType == EditableConnection.eConnectiontype.Speech)
+                    GUILayout.BeginHorizontal();
+                    if (GUILayout.Button("Add condition"))
                     {
-                        GUILayout.Label("Type: node-> Speech");
+                        GenericMenu rightClickMenu = new GenericMenu();
+
+                        for (int i = 0; i < this.CurrentAsset.ParameterList.Count; i++)
+                        {
+                            if (this.CurrentAsset.ParameterList[i] is IntParameter)
+                            {
+                                IntParameter intParam = CurrentAsset.ParameterList[i] as IntParameter;
+                                rightClickMenu.AddItem(new GUIContent(intParam.ParameterName), false, delegate
+                                {
+                                    connection.AddCondition(new EditableIntCondition(intParam.ParameterName));
+                                });
+                            }
+                            else if (this.CurrentAsset.ParameterList[i] is BoolParameter)
+                            {
+                                BoolParameter boolParam = CurrentAsset.ParameterList[i] as BoolParameter;
+                                rightClickMenu.AddItem(new GUIContent(boolParam.ParameterName), false, delegate
+                                {
+                                    connection.AddCondition(new EditableBoolCondition(boolParam.ParameterName));
+                                });
+                            }
+                        }
+
+                        rightClickMenu.ShowAsContext();
                     }
-                    else if (connection.ConnectionType == EditableConnection.eConnectiontype.Option)
+                    GUILayout.EndHorizontal();
+
+
+                    // Validate conditions
+                    for (int i = 0; i < connection.Conditions.Count; i++)
                     {
-                        GUILayout.Label("Type: node-> Option");
+                        if (CurrentAsset.GetParameter(connection.Conditions[i].ParameterName) == null)
+                        {
+                            connection.Conditions.RemoveAt(i);
+                            i--;
+                        }
                     }
 
-                    GUILayout.Label("----");
-                    GUILayout.Label("TODO: conditions.");
 
+                    // Draw conditions
+                    float conditionNameWidth = panelWidth * 0.4f;
+                    for (int i = 0; i < connection.Conditions.Count; i++)
+                    {
+                        GUILayout.BeginHorizontal();
 
-                    /*
-// Add condition
-GUILayout.BeginHorizontal();
-if (GUILayout.Button("Add condition"))
-{
-    GenericMenu rightClickMenu = new GenericMenu();
+                        string name = connection.Conditions[i].ParameterName;
+                        GUILayout.Label(name, EditorStyles.boldLabel, GUILayout.MinWidth(conditionNameWidth), GUILayout.MaxWidth(conditionNameWidth));
 
-    for (int i = 0; i < this.CurrentAsset.ParameterList.Count; i++)
-    {
-        if (this.CurrentAsset.ParameterList[i] is IntParameter)
-        {
-            IntParameter intParam = CurrentAsset.ParameterList[i] as IntParameter;
-            rightClickMenu.AddItem(new GUIContent(intParam.ParameterName), false, delegate
-            {
-                node.Conditions.Add(new IntCondition(intParam.ParameterName));
-            });
-        }
-        else if (this.CurrentAsset.ParameterList[i] is BoolParameter)
-        {
-            BoolParameter boolParam = CurrentAsset.ParameterList[i] as BoolParameter;
-            rightClickMenu.AddItem(new GUIContent(boolParam.ParameterName), false, delegate
-            {
-                node.Conditions.Add(new BoolCondition(boolParam.ParameterName));
-            });
-        }
-    }
+                        if (connection.Conditions[i].ConditionType == EditableCondition.eConditionType.IntCondition)
+                        {
+                            EditableIntCondition intCond = connection.Conditions[i] as EditableIntCondition;
 
-    rightClickMenu.ShowAsContext();
-}
-GUILayout.EndHorizontal();
+                            intCond.CheckType = (EditableIntCondition.eCheckType)EditorGUILayout.EnumPopup(intCond.CheckType);
+                            intCond.RequiredValue = EditorGUILayout.IntField(intCond.RequiredValue);
 
+                        }
+                        else if (connection.Conditions[i].ConditionType == EditableCondition.eConditionType.BoolCondition)
+                        {
+                            EditableBoolCondition boolCond = connection.Conditions[i] as EditableBoolCondition;
 
-// Validate conditions
-for (int i = 0; i < node.Conditions.Count; i++)
-{
-    if (CurrentAsset.GetParameter(node.Conditions[i].ParameterName) == null)
-    {
-        node.Conditions.RemoveAt(i);
-        i--;
-    }
-}
+                            boolCond.CheckType = (EditableBoolCondition.eCheckType)EditorGUILayout.EnumPopup(boolCond.CheckType);
+                            boolCond.RequiredValue = EditorGUILayout.Toggle(boolCond.RequiredValue);
+                        }
 
+                        if (GUILayout.Button("X"))
+                        {
+                            connection.Conditions.RemoveAt(i);
+                            i--;
+                            GUI.changed = true;
+                        }
 
-// Draw conditions
-float conditionNameWidth = panelWidth * 0.4f;
-for (int i = 0; i < node.Conditions.Count; i++)
-{
-    GUILayout.BeginHorizontal();
-
-    string name = node.Conditions[i].ParameterName;
-    GUILayout.Label(name, EditorStyles.boldLabel, GUILayout.MinWidth(conditionNameWidth), GUILayout.MaxWidth(conditionNameWidth));
-
-    if (node.Conditions[i] is IntCondition)
-    {
-        IntCondition intCond = node.Conditions[i] as IntCondition;
-
-        intCond.CheckType = (IntCondition.eCheckType)EditorGUILayout.EnumPopup(intCond.CheckType);
-        intCond.RequiredValue = EditorGUILayout.IntField(intCond.RequiredValue);
-
-    }
-    else if (node.Conditions[i] is BoolCondition)
-    {
-        BoolCondition boolCond = node.Conditions[i] as BoolCondition;
-
-        boolCond.CheckType = (BoolCondition.eCheckType)EditorGUILayout.EnumPopup(boolCond.CheckType);
-        boolCond.RequiredValue = EditorGUILayout.Toggle(boolCond.RequiredValue);
-    }
-
-    if (GUILayout.Button("X"))
-    {
-        node.Conditions.RemoveAt(i);
-        i--;
-    }
-
-    GUILayout.EndHorizontal();
-}
-*/
+                        GUILayout.EndHorizontal();
+                    }
                 }
 
 

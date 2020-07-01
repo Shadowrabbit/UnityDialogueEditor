@@ -4,21 +4,27 @@ using System.Runtime.Serialization.Json;
 namespace DialogueEditor
 {
     [DataContract]
-    public abstract class Condition
+    public abstract class EditableCondition
     {
-        public Condition(string name)
+        public enum eConditionType
+        {
+            IntCondition,
+            BoolCondition
+        }
+
+        public EditableCondition(string name)
         {
             ParameterName = name;
         }
+
+        public abstract eConditionType ConditionType { get; }
 
         [DataMember] public string ParameterName;
     }
 
     [DataContract]
-    public class IntCondition : Condition
+    public class EditableIntCondition : EditableCondition
     {
-        public IntCondition(string name) : base(name) { }
-
         public enum eCheckType
         {
             equal,
@@ -26,20 +32,26 @@ namespace DialogueEditor
             greaterThan
         }
 
+        public EditableIntCondition(string name) : base(name) { }
+
+        public override eConditionType ConditionType { get { return eConditionType.IntCondition; } }
+
         [DataMember] public eCheckType CheckType;
         [DataMember] public int RequiredValue;
     }
 
     [DataContract]
-    public class BoolCondition : Condition
+    public class EditableBoolCondition : EditableCondition
     {
-        public BoolCondition(string name) : base(name) { }
-
         public enum eCheckType
         {
             equal,
             notEqual
         }
+
+        public EditableBoolCondition(string name) : base(name) { }
+
+        public override eConditionType ConditionType { get { return eConditionType.BoolCondition; } }
 
         [DataMember] public eCheckType CheckType;
         [DataMember] public bool RequiredValue;

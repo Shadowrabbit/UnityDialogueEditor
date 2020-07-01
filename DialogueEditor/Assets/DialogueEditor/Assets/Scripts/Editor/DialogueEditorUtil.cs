@@ -247,7 +247,7 @@ namespace DialogueEditor
             return false;
         }
 
-        public static void DrawArrowTip(Vector2 pos, Vector2 dir, Color color)
+        public static void DrawArrowTip(Vector2 pos, Vector2 dir, Color color, float width = UINode.LINE_WIDTH)
         {
             const float rotAmount = 25;
             const float len = 15f;
@@ -259,14 +259,14 @@ namespace DialogueEditor
             end = start + leftLine.normalized * len;
             toStart = (start - end).normalized;
             toEnd = (end - start).normalized;
-            Handles.DrawBezier(start, end, start + toStart, end + toEnd, color, null, UINode.LINE_WIDTH);
+            Handles.DrawBezier(start, end, start + toStart, end + toEnd, color, null, width);
 
             // Right arc
             Vector2 rightLine = Quaternion.Euler(0, 0, -rotAmount) * -dir;
             end = start + rightLine.normalized * len;
             toStart = (start - end).normalized;
             toEnd = (end - start).normalized;
-            Handles.DrawBezier(start, end, start + toStart, end + toEnd, color, null, UINode.LINE_WIDTH);
+            Handles.DrawBezier(start, end, start + toStart, end + toEnd, color, null, width);
         }
 
         public static Color Colour(float r, float g, float b)
