@@ -1,9 +1,5 @@
-﻿using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
-
-namespace DialogueEditor
+﻿namespace DialogueEditor
 {
-    [DataContract]
     public abstract class Parameter
     {
         public Parameter(string name)
@@ -11,25 +7,26 @@ namespace DialogueEditor
             ParameterName = name;
         }
 
-        [DataMember]
         public string ParameterName;
     }
 
-    [DataContract]
     public class BoolParameter : Parameter
     {
-        public BoolParameter(string name) : base(name) { }
+        public BoolParameter(string name, bool defaultValue) : base(name)
+        {
+            BoolValue = defaultValue;
+        }
 
-        [DataMember]
         public bool BoolValue;
     }
 
-    [DataContract]
     public class IntParameter : Parameter
     {
-        public IntParameter(string name) : base(name) { }
+        public IntParameter(string name, int defalutValue) : base(name)
+        {
+            IntValue = defalutValue;
+        }
 
-        [DataMember]
         public int IntValue;
     }
 }

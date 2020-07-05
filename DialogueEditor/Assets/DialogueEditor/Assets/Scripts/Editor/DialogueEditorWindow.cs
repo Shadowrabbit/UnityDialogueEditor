@@ -589,7 +589,8 @@ namespace DialogueEditor
 
         private void DrawPanel()
         {
-            const int VERTICAL_PADDING = 20;
+            const int VERTICAL_GAP = 20;
+            const int VERTICAL_PADDING = 10;
 
             panelRect = new Rect(position.width - panelWidth, TOOLBAR_HEIGHT, panelWidth, position.height - TOOLBAR_HEIGHT);
             if (panelStyle.normal.background == null)
@@ -605,6 +606,7 @@ namespace DialogueEditor
             if (CurrentlySelectedObject == null)
             {
                 GUILayout.Label("Default options", panelTitleStyle);
+                EditorGUILayout.Space();
 
                 // Default options
                 GUILayout.Label("Default name:", EditorStyles.boldLabel);
@@ -616,22 +618,22 @@ namespace DialogueEditor
                 GUILayout.Label("Default font:", EditorStyles.boldLabel);
                 CurrentAsset.DefaultFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(CurrentAsset.DefaultFont, typeof(TMPro.TMP_FontAsset), false);
 
-                GUILayout.Space(VERTICAL_PADDING);
+                GUILayout.Space(VERTICAL_GAP);
 
                 // Parameters
 
                 if (CurrentAsset.ParameterList == null)
-                    CurrentAsset.ParameterList = new List<Parameter>();
+                    CurrentAsset.ParameterList = new List<EditableParameter>();
 
                 GUILayout.Label("Parameters", panelTitleStyle);
                 GUILayout.BeginHorizontal();
                 if (GUILayout.Button("Add bool"))
                 {
-                    CurrentAsset.ParameterList.Add(new BoolParameter("Unnamed bool"));
+                    CurrentAsset.ParameterList.Add(new EditableBoolParameter("Unnamed bool"));
                 }
                 if (GUILayout.Button("Add int"))
                 {
-                    CurrentAsset.ParameterList.Add(new IntParameter("Unnamed int"));
+                    CurrentAsset.ParameterList.Add(new EditableIntParameter("Unnamed int"));
                 }
                 GUILayout.EndHorizontal();
 
@@ -643,14 +645,14 @@ namespace DialogueEditor
                     CurrentAsset.ParameterList[i].ParameterName = GUILayout.TextField(
                         CurrentAsset.ParameterList[i].ParameterName, GUILayout.Width(paramNameWidth), GUILayout.ExpandWidth(false));
 
-                    if (CurrentAsset.ParameterList[i] is BoolParameter)
+                    if (CurrentAsset.ParameterList[i] is EditableBoolParameter)
                     {
-                        BoolParameter param = CurrentAsset.ParameterList[i] as BoolParameter;
+                        EditableBoolParameter param = CurrentAsset.ParameterList[i] as EditableBoolParameter;
                         param.BoolValue = EditorGUILayout.Toggle(param.BoolValue);
                     }
-                    else if (CurrentAsset.ParameterList[i] is IntParameter)
+                    else if (CurrentAsset.ParameterList[i] is EditableIntParameter)
                     {
-                        IntParameter param = CurrentAsset.ParameterList[i] as IntParameter;
+                        EditableIntParameter param = CurrentAsset.ParameterList[i] as EditableIntParameter;
                         param.IntValue = EditorGUILayout.IntField(param.IntValue);
                     }
 
@@ -757,54 +759,21 @@ namespace DialogueEditor
                     {
                         EditableOptionNode node = (selectedNode.Info as EditableOptionNode);
                         GUILayout.Label("[" + node.ID + "] Option Node.", panelTitleStyle);
+                        EditorGUILayout.Space();
 
                         GUILayout.Label("Option text:", EditorStyles.boldLabel);
                         node.Text = GUILayout.TextArea(node.Text);
 
                         GUILayout.Label("TMP Font", EditorStyles.boldLabel);
                         node.TMPFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(node.TMPFont, typeof(TMPro.TMP_FontAsset), false);
-
-                        // Conditions
-                        GUILayout.Space(VERTICAL_PADDING);
-                        GUILayout.Label("Conditions", panelTitleStyle);
                     }
                 }
                 else if (CurrentlySelectedObject.Type == SelectableUI.eType.Connection)
                 {
                     GUILayout.Label("Connection.", panelTitleStyle);
-                    GUILayout.Space(VERTICAL_PADDING);
+                    EditorGUILayout.Space();
 
                     EditableConnection connection = (CurrentlySelectedObject as SelectableUIConnection).Connection;
-
-                    GUILayout.BeginHorizontal();
-                    if (GUILayout.Button("Add condition"))
-                    {
-                        GenericMenu rightClickMenu = new GenericMenu();
-
-                        for (int i = 0; i < this.CurrentAsset.ParameterList.Count; i++)
-                        {
-                            if (this.CurrentAsset.ParameterList[i] is IntParameter)
-                            {
-                                IntParameter intParam = CurrentAsset.ParameterList[i] as IntParameter;
-                                rightClickMenu.AddItem(new GUIContent(intParam.ParameterName), false, delegate
-                                {
-                                    connection.AddCondition(new EditableIntCondition(intParam.ParameterName));
-                                });
-                            }
-                            else if (this.CurrentAsset.ParameterList[i] is BoolParameter)
-                            {
-                                BoolParameter boolParam = CurrentAsset.ParameterList[i] as BoolParameter;
-                                rightClickMenu.AddItem(new GUIContent(boolParam.ParameterName), false, delegate
-                                {
-                                    connection.AddCondition(new EditableBoolCondition(boolParam.ParameterName));
-                                });
-                            }
-                        }
-
-                        rightClickMenu.ShowAsContext();
-                    }
-                    GUILayout.EndHorizontal();
-
 
                     // Validate conditions
                     for (int i = 0; i < connection.Conditions.Count; i++)
@@ -817,14 +786,48 @@ namespace DialogueEditor
                     }
 
 
+                    // Button
+                    {
+                        GUILayout.BeginHorizontal();
+                        if (GUILayout.Button("Add condition"))
+                        {
+                            GenericMenu rightClickMenu = new GenericMenu();
+
+                            for (int i = 0; i < this.CurrentAsset.ParameterList.Count; i++)
+                            {
+                                if (this.CurrentAsset.ParameterList[i] is EditableIntParameter)
+                                {
+                                    EditableIntParameter intParam = CurrentAsset.ParameterList[i] as EditableIntParameter;
+                                    rightClickMenu.AddItem(new GUIContent(intParam.ParameterName), false, delegate
+                                    {
+                                        connection.AddCondition(new EditableIntCondition(intParam.ParameterName));
+                                    });
+                                }
+                                else if (this.CurrentAsset.ParameterList[i] is EditableBoolParameter)
+                                {
+                                    EditableBoolParameter boolParam = CurrentAsset.ParameterList[i] as EditableBoolParameter;
+                                    rightClickMenu.AddItem(new GUIContent(boolParam.ParameterName), false, delegate
+                                    {
+                                        connection.AddCondition(new EditableBoolCondition(boolParam.ParameterName));
+                                    });
+                                }
+                            }
+
+                            rightClickMenu.ShowAsContext();
+                        }
+                        GUILayout.EndHorizontal();
+                    }
+
                     // Draw conditions
+                    GUILayout.Space(VERTICAL_PADDING);
+                    GUILayout.Label("Required conditions.", EditorStyles.boldLabel);
                     float conditionNameWidth = panelWidth * 0.4f;
                     for (int i = 0; i < connection.Conditions.Count; i++)
                     {
                         GUILayout.BeginHorizontal();
 
                         string name = connection.Conditions[i].ParameterName;
-                        GUILayout.Label(name, EditorStyles.boldLabel, GUILayout.MinWidth(conditionNameWidth), GUILayout.MaxWidth(conditionNameWidth));
+                        GUILayout.Label(name, GUILayout.MinWidth(conditionNameWidth), GUILayout.MaxWidth(conditionNameWidth));
 
                         if (connection.Conditions[i].ConditionType == EditableCondition.eConditionType.IntCondition)
                         {
@@ -852,10 +855,6 @@ namespace DialogueEditor
                         GUILayout.EndHorizontal();
                     }
                 }
-
-
-
-
             }
 
             GUILayout.EndScrollView();

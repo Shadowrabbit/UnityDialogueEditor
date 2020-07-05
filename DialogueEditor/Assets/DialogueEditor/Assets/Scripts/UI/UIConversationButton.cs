@@ -13,15 +13,24 @@ namespace DialogueEditor
             animatingOff,
         }
 
-        public TMPro.TextMeshProUGUI TextMesh;
-        public Image OptionBackgroundImage;
+        public enum eButtonType
+        {
+            Option,
+            Speech,
+            None
+        }
 
-        public OptionNode Option { get { return m_option; } }
-        public SpeechNode Speech { get { return m_action; } }
+        // Getters
+        public eButtonType ButtonType { get { return m_buttonType; } }
 
-        private OptionNode m_option;
-        private SpeechNode m_action;
+        // UI Elements
+        [SerializeField] private TMPro.TextMeshProUGUI TextMesh = null;
+        [SerializeField] private Image OptionBackgroundImage = null;
         private RectTransform m_rect;
+
+        // Node data
+        private eButtonType m_buttonType;
+        private ConversationNode m_node;    
 
         // Hovering 
         private float m_hoverT = 0.0f;
@@ -99,10 +108,20 @@ namespace DialogueEditor
         {
             if (!ConversationManager.Instance.AllowMouseInteraction) { return; }
 
-            if (m_action != null)
-                ConversationManager.Instance.DoSpeech(m_action);
-            else
-                ConversationManager.Instance.OptionSelected(m_option);
+            switch (m_buttonType)
+            {
+                case eButtonType.Speech:
+                    ConversationManager.Instance.SpeechSelected(m_node as SpeechNode);
+                    break;
+
+                case eButtonType.Option:
+                    ConversationManager.Instance.OptionSelected(m_node as OptionNode);
+                    break;
+
+                case eButtonType.None:
+                    ConversationManager.Instance.EndButtonSelected();
+                    break;
+            }
         }
 
 
@@ -160,22 +179,25 @@ namespace DialogueEditor
             TextMesh.color = c_text;
         }
 
-        public void SetOption(OptionNode option)
+        public void SetupButton(eButtonType buttonType, ConversationNode node)
         {
-            m_option = option;
-            TextMesh.text = option.Text;
-        }
+            m_buttonType = buttonType;
+            m_node = node;
 
-        public void SetFollowingAction(SpeechNode action)
-        {
-            m_action = action;
-            TextMesh.text = "Continue.";
-        }
+            switch (m_buttonType)
+            {
+                case eButtonType.Option:
+                    TextMesh.text = node.Text;
+                    break;
 
-        public void SetAsEndConversation()
-        {
-            m_option = null;
-            TextMesh.text = "End.";
+                case eButtonType.Speech:
+                    TextMesh.text = "Continue.";
+                    break;
+
+                case eButtonType.None:
+                    TextMesh.text = "End.";
+                    break;
+            }
         }
 
 

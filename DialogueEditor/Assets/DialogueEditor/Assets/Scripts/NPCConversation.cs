@@ -22,10 +22,13 @@ namespace DialogueEditor
     [DisallowMultipleComponent]
     public class NPCConversation : MonoBehaviour
     {
+        // Consts
         /// <summary> Version 1.10 </summary>
         public const int CurrentVersion = (int)eSaveVersion.V1_10;
-
         private readonly string CHILD_NAME = "ConversationEventInfo";
+
+        // Getters
+        public int Version { get { return saveVersion; } }
 
         // Serialized data
         [SerializeField] public int CurrentIDCounter = 1;
@@ -39,9 +42,9 @@ namespace DialogueEditor
 
         // Runtime vars
         public UnityEngine.Events.UnityEvent Event;
-        public List<Parameter> ParameterList; // Serialized into the json string
+        public List<EditableParameter> ParameterList; // Serialized into the json string
 
-        public int Version { get { return saveVersion; } }
+        
 
 
         //--------------------------------------
@@ -91,7 +94,7 @@ namespace DialogueEditor
             }
         }
 
-        public Parameter GetParameter(string name)
+        public EditableParameter GetParameter(string name)
         {
             for (int i = 0; i < this.ParameterList.Count; i++)
             {
@@ -102,6 +105,8 @@ namespace DialogueEditor
             }
             return null;
         }
+
+
 
 
         //--------------------------------------
@@ -122,95 +127,7 @@ namespace DialogueEditor
             // we will use to construct the user-facing Conversation data structure. 
             EditableConversation ec = this.DeserializeForEditor();
 
-            // Create a conversation object
-            Conversation conversation = new Conversation();
-
-            // Construct the parameters
-            for (int i = 0; i < ec.Parameters.Count; i++)
-            {
-                if (ec.Parameters[i] is BoolParameter)
-                {
-                    BoolParameter boolParam = ec.Parameters[i] as BoolParameter;
-                    conversation.Parameters.Add(boolParam);
-                }
-                else if (ec.Parameters[i] is IntParameter)
-                {
-                    IntParameter intParam = ec.Parameters[i] as IntParameter;
-                    conversation.Parameters.Add(intParam);
-                }
-            }
-
-            // Create a dictionary to store our created nodes by UID
-            Dictionary<int, SpeechNode> dialogues = new Dictionary<int, SpeechNode>();
-            Dictionary<int, OptionNode> options = new Dictionary<int, OptionNode>();
-
-            // Create a Dialogue and Option node for each in the conversation
-            // Put them in the dictionary
-            for (int i = 0; i < ec.SpeechNodes.Count; i++)
-            {
-                SpeechNode node = new SpeechNode();
-                node.Name = ec.SpeechNodes[i].Name;
-                node.Text = ec.SpeechNodes[i].Text;
-                node.AutomaticallyAdvance = ec.SpeechNodes[i].AdvanceDialogueAutomatically;
-                node.AutoAdvanceShouldDisplayOption = ec.SpeechNodes[i].AutoAdvanceShouldDisplayOption;
-                node.TimeUntilAdvance = ec.SpeechNodes[i].TimeUntilAdvance;
-                node.TMPFont = ec.SpeechNodes[i].TMPFont;
-                node.Icon = ec.SpeechNodes[i].Icon;
-                node.Audio = ec.SpeechNodes[i].Audio;
-                node.Volume = ec.SpeechNodes[i].Volume;
-                node.Options = new List<OptionNode>();
-                if (this.GetNodeData(ec.SpeechNodes[i].ID) != null)
-                {
-                    node.Event = this.GetNodeData(ec.SpeechNodes[i].ID).Event;
-                }
-
-                dialogues.Add(ec.SpeechNodes[i].ID, node);
-            }
-            for (int i = 0; i < ec.Options.Count; i++)
-            {
-                OptionNode node = new OptionNode();
-                node.Text = ec.Options[i].Text;
-                node.TMPFont = ec.Options[i].TMPFont;
-
-                options.Add(ec.Options[i].ID, node);
-            }
-
-
-
-            // Now that we have every node in the dictionary, reconstruct the tree 
-            // And also look for the root
-            for (int i = 0; i < ec.SpeechNodes.Count; i++)
-            {
-                // Connect dialogue to options
-                for (int j = 0; j < ec.SpeechNodes[i].OptionUIDs.Count; j++)
-                {
-                    dialogues[ec.SpeechNodes[i].ID].Options.Add(options[ec.SpeechNodes[i].OptionUIDs[j]]);
-                }
-
-                // Connect dialogue to following dialogue
-                if (ec.SpeechNodes[i].SpeechUID != EditableConversation.INVALID_UID)
-                {
-                    dialogues[ec.SpeechNodes[i].ID].Dialogue = dialogues[ec.SpeechNodes[i].SpeechUID];
-                }
-
-                // Check if root
-                if (ec.SpeechNodes[i].EditorInfo.isRoot)
-                {
-                    conversation.Root = dialogues[ec.SpeechNodes[i].ID];
-                }
-            }
-
-
-            for (int i = 0; i < ec.Options.Count; i++)
-            {
-                // Connect option to following dialogue
-                if (dialogues.ContainsKey(ec.Options[i].SpeechUID))
-                {
-                    options[ec.Options[i].ID].Dialogue = dialogues[ec.Options[i].SpeechUID];
-                }
-            }
-
-            return conversation;
+            return ConstructConversationObject(ec);
         }
 
         public EditableConversation DeserializeForEditor()
@@ -220,6 +137,7 @@ namespace DialogueEditor
             
             if (conversation != null)
             {
+                // Copy the param list
                 this.ParameterList = conversation.Parameters;
 
                 // Deserialize the indivudual nodes
@@ -273,6 +191,200 @@ namespace DialogueEditor
             ms.Close();
 
             return conversation;
+        }
+
+        private Conversation ConstructConversationObject(EditableConversation ec)
+        {
+            // Create a conversation object
+            Conversation conversation = new Conversation();
+
+            // Construct the parameters
+            CreateParameters(ec, conversation);
+
+            // Create a dictionary to store our created nodes by UID
+            Dictionary<int, SpeechNode> speechByID = new Dictionary<int, SpeechNode>();
+            Dictionary<int, OptionNode> optionsByID = new Dictionary<int, OptionNode>();
+
+            // Create a Dialogue and Option node for each in the conversation
+            // Put them in the dictionary
+            for (int i = 0; i < ec.SpeechNodes.Count; i++)
+            {
+                SpeechNode node = CreateSpeechNode(ec.SpeechNodes[i]);
+                speechByID.Add(ec.SpeechNodes[i].ID, node);
+            }
+            for (int i = 0; i < ec.Options.Count; i++)
+            {
+                OptionNode node = CreateOptionNode(ec.Options[i]);
+                optionsByID.Add(ec.Options[i].ID, node);
+            }
+
+            // Now that we have every node in the dictionary, reconstruct the tree 
+            // And also look for the root
+            ReconstructTree(ec, conversation, speechByID, optionsByID);
+
+            return conversation;
+        }
+
+        private void CreateParameters(EditableConversation ec, Conversation conversation)
+        {
+            for (int i = 0; i < ec.Parameters.Count; i++)
+            {
+                if (ec.Parameters[i].ParameterType == EditableParameter.eParamType.Bool)
+                {
+                    EditableBoolParameter editableParam = ec.Parameters[i] as EditableBoolParameter;
+                    BoolParameter boolParam = new BoolParameter(editableParam.ParameterName, editableParam.BoolValue);
+                    conversation.Parameters.Add(boolParam);
+                }
+                else if (ec.Parameters[i].ParameterType == EditableParameter.eParamType.Int)
+                {
+                    EditableIntParameter editableParam = ec.Parameters[i] as EditableIntParameter;
+                    IntParameter intParam = new IntParameter(editableParam.ParameterName, editableParam.IntValue);
+                    conversation.Parameters.Add(intParam);
+                }
+            }
+        }
+
+        private SpeechNode CreateSpeechNode(EditableSpeechNode editableNode)
+        {
+            SpeechNode speech = new SpeechNode();
+            speech.Name = editableNode.Name;
+            speech.Text = editableNode.Text;
+            speech.AutomaticallyAdvance = editableNode.AdvanceDialogueAutomatically;
+            speech.AutoAdvanceShouldDisplayOption = editableNode.AutoAdvanceShouldDisplayOption;
+            speech.TimeUntilAdvance = editableNode.TimeUntilAdvance;
+            speech.TMPFont = editableNode.TMPFont;
+            speech.Icon = editableNode.Icon;
+            speech.Audio = editableNode.Audio;
+            speech.Volume = editableNode.Volume;
+
+            NodeEventHolder holder = this.GetNodeData(editableNode.ID);
+            if (holder != null)
+            {
+                speech.Event = holder.Event;
+            }
+
+            return speech;
+        }
+
+        private OptionNode CreateOptionNode(EditableOptionNode editableNode)
+        {
+            OptionNode option = new OptionNode();
+            option.Text = editableNode.Text;
+            option.TMPFont = editableNode.TMPFont;
+
+            return option;
+        }
+
+        private void ReconstructTree(EditableConversation ec, Conversation conversation, Dictionary<int, SpeechNode> dialogues, Dictionary<int, OptionNode> options)
+        {
+            // Speech nodes
+            List<EditableSpeechNode> editableSpeechNodes = ec.SpeechNodes;
+            for (int i = 0; i < editableSpeechNodes.Count; i++)
+            {
+                EditableSpeechNode editableNode = editableSpeechNodes[i];
+                SpeechNode speechNode = dialogues[editableNode.ID];
+
+                // Connections
+                List<EditableConnection> editableConnections = editableNode.Connections;
+                for (int j = 0; j < editableConnections.Count; j++)
+                {
+
+                    int childID = editableConnections[j].NodeUID;
+
+                    // Construct node->Speech
+                    if (editableConnections[j].ConnectionType == EditableConnection.eConnectiontype.Speech)
+                    {
+                        SpeechConnection connection = new SpeechConnection(dialogues[childID]);
+                        CopyConnectionConditions(editableConnections[j], connection);
+                        speechNode.Connections.Add(connection);
+                    }
+                    // Construct node->Option
+                    else if (editableConnections[j].ConnectionType == EditableConnection.eConnectiontype.Option)
+                    {
+                        OptionConnection connection = new OptionConnection(options[childID]);
+                        CopyConnectionConditions(editableConnections[j], connection);
+                        speechNode.Connections.Add(connection);
+                    }
+                }
+
+                // Root?
+                if (editableNode.EditorInfo.isRoot)
+                {
+                    conversation.Root = dialogues[editableNode.ID];
+                }
+            }
+
+            // Option nodes
+            List<EditableOptionNode> editableOptionNodes = ec.Options;
+            for (int i = 0; i < editableOptionNodes.Count; i++)
+            {
+                EditableOptionNode editableNode = editableOptionNodes[i];
+                OptionNode optionNode = options[editableNode.ID];
+
+                // Connections
+                List<EditableConnection> editableConnections = editableNode.Connections;
+                for (int j = 0; j < editableConnections.Count; j++)
+                {
+                    int childID = editableConnections[j].NodeUID;
+
+                    // Construct node->Speech
+                    if (editableConnections[j].ConnectionType == EditableConnection.eConnectiontype.Speech)
+                    {
+                        SpeechConnection connection = new SpeechConnection(dialogues[childID]);
+                        CopyConnectionConditions(editableConnections[j], connection);
+                        optionNode.Connections.Add(connection);
+                    }
+                }
+            }
+        }
+
+        private void CopyConnectionConditions(EditableConnection editableConnection, Connection connection)
+        {
+            List<EditableCondition> editableConditions = editableConnection.Conditions;
+            for (int i = 0; i < editableConditions.Count; i++)
+            {
+                if (editableConditions[i].ConditionType == EditableCondition.eConditionType.BoolCondition)
+                {
+                    EditableBoolCondition ebc = editableConditions[i] as EditableBoolCondition;
+
+                    BoolCondition bc = new BoolCondition();
+                    bc.ParameterName = ebc.ParameterName;
+                    switch (ebc.CheckType)
+                    {
+                        case EditableBoolCondition.eCheckType.equal:
+                            bc.CheckType = BoolCondition.eCheckType.equal;
+                            break;
+                        case EditableBoolCondition.eCheckType.notEqual:
+                            bc.CheckType = BoolCondition.eCheckType.notEqual;
+                            break;
+                    }
+                    bc.RequiredValue = ebc.RequiredValue;
+
+                    connection.Conditions.Add(bc);
+                }
+                else if (editableConditions[i].ConditionType == EditableCondition.eConditionType.IntCondition)
+                {
+                    EditableIntCondition eic = editableConditions[i] as EditableIntCondition;
+
+                    IntCondition ic = new IntCondition();
+                    ic.ParameterName = eic.ParameterName;
+                    switch (eic.CheckType)
+                    {
+                        case EditableIntCondition.eCheckType.equal:
+                            ic.CheckType = IntCondition.eCheckType.equal;
+                            break;
+                        case EditableIntCondition.eCheckType.greaterThan:
+                            ic.CheckType = IntCondition.eCheckType.greaterThan;
+                            break;
+                        case EditableIntCondition.eCheckType.lessThan:
+                            ic.CheckType = IntCondition.eCheckType.lessThan;
+                            break;
+                    }
+                    ic.RequiredValue = eic.RequiredValue;
+
+                    connection.Conditions.Add(ic);
+                }
+            }
         }
     }
 }

@@ -6,8 +6,8 @@ using System.Runtime.Serialization.Json;
 namespace DialogueEditor
 {
     [DataContract]
-    [KnownType(typeof(BoolParameter))]
-    [KnownType(typeof(IntParameter))]
+    [KnownType(typeof(EditableBoolParameter))]
+    [KnownType(typeof(EditableIntParameter))]
     public class EditableConversation
     {
         public const int INVALID_UID = -1;
@@ -20,7 +20,7 @@ namespace DialogueEditor
 
         [DataMember] public List<EditableSpeechNode> SpeechNodes;
         [DataMember] public List<EditableOptionNode> Options;
-        [DataMember] public List<Parameter> Parameters;
+        [DataMember] public List<EditableParameter> Parameters;
 
         public int SaveVersion;
 

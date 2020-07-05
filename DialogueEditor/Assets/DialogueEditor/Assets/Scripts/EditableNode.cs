@@ -73,24 +73,18 @@ namespace DialogueEditor
 
         public void RemoveSelfFromTree()
         {
-            Debug.Log("Removing Node_Id_" + this.ID + " from tree.");
-
             // This speech is no longer the parent of any children
             for (int i = 0; i < Connections.Count; i++)
             {
                 if (Connections[i] is EditableSpeechConnection)
                 {
                     EditableSpeechConnection speechCon = Connections[i] as EditableSpeechConnection;
-                    Debug.Log("----Child_" + speechCon.Speech.ID + " parents count before = " + speechCon.Speech.parents.Count);
                     speechCon.Speech.parents.Remove(this);
-                    Debug.Log("----Child_" + speechCon.Speech.ID + " parents count after = " + speechCon.Speech.parents.Count);
                 }
                 else if (Connections[i] is EditableOptionConnection)
                 {
                     EditableOptionConnection optionCon = Connections[i] as EditableOptionConnection;
-                    Debug.Log("----Child_" + optionCon.Option.ID + " parents count before = " + optionCon.Option.parents.Count);
                     optionCon.Option.parents.Remove(this);
-                    Debug.Log("----Child_" + optionCon.Option.ID + " parents count after = " + optionCon.Option.parents.Count);
                 }
             }
 
@@ -178,45 +172,31 @@ namespace DialogueEditor
         // ----
         // Serialized Node data
 
-        /// <summary>
-        /// The NPC Name
-        /// </summary>
+        /// <summary> The NPC Name </summary>
         [DataMember] public string Name;
 
-        /// <summary>
-        /// The NPC Icon
-        /// </summary>
+        /// <summary> The NPC Icon </summary>
         public Sprite Icon;
         /// <summary> Deprecated as of V1.03 </summary>
         [DataMember] public string IconGUID;
 
-        /// <summary>
-        /// The Audio Clip acompanying this Speech.
-        /// </summary>
+        /// <summary> The Audio Clip acompanying this Speech. </summary>
         public AudioClip Audio;
         /// <summary> Deprecated as of V1.03 </summary>
         [DataMember] public string AudioGUID;
 
-        /// <summary>
-        /// The Volume for the AudioClip;
-        /// </summary>
+        /// <summary> The Volume for the AudioClip; </summary>
         [DataMember] public float Volume;
 
-        /// <summary>
-        /// If this dialogue leads onto another dialogue... 
-        /// Should the dialogue advance automatially?
-        /// </summary>
+        /// <summary> If this dialogue leads onto another dialogue... 
+        /// Should the dialogue advance automatially? </summary>
         [DataMember] public bool AdvanceDialogueAutomatically;
 
-        /// <summary>
-        /// If this dialogue automatically advances, should it also display an 
-        /// "end" / "continue" button?
-        /// </summary>
+        /// <summary> If this dialogue automatically advances, should it also display an 
+        /// "end" / "continue" button? </summary>
         [DataMember] public bool AutoAdvanceShouldDisplayOption;
 
-        /// <summary>
-        /// The time it will take for the Dialogue to automaically advance
-        /// </summary>
+        /// <summary>  The time it will take for the Dialogue to automaically advance </summary>
         [DataMember] public float TimeUntilAdvance;
 
 
