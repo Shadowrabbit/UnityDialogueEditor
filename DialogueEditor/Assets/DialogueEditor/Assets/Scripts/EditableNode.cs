@@ -10,6 +10,8 @@ namespace DialogueEditor
     [DataContract]
     [KnownType(typeof(EditableSpeechConnection))]
     [KnownType(typeof(EditableOptionConnection))]
+    [KnownType(typeof(EditableSetIntParamAction))]
+    [KnownType(typeof(EditableSetBoolParamAction))]
     public abstract class EditableConversationNode
     {
         public enum eNodeType
@@ -31,6 +33,7 @@ namespace DialogueEditor
         {
             parents = new List<EditableConversationNode>();
             Connections = new List<EditableConnection>();
+            ParamActions = new List<EditableSetParamAction>();
             parentUIDs = new List<int>();
             EditorInfo = new EditorArgs { xPos = 0, yPos = 0, isRoot = false };
         }
@@ -47,6 +50,7 @@ namespace DialogueEditor
         [DataMember] public string Text;
         [DataMember] public List<EditableConnection> Connections;
         [DataMember] public List<int> parentUIDs;
+        [DataMember] public List<EditableSetParamAction> ParamActions;
         /// <summary> Deprecated as of V1.03 </summary>
         [DataMember] public string TMPFontGUID;
 

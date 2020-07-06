@@ -304,6 +304,8 @@ namespace DialogueEditor
 
                 case eState.TransitioningOptionsOn:
                     {
+                        CreateUIOptions();
+
                         for (int i = 0; i < m_uiOptions.Count; i++)
                         {
                             m_uiOptions[i].gameObject.SetActive(true);
@@ -536,52 +538,6 @@ namespace DialogueEditor
                 AudioPlayer.Play();
             }
 
-
-            // Display new options
-            if (speech.ConnectionType == Connection.eConnectionType.Option)
-            {
-                for (int i = 0; i < speech.Connections.Count; i++)
-                {
-                    OptionConnection connection = speech.Connections[i] as OptionConnection;
-                    if (ConditionsMet(connection))
-                    {
-                        UIConversationButton uiOption = CreateButton();
-                        uiOption.SetupButton(UIConversationButton.eButtonType.Option, connection.OptionNode);
-                    }
-                }
-            }
-            // Display Continue/End options
-            else
-            {
-                bool notAutoAdvance = !speech.AutomaticallyAdvance;
-                bool allowVisibleOptionWithAuto = (speech.AutomaticallyAdvance && speech.AutoAdvanceShouldDisplayOption);
-
-                if (notAutoAdvance || allowVisibleOptionWithAuto)
-                {
-                    if (speech.ConnectionType == Connection.eConnectionType.Speech)
-                    {
-                        UIConversationButton uiOption = CreateButton();
-                        SpeechNode next = GetValidSpeechOfNode(speech);
-                        uiOption.SetupButton(UIConversationButton.eButtonType.Speech, next);
-                    }
-                    else if (speech.ConnectionType == Connection.eConnectionType.None)
-                    {
-                        UIConversationButton option = CreateButton();
-                        option.SetupButton(UIConversationButton.eButtonType.None, null);
-                    }
-                }
-
-            }
-            SetSelectedOption(0);
-
-            // Set the button sprite and alpha
-            for (int i = 0; i < m_uiOptions.Count; i++)
-            {
-                m_uiOptions[i].SetImage(OptionImage, OptionImageSliced);
-                m_uiOptions[i].SetAlpha(0);
-                m_uiOptions[i].gameObject.SetActive(false);
-            }
-
             SetState(eState.ScrollingText);
         }
 
@@ -682,6 +638,54 @@ namespace DialogueEditor
 #if UNITY_EDITOR
             // Debug.Log("[ConversationManager]: Conversation UI off.");
 #endif
+        }
+
+        private void CreateUIOptions()
+        {
+            // Display new options
+            if (m_currentSpeech.ConnectionType == Connection.eConnectionType.Option)
+            {
+                for (int i = 0; i < m_currentSpeech.Connections.Count; i++)
+                {
+                    OptionConnection connection = m_currentSpeech.Connections[i] as OptionConnection;
+                    if (ConditionsMet(connection))
+                    {
+                        UIConversationButton uiOption = CreateButton();
+                        uiOption.SetupButton(UIConversationButton.eButtonType.Option, connection.OptionNode);
+                    }
+                }
+            }
+            // Display Continue/End options
+            else
+            {
+                bool notAutoAdvance = !m_currentSpeech.AutomaticallyAdvance;
+                bool allowVisibleOptionWithAuto = (m_currentSpeech.AutomaticallyAdvance && m_currentSpeech.AutoAdvanceShouldDisplayOption);
+
+                if (notAutoAdvance || allowVisibleOptionWithAuto)
+                {
+                    if (m_currentSpeech.ConnectionType == Connection.eConnectionType.Speech)
+                    {
+                        UIConversationButton uiOption = CreateButton();
+                        SpeechNode next = GetValidSpeechOfNode(m_currentSpeech);
+                        uiOption.SetupButton(UIConversationButton.eButtonType.Speech, next);
+                    }
+                    else if (m_currentSpeech.ConnectionType == Connection.eConnectionType.None)
+                    {
+                        UIConversationButton option = CreateButton();
+                        option.SetupButton(UIConversationButton.eButtonType.None, null);
+                    }
+                }
+
+            }
+            SetSelectedOption(0);
+
+            // Set the button sprite and alpha
+            for (int i = 0; i < m_uiOptions.Count; i++)
+            {
+                m_uiOptions[i].SetImage(OptionImage, OptionImageSliced);
+                m_uiOptions[i].SetAlpha(0);
+                m_uiOptions[i].gameObject.SetActive(false);
+            }
         }
 
         private void ClearOptions()
