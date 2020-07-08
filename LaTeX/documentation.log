@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.6.29) (preloaded format=pdflatex 2020.7.7)  7 JUL 2020 21:17
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.6.29) (preloaded format=pdflatex 2020.7.7)  8 JUL 2020 20:59
 entering extended mode
 **./documentation.tex
 (documentation.tex
@@ -45,15 +45,85 @@ File: pdftex.def 2018/01/08 v1.0l Graphics/color driver for pdftex
 ))
 \Gin@req@height=\dimen135
 \Gin@req@width=\dimen136
+) (C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/wrapfig\wrapfig.sty
+\wrapoverhang=\dimen137
+\WF@size=\dimen138
+\c@WF@wrappedlines=\count175
+\WF@box=\box45
+\WF@everypar=\toks16
+Package: wrapfig 2003/01/31  v 3.6
+) (C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/float\float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count176
+\float@exts=\toks17
+\float@box=\box46
+\@float@everytoks=\toks18
+\@floatcapt=\box47
 )
+(C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.sty
+Package: geometry 2020/01/02 v5.9 Page Geometry
+
+(C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/generic/iftex\ifvtex.sty
+Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
+
+(C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/generic/iftex\iftex.sty
+Package: iftex 2020/03/06 v1.0d TeX engine tests
+))
+\Gm@cnth=\count177
+\Gm@cntv=\count178
+\c@Gm@tempcnt=\count179
+\Gm@bindingoffset=\dimen139
+\Gm@wd@mp=\dimen140
+\Gm@odd@mp=\dimen141
+\Gm@even@mp=\dimen142
+\Gm@layoutwidth=\dimen143
+\Gm@layoutheight=\dimen144
+\Gm@layouthoffset=\dimen145
+\Gm@layoutvoffset=\dimen146
+\Gm@dimlist=\toks19
+
+(C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/geometry\geometry.cfg))
+(C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/base\inputenc.sty
+Package: inputenc 2018/08/11 v1.3c Input encoding file
+\inpenc@prehook=\toks20
+\inpenc@posthook=\toks21
+)
+(C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/generic/babel\babel.sty
+Package: babel 2020/06/10 3.45 The Babel package
+
+(C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/generic/babel\babel.def
+File: babel.def 2020/06/10 3.45 Babel common definitions
+\babel@savecnt=\count180
+\U@D=\dimen147
+\l@babelnohyphens=\language79
+
+(C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/generic/babel\txtbabel.def)
+\bbl@readstream=\read2
+)
+\bbl@dirlevel=\count181
+
+*************************************
+* Local config file bblopts.cfg used
+*
+(C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/arabi\bblopts.cfg
+File: bblopts.cfg 2005/09/08 v0.1 add Arabic and Farsi to "declared" options of
+ babel
+)
+(C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/babel-english\english.l
+df
+Language: english 2017/06/06 v3.3r English support from the babel system
+Package babel Info: \l@canadian = using hyphenrules for english
+(babel)             (\language0) on input line 102.
+Package babel Info: \l@australian = using hyphenrules for ukenglish
+(babel)             (\language73) on input line 105.
+Package babel Info: \l@newzealand = using hyphenrules for ukenglish
+(babel)             (\language73) on input line 108.
+))
 (C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hyperref.sty
 Package: hyperref 2020-05-15 v7.00e Hypertext links for LaTeX
 
 (C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/generic/ltxcmds\ltxcmds.sty
 Package: ltxcmds 2019/12/15 v1.24 LaTeX kernel commands for general use (HO)
-)
-(C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/generic/iftex\iftex.sty
-Package: iftex 2020/03/06 v1.0d TeX engine tests
 )
 (C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/generic/pdftexcmds\pdftexcmds
 .sty
@@ -92,9 +162,9 @@ Package: auxhook 2019-12-17 v1.6 Hooks for auxiliary files (HO)
 (C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/kvoptions\kvoptions.sty
 Package: kvoptions 2019/11/29 v3.13 Key value format for package options (HO)
 )
-\@linkdim=\dimen137
-\Hy@linkcounter=\count175
-\Hy@pagecounter=\count176
+\@linkdim=\dimen148
+\Hy@linkcounter=\count182
+\Hy@pagecounter=\count183
  (C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\pd1enc.def
 File: pd1enc.def 2020-05-15 v7.00e Hyperref: PDFDocEncoding definition (HO)
 Now handling font encoding PD1 ...
@@ -106,7 +176,7 @@ Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
 (C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/generic/etexcmds\etexcmds.sty
 Package: etexcmds 2019/12/15 v1.7 Avoid name clashes with e-TeX commands (HO)
 )
-\Hy@SavedSpaceFactor=\count177
+\Hy@SavedSpaceFactor=\count184
 Package hyperref Info: Hyper figures OFF on input line 4464.
 Package hyperref Info: Link nesting OFF on input line 4469.
 Package hyperref Info: Hyper index ON on input line 4472.
@@ -114,13 +184,13 @@ Package hyperref Info: Plain pages OFF on input line 4479.
 Package hyperref Info: Backreferencing OFF on input line 4484.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4717.
-\c@Hy@tempcnt=\count178
+\c@Hy@tempcnt=\count185
  (C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/url\url.sty
 \Urlmuskip=\muskip16
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
 LaTeX Info: Redefining \url on input line 5076.
-\XeTeXLinkMargin=\dimen138
+\XeTeXLinkMargin=\dimen149
 
 (C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/generic/bitset\bitset.sty
 Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
@@ -130,9 +200,9 @@ Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
 Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
 )
 ))
-\Fld@menulength=\count179
-\Field@Width=\dimen139
-\Fld@charsize=\dimen140
+\Fld@menulength=\count186
+\Field@Width=\dimen150
+\Fld@charsize=\dimen151
 Package hyperref Info: Hyper figures OFF on input line 6347.
 Package hyperref Info: Link nesting OFF on input line 6352.
 Package hyperref Info: Hyper index ON on input line 6355.
@@ -146,9 +216,9 @@ LaTeX Info: Redefining \pageref on input line 6421.
 (C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/generic/atbegshi\atbegshi.sty
 Package: atbegshi 2019/12/05 v1.19 At begin shipout hook (HO)
 )
-\Hy@abspage=\count180
-\c@Item=\count181
-\c@Hfootnote=\count182
+\Hy@abspage=\count187
+\c@Item=\count188
+\c@Hfootnote=\count189
 )
 Package hyperref Info: Driver (autodetected): hpdftex.
  (C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\hpdftex.def
@@ -158,8 +228,8 @@ File: hpdftex.def 2020-05-15 v7.00e Hyperref driver for pdfTeX
 Package: atveryend 2019-12-11 v1.11 Hooks at the very end of document (HO)
 Package atveryend Info: \enddocument detected (standard20110627).
 )
-\Fld@listcount=\count183
-\c@bookmark@seq@number=\count184
+\Fld@listcount=\count190
+\c@bookmark@seq@number=\count191
 
 (C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/rerunfilecheck\rerunfil
 echeck.sty
@@ -174,47 +244,93 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 )
 \Hy@SectionHShift=\skip49
 )
-Package hyperref Info: Option `colorlinks' set `true' on input line 12.
+Package hyperref Info: Option `colorlinks' set `true' on input line 34.
 
+(C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/listings\listings.sty
+\lst@mode=\count192
+\lst@gtempboxa=\box48
+\lst@token=\toks22
+\lst@length=\count193
+\lst@currlwidth=\dimen152
+\lst@column=\count194
+\lst@pos=\count195
+\lst@lostspace=\dimen153
+\lst@width=\dimen154
+\lst@newlines=\count196
+\lst@lineno=\count197
+\lst@maxwidth=\dimen155
+
+(C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstmisc.sty
+File: lstmisc.sty 2020/03/24 1.8d (Carsten Heinz)
+\c@lstnumber=\count198
+\lst@skipnumbers=\count199
+\lst@framebox=\box49
+)
+(C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/listings\listings.cfg
+File: listings.cfg 2020/03/24 1.8d listings configuration
+))
+Package: listings 2020/03/24 1.8d (Carsten Heinz)
+(C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/xcolor\xcolor.sty
+Package: xcolor 2016/05/11 v2.12 LaTeX color extensions (UK)
+
+(C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: pdftex.def on input line 225.
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1348.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1352.
+Package xcolor Info: Model `RGB' extended on input line 1364.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1366.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1367.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1368.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1370.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1371.
+) (C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\courier.sty
+Package: courier 2020/03/25 PSNFSS-v9.3 (WaS) 
+)
+(C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstlang1.sty
+File: lstlang1.sty 2020/03/24 1.8d listings language file
+)
 (C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdf
 mode.def
 File: l3backend-pdfmode.def 2020-06-29 L3 backend support: PDF mode
-\l__kernel_color_stack_int=\count185
-\l__pdf_internal_box=\box45
+\l__kernel_color_stack_int=\count266
+\l__pdf_internal_box=\box50
 ) (documentation.aux)
 \openout1 = `documentation.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
 
 (C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mk
 ii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count186
-\scratchdimen=\dimen141
-\scratchbox=\box46
-\nofMPsegments=\count187
-\nofMParguments=\count188
-\everyMPshowfont=\toks16
-\MPscratchCnt=\count189
-\MPscratchDim=\dimen142
-\MPnumerator=\count190
-\makeMPintoPDFobject=\count191
-\everyMPtoPDFconversion=\toks17
+\scratchcounter=\count267
+\scratchdimen=\dimen156
+\scratchbox=\box51
+\nofMPsegments=\count268
+\nofMParguments=\count269
+\everyMPshowfont=\toks23
+\MPscratchCnt=\count270
+\MPscratchDim=\dimen157
+\MPnumerator=\count271
+\makeMPintoPDFobject=\count272
+\everyMPtoPDFconversion=\toks24
 )
 (C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-b
 ase.sty
@@ -222,18 +338,43 @@ Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 85.
 )
-\AtBeginShipoutBox=\box47
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: 
+* h-part:(L,W,R)=(50.0pt, 497.50787pt, 50.0pt)
+* v-part:(T,H,B)=(60.0pt, 725.04684pt, 60.0pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=497.50787pt
+* \textheight=725.04684pt
+* \oddsidemargin=-22.26999pt
+* \evensidemargin=-22.26999pt
+* \topmargin=-49.26999pt
+* \headheight=12.0pt
+* \headsep=25.0pt
+* \topskip=12.0pt
+* \footskip=30.0pt
+* \marginparwidth=35.0pt
+* \marginparsep=10.0pt
+* \columnsep=10.0pt
+* \skip\footins=10.8pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-(C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/graphics\color.sty
-Package: color 2019/11/23 v1.2a Standard LaTeX Color (DPC)
-
-(C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\color.cfg
-File: color.cfg 2016/01/02 v1.6 sample color configuration
-)
-Package color Info: Driver file: pdftex.def on input line 147.
-)
-Package hyperref Info: Link coloring ON on input line 16.
- (C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\nameref.sty
+\AtBeginShipoutBox=\box52
+Package hyperref Info: Link coloring ON on input line 54.
+(C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\nameref.sty
 Package: nameref 2019/09/16 v2.46 Cross-referencing by name of section
 
 (C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/refcount\refcount.sty
@@ -243,81 +384,153 @@ Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 lestring.sty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
-\c@section@level=\count192
+\c@section@level=\count273
 )
-LaTeX Info: Redefining \ref on input line 16.
-LaTeX Info: Redefining \pageref on input line 16.
-LaTeX Info: Redefining \nameref on input line 16.
+LaTeX Info: Redefining \ref on input line 54.
+LaTeX Info: Redefining \pageref on input line 54.
+LaTeX Info: Redefining \nameref on input line 54.
  (documentation.out) (documentation.out)
 \@outlinefile=\write3
 \openout3 = `documentation.out'.
 
+\c@lstlisting=\count274
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <14.4> on input line 23.
+(Font)              <14.4> on input line 61.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 23.
+(Font)              <7> on input line 61.
 
 
 LaTeX Warning: No \author given.
 
+<img/CardImage.png, id=71, 101.178pt x 67.452pt>
+File: img/CardImage.png Graphic file (type png)
+<use img/CardImage.png>
+Package pdftex.def Info: img/CardImage.png  used on input line 64.
+(pdftex.def)             Requested size: 250.0pt x 166.67607pt.
 LaTeX Font Info:    Trying to load font information for TS1+cmss on input line 
-28.
+71.
 (C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/base\ts1cmss.fd
 File: ts1cmss.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 )
 [1
 
-{C:/Users/Rikka/AppData/Local/MiKTeX/pdftex/config/pdftex.map}] [2]
-<img/EditorWindowFullConversation.png, id=100, 800.23969pt x 408.77719pt>
+{C:/Users/Rikka/AppData/Local/MiKTeX/pdftex/config/pdftex.map} <./img/CardImage
+.png>]
+<img/EditorWindowFullConversation.png, id=97, 800.23969pt x 408.77719pt>
 File: img/EditorWindowFullConversation.png Graphic file (type png)
 <use img/EditorWindowFullConversation.png>
 Package pdftex.def Info: img/EditorWindowFullConversation.png  used on input li
-ne 68.
-(pdftex.def)             Requested size: 390.00844pt x 199.2235pt.
-<img/AddNpcConversation.png, id=101, 343.2825pt x 142.28156pt>
+ne 110.
+(pdftex.def)             Requested size: 398.00781pt x 203.309pt.
+<img/AddNpcConversation.png, id=98, 343.2825pt x 142.28156pt>
 File: img/AddNpcConversation.png Graphic file (type png)
 <use img/AddNpcConversation.png>
-Package pdftex.def Info: img/AddNpcConversation.png  used on input line 77.
-(pdftex.def)             Requested size: 343.28165pt x 142.2812pt.
+Package pdftex.def Info: img/AddNpcConversation.png  used on input line 119.
+(pdftex.def)             Requested size: 300.0pt x 124.3419pt.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <12> on input line 83.
+(Font)              <12> on input line 125.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 83.
+(Font)              <8> on input line 125.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 83.
- [3 <./img/EditorWindowFullConversation.png> <./img/AddNpcConversation.png>]
-<img/OpenEditorWindow.png, id=106, 198.7425pt x 96.36pt>
+(Font)              <6> on input line 125.
+<img/OpenEditorWindow.png, id=99, 198.7425pt x 96.36pt>
 File: img/OpenEditorWindow.png Graphic file (type png)
 <use img/OpenEditorWindow.png>
-Package pdftex.def Info: img/OpenEditorWindow.png  used on input line 87.
-(pdftex.def)             Requested size: 198.742pt x 96.35974pt.
- [4 <./img/OpenEditorWindow.png>] [5] [6] [7] [8] [9] [10]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 164.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 164.
+Package pdftex.def Info: img/OpenEditorWindow.png  used on input line 129.
+(pdftex.def)             Requested size: 200.0pt x 96.97287pt.
+ [2 <./img/EditorWindowFullConversation.png> <./img/AddNpcConversation.png> <./
+img/OpenEditorWindow.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 150--151
+[]\OT1/cmss/bx/n/12 Display Con-tinue Op-tions\OT1/cmss/m/n/12 :
+ []
+
+<img/SpeechNode.png, id=105, 347.79938pt x 392.21532pt>
+File: img/SpeechNode.png Graphic file (type png)
+<use img/SpeechNode.png>
+Package pdftex.def Info: img/SpeechNode.png  used on input line 163.
+(pdftex.def)             Requested size: 223.87701pt x 252.46524pt.
+[3 <./img/SpeechNode.png>]
+<img/DeleteConnection.png, id=112, 218.31563pt x 72.27pt>
+File: img/DeleteConnection.png Graphic file (type png)
+<use img/DeleteConnection.png>
+Package pdftex.def Info: img/DeleteConnection.png  used on input line 193.
+(pdftex.def)             Requested size: 218.31508pt x 72.2698pt.
+<img/DeleteNode.png, id=113, 310.15875pt x 218.31563pt>
+File: img/DeleteNode.png Graphic file (type png)
+<use img/DeleteNode.png>
+Package pdftex.def Info: img/DeleteNode.png  used on input line 198.
+(pdftex.def)             Requested size: 200.0pt x 140.77417pt.
+ [4 <./img/DeleteConnection.png> <./img/DeleteNode.png>]
+<img/CanvasInHierarchy.png, id=118, 154.32657pt x 39.14626pt>
+File: img/CanvasInHierarchy.png Graphic file (type png)
+<use img/CanvasInHierarchy.png>
+Package pdftex.def Info: img/CanvasInHierarchy.png  used on input line 224.
+(pdftex.def)             Requested size: 154.32617pt x 39.14615pt.
+<img/CanvasComponent.png, id=119, 344.03531pt x 116.68594pt>
+File: img/CanvasComponent.png Graphic file (type png)
+<use img/CanvasComponent.png>
+Package pdftex.def Info: img/CanvasComponent.png  used on input line 229.
+(pdftex.def)             Requested size: 250.0pt x 84.79187pt.
+<img/CanvasScalarComponent.png, id=120, 344.03531pt x 99.37125pt>
+File: img/CanvasScalarComponent.png Graphic file (type png)
+<use img/CanvasScalarComponent.png>
+Package pdftex.def Info: img/CanvasScalarComponent.png  used on input line 235.
+
+(pdftex.def)             Requested size: 250.0pt x 72.20985pt.
+<img/ConversationManager.png, id=121, 353.06906pt x 265.74281pt>
+File: img/ConversationManager.png Graphic file (type png)
+<use img/ConversationManager.png>
+Package pdftex.def Info: img/ConversationManager.png  used on input line 242.
+(pdftex.def)             Requested size: 300.0pt x 225.80135pt.
+ [5 <./img/CanvasInHierarchy.png> <./img/CanvasComponent.png> <./img/CanvasScal
+arComponent.png> <./img/ConversationManager.png>]
+LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 2
+58.
+
+(C:\Users\Rikka\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ot1pcr.fd
+File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
+)
+LaTeX Font Info:    Font shape `OT1/pcr/m/it' in size <12> not available
+(Font)              Font shape `OT1/pcr/m/sl' tried instead on input line 298.
+
+[6]
+<img/AllowMouseInteraction.png, id=162, 315.42844pt x 40.65187pt>
+File: img/AllowMouseInteraction.png Graphic file (type png)
+<use img/AllowMouseInteraction.png>
+Package pdftex.def Info: img/AllowMouseInteraction.png  used on input line 373.
+
+(pdftex.def)             Requested size: 315.42766pt x 40.65176pt.
+ [7 <./img/AllowMouseInteraction.png>] [8] [9] [10]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 521.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 521.
  (documentation.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 164.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 164.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 521.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 521.
 Package rerunfilecheck Info: File `documentation.out' has not changed.
-(rerunfilecheck)             Checksum: 1CC80B77701B799E8CD86C0D274486F5;1001.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 164.
+(rerunfilecheck)             Checksum: 7E8C948B22F531FF76598FA34C465B81;1011.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 521.
  ) 
 Here is how much of TeX's memory you used:
- 5307 strings out of 480790
- 84429 string characters out of 2897302
- 342140 words of memory out of 3000000
- 21205 multiletter control sequences out of 15000+200000
- 538438 words of font info for 44 fonts, out of 3000000 for 9000
+ 9002 strings out of 480790
+ 135398 string characters out of 2897302
+ 665492 words of memory out of 3000000
+ 24671 multiletter control sequences out of 15000+200000
+ 540085 words of font info for 50 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 37i,6n,29p,280b,364s stack positions out of 5000i,500n,10000p,200000b,50000s
- <C:\Users\Rikka\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcss
-1200.pk><C:/Users/Rikka/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfon
-ts/cm/cmss12.pfb><C:/Users/Rikka/AppData/Local/Programs/MiKTeX/fonts/type1/publ
-ic/amsfonts/cm/cmss17.pfb><C:/Users/Rikka/AppData/Local/Programs/MiKTeX/fonts/t
-ype1/public/amsfonts/cm/cmssbx10.pfb><C:/Users/Rikka/AppData/Local/Programs/MiK
-TeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on documentation.pdf (10 pages, 126251 bytes).
+ 37i,6n,47p,318b,1798s stack positions out of 5000i,500n,10000p,200000b,50000s
+{C:/Users/Rikka/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc} <C
+:\Users\Rikka\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcss1200.
+pk><C:/Users/Rikka/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm
+/cmss12.pfb><C:/Users/Rikka/AppData/Local/Programs/MiKTeX/fonts/type1/public/am
+sfonts/cm/cmss17.pfb><C:/Users/Rikka/AppData/Local/Programs/MiKTeX/fonts/type1/
+public/amsfonts/cm/cmssbx10.pfb><C:/Users/Rikka/AppData/Local/Programs/MiKTeX/f
+onts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/Rikka/AppData/Local/Programs
+/MiKTeX/fonts/type1/urw/courier/ucrb8a.pfb><C:/Users/Rikka/AppData/Local/Progra
+ms/MiKTeX/fonts/type1/urw/courier/ucrr8a.pfb><C:/Users/Rikka/AppData/Local/Prog
+rams/MiKTeX/fonts/type1/urw/courier/ucrro8a.pfb>
+Output written on documentation.pdf (10 pages, 312603 bytes).
 PDF statistics:
- 164 PDF objects out of 1000 (max. 8388607)
- 35 named destinations out of 1000 (max. 500000)
- 152 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 369 PDF objects out of 1000 (max. 8388607)
+ 185 named destinations out of 1000 (max. 500000)
+ 197 words of extra memory for PDF output out of 10000 (max. 10000000)
 
