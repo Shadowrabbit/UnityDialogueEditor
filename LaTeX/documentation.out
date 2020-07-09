@@ -10,8 +10,11 @@
 \BOOKMARK [2][-]{subsection.4.6}{Connecting Nodes}{section.4}% 10
 \BOOKMARK [2][-]{subsection.4.7}{Deleting Nodes and Connections}{section.4}% 11
 \BOOKMARK [2][-]{subsection.4.8}{Parameters and Conditions}{section.4}% 12
-\BOOKMARK [1][-]{section.5}{Conversation Manager}{}% 13
-\BOOKMARK [1][-]{section.6}{Triggering a Conversation}{}% 14
-\BOOKMARK [1][-]{section.7}{Custom Input}{}% 15
-\BOOKMARK [1][-]{section.8}{Callback}{}% 16
-\BOOKMARK [1][-]{section.9}{Conversation Datastructure}{}% 17
+\BOOKMARK [3][-]{subsubsection.4.8.1}{Adding Parameters}{subsection.4.8}% 13
+\BOOKMARK [3][-]{subsubsection.4.8.2}{Adding Conditions}{subsection.4.8}% 14
+\BOOKMARK [3][-]{subsubsection.4.8.3}{Setting Parameter Values}{subsection.4.8}% 15
+\BOOKMARK [1][-]{section.5}{Conversation Manager}{}% 16
+\BOOKMARK [1][-]{section.6}{Triggering a Conversation}{}% 17
+\BOOKMARK [1][-]{section.7}{Custom Input}{}% 18
+\BOOKMARK [1][-]{section.8}{Callbacks}{}% 19
+\BOOKMARK [1][-]{section.9}{Conversation Datastructure}{}% 20

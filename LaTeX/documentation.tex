@@ -69,6 +69,7 @@
 \begin{itemize}
 \setlength\itemsep{1pt}
 	\item \href{https://assetstore.unity.com/packages/tools/utilities/dialogue-editor-168329}{Asset store}
+	\item \href{https://josephbarber96.github.io/dialogueeditor.html}{Online documentation}
 	\item \href{https://www.youtube.com/playlist?list=PLfRF6lnXtGqjrhzyQhidqMD-shMHGReXi}{Video Tutorial Playlist}
 \end{itemize}
 
@@ -180,7 +181,23 @@ Click on an option node to edit it. An option node has the following variables:
 \end{itemize}
 
 \subsection{Connecting Nodes}
-TODO.
+
+Speech nodes can be connected to option nodes, or other speech nodes. 
+
+\begin{itemize}
+\setlength\itemsep{1pt}
+	\item If a speech node connects to option nodes, these options will appear for the player.
+	\item If a speech node connects to another speech node, the following speech node will occur afterwards.
+	\item If a speech node is connected to nothing, it marks the end of the conversation.
+\end{itemize}
+\bigbreak
+
+Option nodes can only be connected to speech nodes.
+\begin{itemize}
+\setlength\itemsep{1pt}
+	\item If an option node connects to a speech node, the following speech node will occur after selecting the option.
+	\item If an option node is connected to nothing, the conversation will end after selecting the option.	
+\end{itemize}
 
 \subsection{Deleting Nodes and Connections}
 Unwanted connections between nodes can be deleted by right-clicking on the arrow and clicking "Delete this connection"
@@ -202,7 +219,16 @@ Likewise, unwanted nodes can also be deleted by right-clicking on the node and c
 
 
 \subsection{Parameters and Conditions}
-TODO.
+A conversation can have parameters. These will have a name and a value; the value can be updated. A connection between nodes can have conditions, so that the connection will only be valid if the conditions are met. Conditions require a parameter value to meet certain requirements.
+
+\subsubsection{Adding Parameters}
+By having nothing in the conversation selected, you can see the Parameters. You can add Int and Bool parameters by clicking the Add Int and Add Bool buttons respectively. You can re-name these parameters and give them a default value. 
+
+\subsubsection{Adding Conditions}
+By clicking on a connection, you can set conditions. This connection will only be valid if the conditions are all met. This allows you to create scenarios in which specific options or pieces of dialogue will only be shown to players who meet the requirements. 
+
+\subsubsection{Setting Parameter Values}
+To set parameter values by code, look at this section *todo: hyperlink*. 
 
 \newpage
 
@@ -376,10 +402,10 @@ There is also an option on the Conversation Manager prefab which allows you to c
 \newpage
 
 % Callbacks
-\section{Callback}
+\section{Callbacks}
 \hypertarget{_callbacks}{}
 
-If you are using the ConversationManager UI Prefab, there are two callbacks you can use which are invoked when a conversation starts and ends, respectively.
+If you are using the ConversationManager UI Prefab, there are two callbacks available to you which are invoked when a conversation starts and ends, respectively.
 \bigskip
 
 \begin{lstlisting}
