@@ -605,23 +605,7 @@ namespace DialogueEditor
 
             if (CurrentlySelectedObject == null)
             {
-                GUILayout.Label("Default options", panelTitleStyle);
-                EditorGUILayout.Space();
-
-                // Default options
-                GUILayout.Label("Default name:", EditorStyles.boldLabel);
-                CurrentAsset.DefaultName = EditorGUILayout.TextField(CurrentAsset.DefaultName);
-
-                GUILayout.Label("Default Icon:", EditorStyles.boldLabel);
-                CurrentAsset.DefaultSprite = (Sprite)EditorGUILayout.ObjectField(CurrentAsset.DefaultSprite, typeof(Sprite), false);
-
-                GUILayout.Label("Default font:", EditorStyles.boldLabel);
-                CurrentAsset.DefaultFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(CurrentAsset.DefaultFont, typeof(TMPro.TMP_FontAsset), false);
-
-                GUILayout.Space(VERTICAL_GAP);
-
                 // Parameters
-
                 if (CurrentAsset.ParameterList == null)
                     CurrentAsset.ParameterList = new List<EditableParameter>();
 
@@ -629,11 +613,13 @@ namespace DialogueEditor
                 GUILayout.BeginHorizontal();
                 if (GUILayout.Button("Add bool"))
                 {
-                    CurrentAsset.ParameterList.Add(new EditableBoolParameter("Unnamed bool"));
+                    string newname = GetValidParamName("New bool");
+                    CurrentAsset.ParameterList.Add(new EditableBoolParameter(newname));
                 }
                 if (GUILayout.Button("Add int"))
                 {
-                    CurrentAsset.ParameterList.Add(new EditableIntParameter("Unnamed int"));
+                    string newname = GetValidParamName("New int");
+                    CurrentAsset.ParameterList.Add(new EditableIntParameter(newname));
                 }
                 GUILayout.EndHorizontal();
 
@@ -642,8 +628,8 @@ namespace DialogueEditor
                     GUILayout.BeginHorizontal();
 
                     float paramNameWidth = panelWidth * 0.6f;
-                    CurrentAsset.ParameterList[i].ParameterName = GUILayout.TextField(
-                        CurrentAsset.ParameterList[i].ParameterName, GUILayout.Width(paramNameWidth), GUILayout.ExpandWidth(false));
+                    CurrentAsset.ParameterList[i].ParameterName = GUILayout.TextField(CurrentAsset.ParameterList[i].ParameterName, 
+                        EditableParameter.MAX_NAME_SIZE, GUILayout.Width(paramNameWidth), GUILayout.ExpandWidth(false));
 
                     if (CurrentAsset.ParameterList[i] is EditableBoolParameter)
                     {
@@ -664,6 +650,30 @@ namespace DialogueEditor
 
                     GUILayout.EndHorizontal();
                 }
+
+                GUILayout.Space(VERTICAL_GAP);
+
+
+                // Default options
+                GUILayout.Label("Default Speech-Node values", panelTitleStyle);
+
+                float labelWidth = panelWidth * 0.3f;
+
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("Name:", GUILayout.MinWidth(labelWidth), GUILayout.MaxWidth(labelWidth));
+                CurrentAsset.DefaultName = EditorGUILayout.TextField(CurrentAsset.DefaultName);
+                EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("Icon:", GUILayout.MinWidth(labelWidth), GUILayout.MaxWidth(labelWidth));
+                CurrentAsset.DefaultSprite = (Sprite)EditorGUILayout.ObjectField(CurrentAsset.DefaultSprite, typeof(Sprite), false);
+                EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("Font:", GUILayout.MinWidth(labelWidth), GUILayout.MaxWidth(labelWidth));
+                CurrentAsset.DefaultFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(CurrentAsset.DefaultFont, typeof(TMPro.TMP_FontAsset), false);
+                EditorGUILayout.EndHorizontal();
+
             }
             else
             {
@@ -1395,6 +1405,23 @@ namespace DialogueEditor
             }
 
             return false;
+        }
+
+        private string GetValidParamName(string baseName)
+        {
+            string newName = baseName;
+
+            if (CurrentAsset.GetParameter(newName) != null)
+            {
+                int counter = 0;
+                do
+                {
+                    newName = baseName + "_" + counter;
+                    counter++;
+                } while (CurrentAsset.GetParameter(newName) != null);
+            }
+
+            return newName;
         }
 
         private static void Log(string str)

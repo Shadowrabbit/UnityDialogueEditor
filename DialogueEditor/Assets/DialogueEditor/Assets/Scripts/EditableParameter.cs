@@ -6,6 +6,8 @@ namespace DialogueEditor
     [DataContract]
     public abstract class EditableParameter
     {
+        public const int MAX_NAME_SIZE = 24;
+
         public enum eParamType
         {
             Bool,
