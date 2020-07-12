@@ -293,12 +293,6 @@ namespace DialogueEditor
                 case eState.ScrollingText:
                     {
                         SetColorAlpha(DialogueText, 1);
-
-                        if (m_targetScrollTextCount == 0)
-                        {
-                            SetState(eState.TransitioningOptionsOn);
-                            return;
-                        }
                     }
                     break;
 
@@ -457,6 +451,8 @@ namespace DialogueEditor
 
         private void SetupSpeech(SpeechNode speech)
         {
+            Debug.Log("Setup speech: frame " + Time.frameCount);
+
             if (speech == null)
             {
                 EndConversation();
@@ -642,6 +638,8 @@ namespace DialogueEditor
 
         private void CreateUIOptions()
         {
+            Debug.Log("Creating UI options: frame " + Time.frameCount);
+
             // Display new options
             if (m_currentSpeech.ConnectionType == Connection.eConnectionType.Option)
             {

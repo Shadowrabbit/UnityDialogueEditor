@@ -161,7 +161,127 @@ namespace DialogueEditor
             // Clear our dummy event
             Event = new UnityEngine.Events.UnityEvent();
 
+            // Reconstruct
+            ReconstructEditableConversation(conversation);
+
             return conversation;
+        }
+
+        private void ReconstructEditableConversation(EditableConversation conversation)
+        {
+            if (conversation == null)
+                conversation = new EditableConversation();
+
+            // Get a list of every node in the conversation
+            List<EditableConversationNode> allNodes = new List<EditableConversationNode>();
+            for (int i = 0; i < conversation.SpeechNodes.Count; i++)
+                allNodes.Add(conversation.SpeechNodes[i]);
+            for (int i = 0; i < conversation.Options.Count; i++)
+                allNodes.Add(conversation.Options[i]);
+
+            // For every node: 
+            // Find the children and parents by UID
+            for (int i = 0; i < allNodes.Count; i++)
+            {
+                // Remove duplicate parent UIDs
+                HashSet<int> noDupes = new HashSet<int>(allNodes[i].parentUIDs);
+                allNodes[i].parentUIDs.Clear();
+                foreach (int j in noDupes)
+                    allNodes[i].parentUIDs.Add(j);
+
+                // Get parents by UIDs
+                allNodes[i].parents = new List<EditableConversationNode>();
+                for (int j = 0; j < allNodes[i].parentUIDs.Count; j++)
+                {
+                    allNodes[i].parents.Add(conversation.GetNodeByUID(allNodes[i].parentUIDs[j]));
+                }
+
+                // Construct the connections
+                //
+                // V1.03
+                if (conversation.SaveVersion <= (int)eSaveVersion.V1_03)
+                {
+                    // Construct Connections from the OptionUIDs and SpeechUIDs (which are now deprecated)
+                    // This supports upgrading from V1.03 +
+
+                    allNodes[i].Connections = new List<EditableConnection>();
+                    allNodes[i].ParamActions = new List<EditableSetParamAction>();
+
+                    if (allNodes[i].NodeType == EditableConversationNode.eNodeType.Speech)
+                    {
+                        EditableSpeechNode thisSpeech = allNodes[i] as EditableSpeechNode;
+
+                        // Speech options
+                        int count = thisSpeech.OptionUIDs.Count;
+                        for (int j = 0; j < count; j++)
+                        {
+                            int optionUID = thisSpeech.OptionUIDs[j];
+                            EditableOptionNode option = conversation.GetOptionByUID(optionUID);
+
+                            thisSpeech.Connections.Add(new EditableOptionConnection(option));
+                        }
+
+                        // Speech following speech
+                        {
+                            int speechUID = thisSpeech.SpeechUID;
+                            EditableSpeechNode speech = conversation.GetSpeechByUID(speechUID);
+
+                            if (speech != null)
+                            {
+                                thisSpeech.Connections.Add(new EditableSpeechConnection(speech));
+                            }
+                        }
+                    }
+                    else if (allNodes[i] is EditableOptionNode)
+                    {
+                        int speechUID = (allNodes[i] as EditableOptionNode).SpeechUID;
+                        EditableSpeechNode speech = conversation.GetSpeechByUID(speechUID);
+
+                        if (speech != null)
+                        {
+                            allNodes[i].Connections.Add(new EditableSpeechConnection(speech));
+                        }
+                    }
+                }
+                //
+                // V1.10 +
+                else
+                {
+                    // For each node..  Reconstruct the connections
+                    for (int j = 0; j < allNodes[i].Connections.Count; j++)
+                    {
+                        if (allNodes[i].Connections[j] is EditableSpeechConnection)
+                        {
+                            EditableSpeechNode speech = conversation.GetSpeechByUID(allNodes[i].Connections[j].NodeUID);
+                            (allNodes[i].Connections[j] as EditableSpeechConnection).Speech = speech;
+                        }
+                        else if (allNodes[i].Connections[j] is EditableOptionConnection)
+                        {
+                            EditableOptionNode option = conversation.GetOptionByUID(allNodes[i].Connections[j].NodeUID);
+                            (allNodes[i].Connections[j] as EditableOptionConnection).Option = option;
+                        }
+                    }
+                }
+            }
+
+            // For every node: 
+            // Tell any of the nodes children that the node is the childs parent
+            for (int i = 0; i < allNodes.Count; i++)
+            {
+                EditableConversationNode thisNode = allNodes[i];
+
+                for (int j = 0; j < thisNode.Connections.Count; j++)
+                {
+                    if (thisNode.Connections[j].ConnectionType == EditableConnection.eConnectiontype.Speech)
+                    {
+                        (thisNode.Connections[j] as EditableSpeechConnection).Speech.parents.Add(thisNode);
+                    }
+                    else if (thisNode.Connections[j].ConnectionType == EditableConnection.eConnectiontype.Option)
+                    {
+                        (thisNode.Connections[j] as EditableOptionConnection).Option.parents.Add(thisNode);
+                    }
+                }
+            }
         }
 
         private string Jsonify(EditableConversation conversation)
@@ -313,6 +433,7 @@ namespace DialogueEditor
                     conversation.Root = dialogues[editableNode.ID];
                 }
             }
+
 
             // Option nodes
             List<EditableOptionNode> editableOptionNodes = ec.Options;
