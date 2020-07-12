@@ -164,10 +164,7 @@ Click on a speech node to edit it. A speech node has the following variables:
 \includegraphics[width=\linewidth]{img/SpeechNode.png}
 \end{minipage}
 
-
-
-
-\newpage
+\bigskip
 
 \subsection{Option Nodes}
 An Option Node represents an option that a user can select.
@@ -180,7 +177,27 @@ Click on an option node to edit it. An option node has the following variables:
 	\item \textbf{TMP Font}: This is the TextMeshPro font that the option text will use.
 \end{itemize}
 
+\newpage
+
+\subsection{Creating Nodes}
+
+To make a new node, right-click on an existing node. Select either "Create Speech" or "Create Option". Then, left-click somewhere to place the node.
+
+\bigskip
+
+\begin{minipage}[c]{0.45\textwidth}
+\centering
+\includegraphics[width=225pt, keepaspectratio]{img/CreateNode.png}
+\end{minipage}
+\hfill
+\begin{minipage}[c]{0.45\textwidth}
+\centering
+\includegraphics[width=225pt, keepaspectratio]{img/PlaceNode.png}
+\end{minipage}
+
 \subsection{Connecting Nodes}
+
+To connect two existing nodes, right-click on a node and click "Connect". Then, left-click on the node you wish to connect it to. 
 
 Speech nodes can be connected to option nodes, or other speech nodes. 
 
@@ -215,6 +232,7 @@ Likewise, unwanted nodes can also be deleted by right-clicking on the node and c
 \includegraphics[width=200pt, keepaspectratio]{img/DeleteNode.png}
 \end{minipage}
 
+\newpage
 
 
 
@@ -224,11 +242,60 @@ A conversation can have parameters. These will have a name and a value; the valu
 \subsubsection{Adding Parameters}
 By having nothing in the conversation selected, you can see the Parameters. You can add Int and Bool parameters by clicking the Add Int and Add Bool buttons respectively. You can re-name these parameters and give them a default value. 
 
+\begin{figure}[h]
+\centering
+\includegraphics[keepaspectratio]{img/Parameters.png}
+\end{figure}
+
 \subsubsection{Adding Conditions}
 By clicking on a connection, you can set conditions. This connection will only be valid if the conditions are all met. This allows you to create scenarios in which specific options or pieces of dialogue will only be shown to players who meet the requirements. 
 
+\begin{figure}[h]
+\centering
+\includegraphics[keepaspectratio]{img/ConnectionConditions.png}
+\end{figure}
+\newpage
+
 \subsubsection{Setting Parameter Values}
-To set parameter values by code, look at this section *todo: hyperlink*. 
+
+\textbf{By Action}
+\bigskip
+
+By clicking on a Speech node or Option node, you can click "Add Parameter Action". This allows you to set the value of any parameters when either the speech is activated, or the option is selected.
+
+\begin{figure}[hb]
+\centering
+\includegraphics[keepaspectratio]{img/SetParam.png}
+\end{figure}
+\bigskip
+
+\textbf{By Code}
+\bigskip
+
+You can also get and set the values of Parameters at run time by code. You can do this by calling the appropriate functions on the ConversationManager.
+\newline
+
+Note: You will need to add the "DialogueEditor" namespace to your script. This can be done by adding the following line at the top:
+\bigskip
+
+\begin{lstlisting}
+using DialogueEditor;
+\end{lstlisting}
+\bigskip
+
+You can call the following functions to get/set the parameter values:
+\bigskip
+
+\begin{lstlisting}
+// Set
+ConversationManager.Instance.SetBool("BoolName", true);
+ConversationManager.Instance.SetInt("IntName", 1);
+
+// Get
+bool bVal = ConversationManager.Instance.GetBool("BoolName");
+int iVal = ConversationManager.Instance.GetInt("IntName");
+\end{lstlisting}
+\bigskip
 
 \newpage
 

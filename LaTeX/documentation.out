@@ -7,14 +7,15 @@
 \BOOKMARK [2][-]{subsection.4.3}{Opening the Editor Window}{section.4}% 7
 \BOOKMARK [2][-]{subsection.4.4}{Speech Nodes}{section.4}% 8
 \BOOKMARK [2][-]{subsection.4.5}{Option Nodes}{section.4}% 9
-\BOOKMARK [2][-]{subsection.4.6}{Connecting Nodes}{section.4}% 10
-\BOOKMARK [2][-]{subsection.4.7}{Deleting Nodes and Connections}{section.4}% 11
-\BOOKMARK [2][-]{subsection.4.8}{Parameters and Conditions}{section.4}% 12
-\BOOKMARK [3][-]{subsubsection.4.8.1}{Adding Parameters}{subsection.4.8}% 13
-\BOOKMARK [3][-]{subsubsection.4.8.2}{Adding Conditions}{subsection.4.8}% 14
-\BOOKMARK [3][-]{subsubsection.4.8.3}{Setting Parameter Values}{subsection.4.8}% 15
-\BOOKMARK [1][-]{section.5}{Conversation Manager}{}% 16
-\BOOKMARK [1][-]{section.6}{Triggering a Conversation}{}% 17
-\BOOKMARK [1][-]{section.7}{Custom Input}{}% 18
-\BOOKMARK [1][-]{section.8}{Callbacks}{}% 19
-\BOOKMARK [1][-]{section.9}{Conversation Datastructure}{}% 20
+\BOOKMARK [2][-]{subsection.4.6}{Creating Nodes}{section.4}% 10
+\BOOKMARK [2][-]{subsection.4.7}{Connecting Nodes}{section.4}% 11
+\BOOKMARK [2][-]{subsection.4.8}{Deleting Nodes and Connections}{section.4}% 12
+\BOOKMARK [2][-]{subsection.4.9}{Parameters and Conditions}{section.4}% 13
+\BOOKMARK [3][-]{subsubsection.4.9.1}{Adding Parameters}{subsection.4.9}% 14
+\BOOKMARK [3][-]{subsubsection.4.9.2}{Adding Conditions}{subsection.4.9}% 15
+\BOOKMARK [3][-]{subsubsection.4.9.3}{Setting Parameter Values}{subsection.4.9}% 16
+\BOOKMARK [1][-]{section.5}{Conversation Manager}{}% 17
+\BOOKMARK [1][-]{section.6}{Triggering a Conversation}{}% 18
+\BOOKMARK [1][-]{section.7}{Custom Input}{}% 19
+\BOOKMARK [1][-]{section.8}{Callbacks}{}% 20
+\BOOKMARK [1][-]{section.9}{Conversation Datastructure}{}% 21

@@ -19,4 +19,13 @@ public class InputManager : MonoBehaviour
                 ConversationManager.Instance.PressSelectedOption();
         }
     }
+
+    void Test()
+    {
+        ConversationManager.Instance.SetBool("BoolName", true);
+        ConversationManager.Instance.SetInt("IntName", 1);
+
+        bool bVal = ConversationManager.Instance.GetBool("BoolName");
+        int iVal = ConversationManager.Instance.GetInt("IntName");
+    }
 }
