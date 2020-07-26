@@ -313,6 +313,13 @@ namespace DialogueEditor
             return conversation;
         }
 
+
+
+
+        //--------------------------------------
+        // Construct User-Facing Conversation Object and Nodes
+        //--------------------------------------
+
         private Conversation ConstructConversationObject(EditableConversation ec)
         {
             // Create a conversation object
@@ -332,6 +339,7 @@ namespace DialogueEditor
                 SpeechNode node = CreateSpeechNode(ec.SpeechNodes[i]);
                 speechByID.Add(ec.SpeechNodes[i].ID, node);
             }
+
             for (int i = 0; i < ec.Options.Count; i++)
             {
                 OptionNode node = CreateOptionNode(ec.Options[i]);
@@ -377,6 +385,8 @@ namespace DialogueEditor
             speech.Audio = editableNode.Audio;
             speech.Volume = editableNode.Volume;
 
+            CopyParamActions(editableNode, speech);
+
             NodeEventHolder holder = this.GetNodeData(editableNode.ID);
             if (holder != null)
             {
@@ -392,7 +402,36 @@ namespace DialogueEditor
             option.Text = editableNode.Text;
             option.TMPFont = editableNode.TMPFont;
 
+            CopyParamActions(editableNode, option);
+
             return option;
+        }
+
+        public void CopyParamActions(EditableConversationNode editable, ConversationNode node)
+        {
+            node.ParamActions = new List<SetParamAction>();
+
+            for (int i = 0; i < editable.ParamActions.Count; i++)
+            {
+                if (editable.ParamActions[i].ParamActionType == EditableSetParamAction.eParamActionType.Int)
+                {
+                    EditableSetIntParamAction setIntEditable = editable.ParamActions[i] as EditableSetIntParamAction;
+
+                    SetIntParamAction setInt = new SetIntParamAction();
+                    setInt.ParameterName = setIntEditable.ParameterName;
+                    setInt.Value = setIntEditable.Value;
+                    node.ParamActions.Add(setInt);
+                }
+                else if (editable.ParamActions[i].ParamActionType == EditableSetParamAction.eParamActionType.Bool)
+                {
+                    EditableSetBoolParamAction setBoolEditable = editable.ParamActions[i] as EditableSetBoolParamAction;
+
+                    SetBoolParamAction setBool = new SetBoolParamAction();
+                    setBool.ParameterName = setBoolEditable.ParameterName;
+                    setBool.Value = setBoolEditable.Value;
+                    node.ParamActions.Add(setBool);
+                }
+            }
         }
 
         private void ReconstructTree(EditableConversation ec, Conversation conversation, Dictionary<int, SpeechNode> dialogues, Dictionary<int, OptionNode> options)

@@ -5,6 +5,8 @@ using DialogueEditor;
 
 public class InputManager : MonoBehaviour
 {
+    public NPCConversation m_testConv;
+
     void Update()
     {
         if (ConversationManager.Instance != null && ConversationManager.Instance.IsConversationActive)

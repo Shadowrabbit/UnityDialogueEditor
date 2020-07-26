@@ -218,7 +218,7 @@ namespace DialogueEditor
 
             if (status == eParamStatus.NoParamFound)
             {
-                Debug.LogWarning("parameter \'" + paramName + "\' does not exist.");
+                LogWarning("parameter \'" + paramName + "\' does not exist.");
             }
         }
         
@@ -229,7 +229,7 @@ namespace DialogueEditor
 
             if (status == eParamStatus.NoParamFound)
             {
-                Debug.LogWarning("parameter \'" + paramName + "\' does not exist.");
+                LogWarning("parameter \'" + paramName + "\' does not exist.");
             }
         }
 
@@ -240,7 +240,7 @@ namespace DialogueEditor
 
             if (status == eParamStatus.NoParamFound)
             {
-                Debug.LogWarning("parameter \'" + paramName + "\' does not exist.");
+                LogWarning("parameter \'" + paramName + "\' does not exist.");
             }
 
             return value;
@@ -253,7 +253,7 @@ namespace DialogueEditor
 
             if (status == eParamStatus.NoParamFound)
             {
-                Debug.LogWarning("parameter \'" + paramName + "\' does not exist.");
+                LogWarning("parameter \'" + paramName + "\' does not exist.");
             }
 
             return value;
@@ -397,7 +397,7 @@ namespace DialogueEditor
 
                 if (m_currentSpeech.AutomaticallyAdvance)
                 {
-                    if (AutoAdvance())
+                    if (IsAutoAdvance())
                         return;
                 }
 
@@ -451,8 +451,6 @@ namespace DialogueEditor
 
         private void SetupSpeech(SpeechNode speech)
         {
-            Debug.Log("Setup speech: frame " + Time.frameCount);
-
             if (speech == null)
             {
                 EndConversation();
@@ -526,6 +524,8 @@ namespace DialogueEditor
             if (speech.Event != null)
                 speech.Event.Invoke();
 
+            DoParamAction(speech);
+
             // Play the audio
             if (speech.Audio != null)
             {
@@ -552,6 +552,7 @@ namespace DialogueEditor
         public void OptionSelected(OptionNode option)
         {
             m_selectedOption = option;
+            DoParamAction(option);
             SetState(eState.TransitioningOptionsOff);
         }
 
@@ -568,7 +569,7 @@ namespace DialogueEditor
         // Util
         //--------------------------------------
 
-        private bool AutoAdvance()
+        private bool IsAutoAdvance()
         {
             if (m_currentSpeech.ConnectionType == Connection.eConnectionType.Speech)
             {
@@ -638,8 +639,6 @@ namespace DialogueEditor
 
         private void CreateUIOptions()
         {
-            Debug.Log("Creating UI options: frame " + Time.frameCount);
-
             // Display new options
             if (m_currentSpeech.ConnectionType == Connection.eConnectionType.Option)
             {
@@ -795,9 +794,32 @@ namespace DialogueEditor
             return true;
         }
 
+        public void DoParamAction(ConversationNode node)
+        {
+            if (node.ParamActions == null) { return; }
+
+            for (int i = 0; i < node.ParamActions.Count; i++)
+            {
+                string name = node.ParamActions[i].ParameterName;
+
+                if (node.ParamActions[i].ParamActionType == SetParamAction.eParamActionType.Int)
+                {
+                    int val = (node.ParamActions[i] as SetIntParamAction).Value;
+                    SetInt(name, val);
+                }
+                else if (node.ParamActions[i].ParamActionType == SetParamAction.eParamActionType.Bool)
+                {
+                    bool val = (node.ParamActions[i] as SetBoolParamAction).Value;
+                    SetBool(name, val);
+                }
+            }
+        }
+
         private void LogWarning(string warning)
         {
+#if UNITY_EDITOR
             Debug.LogWarning("[Dialogue Editor]: " + warning);
+#endif
         }
     }
 }

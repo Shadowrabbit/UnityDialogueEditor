@@ -19,6 +19,7 @@ namespace DialogueEditor
         public ConversationNode()
         {
             Connections = new List<Connection>();
+            ParamActions = new List<SetParamAction>();
         }
 
         public abstract eNodeType NodeType { get; }
@@ -37,6 +38,9 @@ namespace DialogueEditor
 
         /// <summary> The child connections this node has. </summary>
         public List<Connection> Connections;
+
+        /// <summary> This nodes parameter actions. </summary>
+        public List<SetParamAction> ParamActions;
 
         /// <summary> The Text Mesh Pro FontAsset for the text of this node. </summary>
         public TMPro.TMP_FontAsset TMPFont;

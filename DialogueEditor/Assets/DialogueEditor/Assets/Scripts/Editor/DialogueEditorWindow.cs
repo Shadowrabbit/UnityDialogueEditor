@@ -515,6 +515,9 @@ namespace DialogueEditor
                 if (CurrentAsset.ParameterList == null)
                     CurrentAsset.ParameterList = new List<EditableParameter>();
 
+                GUILayout.Label("Conversation: " + CurrentAsset.gameObject.name, panelTitleStyle);
+                GUILayout.Space(VERTICAL_GAP);
+
                 GUILayout.Label("Parameters", panelTitleStyle);
                 GUILayout.BeginHorizontal();
                 if (GUILayout.Button("Add bool"))
@@ -670,88 +673,10 @@ namespace DialogueEditor
                                 o.ApplyModifiedProperties();
                             }
                         }
-                        // Param Actions
-                        GUILayout.Label("Set Param:", EditorStyles.boldLabel);
-                        {
-                            // Button
-                            {
-                                GUILayout.BeginHorizontal();
-                                if (GUILayout.Button("Add Parameter Action"))
-                                {
-                                    GenericMenu rightClickMenu = new GenericMenu();
 
-                                    for (int i = 0; i < this.CurrentAsset.ParameterList.Count; i++)
-                                    {
-                                        // Skip if node already has action for this param
-                                        if (NodeContainsSetParamAction(node, CurrentAsset.ParameterList[i].ParameterName))
-                                        {
-                                            continue;
-                                        }
+                        Panel_NodeParamActions(node);
 
-                                        if (this.CurrentAsset.ParameterList[i].ParameterType == EditableParameter.eParamType.Int)
-                                        {
-                                            EditableIntParameter intParam = CurrentAsset.ParameterList[i] as EditableIntParameter;
-                                            rightClickMenu.AddItem(new GUIContent(intParam.ParameterName), false, delegate
-                                            {
-                                                node.ParamActions.Add(new EditableSetIntParamAction(intParam.ParameterName));
-                                            });
-                                        }
-                                        else if (this.CurrentAsset.ParameterList[i].ParameterType == EditableParameter.eParamType.Bool)
-                                        {
-                                            EditableBoolParameter boolParam = CurrentAsset.ParameterList[i] as EditableBoolParameter;
-                                            rightClickMenu.AddItem(new GUIContent(boolParam.ParameterName), false, delegate
-                                            {
-                                                node.ParamActions.Add(new EditableSetBoolParamAction(boolParam.ParameterName));
-                                            });
-                                        }
-                                    }
 
-                                    rightClickMenu.ShowAsContext();
-                                }
-                                GUILayout.EndHorizontal();
-                            }
-
-                            // Validate conditions
-                            for (int i = 0; i < node.ParamActions.Count; i++)
-                            {
-                                if (CurrentAsset.GetParameter(node.ParamActions[i].ParameterName) == null)
-                                {
-                                    node.ParamActions.RemoveAt(i);
-                                    i--;
-                                }
-                            }
-
-                            // Draw
-                            float conditionNameWidth = panelWidth * 0.4f;
-                            for (int i = 0; i < node.ParamActions.Count; i++)
-                            {
-                                GUILayout.BeginHorizontal();
-
-                                string name = node.ParamActions[i].ParameterName;
-                                GUILayout.Label(name, GUILayout.MinWidth(conditionNameWidth), GUILayout.MaxWidth(conditionNameWidth));
-
-                                if (node.ParamActions[i].ParamActionType == EditableSetParamAction.eParamActionType.Int)
-                                {
-                                    EditableSetIntParamAction intAction = node.ParamActions[i] as EditableSetIntParamAction;
-                                    intAction.Value = EditorGUILayout.IntField(intAction.Value);
-
-                                }
-                                else if (node.ParamActions[i].ParamActionType == EditableSetParamAction.eParamActionType.Bool)
-                                {
-                                    EditableSetBoolParamAction boolAction = node.ParamActions[i] as EditableSetBoolParamAction;
-                                    boolAction.Value = EditorGUILayout.Toggle(boolAction.Value);
-                                }
-
-                                if (GUILayout.Button("X"))
-                                {
-                                    node.ParamActions.RemoveAt(i); 
-                                    i--;
-                                    GUI.changed = true;
-                                }
-
-                                GUILayout.EndHorizontal();
-                            }
-                        }
                     }
                     else if (selectedNode is UIOptionNode)
                     {
@@ -761,9 +686,13 @@ namespace DialogueEditor
 
                         GUILayout.Label("Option text:", EditorStyles.boldLabel);
                         node.Text = GUILayout.TextArea(node.Text);
+                        EditorGUILayout.Space();
 
                         GUILayout.Label("TMP Font", EditorStyles.boldLabel);
                         node.TMPFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(node.TMPFont, typeof(TMPro.TMP_FontAsset), false);
+                        EditorGUILayout.Space();
+
+                        Panel_NodeParamActions(node);
                     }
                 }
                 else if (CurrentlySelectedObject.Type == SelectableUI.eType.Connection)
@@ -875,6 +804,92 @@ namespace DialogueEditor
                 (position.height) - TOOLBAR_HEIGHT);
             GUILayout.BeginArea(new Rect(panelResizerRect.position, new Vector2(2, position.height)), resizerStyle);
             GUILayout.EndArea();
+        }
+
+        private void Panel_NodeParamActions(EditableConversationNode node)
+        {
+            // Param Actions
+            GUILayout.Label("Set Param:", EditorStyles.boldLabel);
+            {
+                // Button
+                {
+                    GUILayout.BeginHorizontal();
+                    if (GUILayout.Button("Add Parameter Action"))
+                    {
+                        GenericMenu rightClickMenu = new GenericMenu();
+
+                        for (int i = 0; i < this.CurrentAsset.ParameterList.Count; i++)
+                        {
+                            // Skip if node already has action for this param
+                            if (NodeContainsSetParamAction(node, CurrentAsset.ParameterList[i].ParameterName))
+                            {
+                                continue;
+                            }
+
+                            if (this.CurrentAsset.ParameterList[i].ParameterType == EditableParameter.eParamType.Int)
+                            {
+                                EditableIntParameter intParam = CurrentAsset.ParameterList[i] as EditableIntParameter;
+                                rightClickMenu.AddItem(new GUIContent(intParam.ParameterName), false, delegate
+                                {
+                                    node.ParamActions.Add(new EditableSetIntParamAction(intParam.ParameterName));
+                                });
+                            }
+                            else if (this.CurrentAsset.ParameterList[i].ParameterType == EditableParameter.eParamType.Bool)
+                            {
+                                EditableBoolParameter boolParam = CurrentAsset.ParameterList[i] as EditableBoolParameter;
+                                rightClickMenu.AddItem(new GUIContent(boolParam.ParameterName), false, delegate
+                                {
+                                    node.ParamActions.Add(new EditableSetBoolParamAction(boolParam.ParameterName));
+                                });
+                            }
+                        }
+
+                        rightClickMenu.ShowAsContext();
+                    }
+                    GUILayout.EndHorizontal();
+                }
+
+                // Validate all params exist
+                for (int i = 0; i < node.ParamActions.Count; i++)
+                {
+                    if (CurrentAsset.GetParameter(node.ParamActions[i].ParameterName) == null)
+                    {
+                        node.ParamActions.RemoveAt(i);
+                        i--;
+                    }
+                }
+
+                // Draw
+                float conditionNameWidth = panelWidth * 0.4f;
+                for (int i = 0; i < node.ParamActions.Count; i++)
+                {
+                    GUILayout.BeginHorizontal();
+
+                    string name = node.ParamActions[i].ParameterName;
+                    GUILayout.Label(name, GUILayout.MinWidth(conditionNameWidth), GUILayout.MaxWidth(conditionNameWidth));
+
+                    if (node.ParamActions[i].ParamActionType == EditableSetParamAction.eParamActionType.Int)
+                    {
+                        EditableSetIntParamAction intAction = node.ParamActions[i] as EditableSetIntParamAction;
+                        intAction.Value = EditorGUILayout.IntField(intAction.Value);
+
+                    }
+                    else if (node.ParamActions[i].ParamActionType == EditableSetParamAction.eParamActionType.Bool)
+                    {
+                        EditableSetBoolParamAction boolAction = node.ParamActions[i] as EditableSetBoolParamAction;
+                        boolAction.Value = EditorGUILayout.Toggle(boolAction.Value);
+                    }
+
+                    if (GUILayout.Button("X"))
+                    {
+                        node.ParamActions.RemoveAt(i);
+                        i--;
+                        GUI.changed = true;
+                    }
+
+                    GUILayout.EndHorizontal();
+                }
+            }
         }
 
 
@@ -1287,7 +1302,7 @@ namespace DialogueEditor
                 panelResizerRect.y < panelResizerRect.y + panelResizerRect.height);        
         }
 
-        public bool NodeContainsSetParamAction(EditableSpeechNode node, string parameterName)
+        public bool NodeContainsSetParamAction(EditableConversationNode node, string parameterName)
         {
             for (int i = 0; i < node.ParamActions.Count; i++)
             {
