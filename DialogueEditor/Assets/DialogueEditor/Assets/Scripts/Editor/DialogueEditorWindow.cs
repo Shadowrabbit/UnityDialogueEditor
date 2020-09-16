@@ -1049,7 +1049,7 @@ namespace DialogueEditor
 
         private static void Log(string str)
         {
-#if DIALOGUE_DEBUG || true
+#if DIALOGUE_DEBUG
             Debug.Log("[DialogueEditor]: " + str);
 #endif
         }
