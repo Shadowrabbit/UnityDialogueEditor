@@ -231,6 +231,8 @@ namespace DialogueEditor
 
             this.name = WINDOW_NAME;
             panelWidth = START_PANEL_WIDTH;
+
+            EditorApplication.playModeStateChanged += PlayModeStateChanged;
         }
 
         private void InitGUIStyles()
@@ -259,6 +261,8 @@ namespace DialogueEditor
             UISpeechNode.OnCreateOption -= CreateNewOption;
             UIOptionNode.OnCreateSpeech -= CreateNewSpeech;
             UISpeechNode.OnConnect -= ConnectNode;
+
+            EditorApplication.playModeStateChanged -= PlayModeStateChanged;
         }
 
         protected void OnFocus()
@@ -1045,9 +1049,18 @@ namespace DialogueEditor
 
         private static void Log(string str)
         {
-#if DIALOGUE_DEBUG
+#if DIALOGUE_DEBUG || true
             Debug.Log("[DialogueEditor]: " + str);
 #endif
+        }
+
+        private void PlayModeStateChanged(PlayModeStateChange state)
+        {
+            if (state == PlayModeStateChange.ExitingEditMode)
+            {
+                Log("Saving. Reason: Editor exiting edit mode.");
+                Save();
+            }
         }
 
 
@@ -1118,7 +1131,10 @@ namespace DialogueEditor
                 }
 
 #if UNITY_EDITOR
-                UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
+                if (!Application.isPlaying)
+                {
+                    UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
+                }
 #endif
             }
         }
