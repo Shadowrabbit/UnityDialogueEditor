@@ -23,6 +23,7 @@ namespace DialogueEditor
         private const string WINDOW_NAME = "DIALOGUE_EDITOR_WINDOW";
         private const string HELP_URL = "https://josephbarber96.github.io/dialogueeditor.html";
         private const string CONTROL_NAME = "DEFAULT_CONTROL";
+        private const string UNAVAILABLE_DURING_PLAY_TEXT = "Dialogue Editor unavaiable during play mode.";
 
         // Static properties
         public static bool NodeClickedOnThisUpdate { get; set; }
@@ -95,6 +96,12 @@ namespace DialogueEditor
 
         public void LoadNewAsset(NPCConversation asset)
         {
+            if (Application.isPlaying)
+            {
+                Log("Load new asset aborted. Will not open assets during play.");
+                return;
+            }
+
             CurrentAsset = asset;
             Log("Loading new asset: " + CurrentAsset.name);
 
@@ -203,9 +210,7 @@ namespace DialogueEditor
 
             Recenter();
             Repaint();
-#if UNITY_EDITOR
-            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
-#endif
+            MarkSceneDirty();
         }
 
 
@@ -253,9 +258,6 @@ namespace DialogueEditor
 
         private void OnDisable()
         {
-            Log("Saving. Reason: Disable.");
-            Save();
-
             UINode.OnUINodeSelected -= SelectNode;
             UINode.OnUINodeDeleted -= DeleteUINode;
             UISpeechNode.OnCreateOption -= CreateNewOption;
@@ -263,10 +265,23 @@ namespace DialogueEditor
             UISpeechNode.OnConnect -= ConnectNode;
 
             EditorApplication.playModeStateChanged -= PlayModeStateChanged;
+
+            if (Application.isPlaying)
+            {
+                return;
+            }
+
+            Log("Saving. Reason: Disable.");
+            Save();
         }
 
         protected void OnFocus()
         {
+            if (Application.isPlaying)
+            {
+                return;
+            }
+
             // Get asset the user is selecting
             newlySelectedAsset = Selection.activeTransform;
 
@@ -288,6 +303,11 @@ namespace DialogueEditor
 
         protected void OnLostFocus()
         {
+            if (Application.isPlaying)
+            {
+                return;
+            }
+
             bool keepOnWindow = EditorWindow.focusedWindow != null && EditorWindow.focusedWindow.titleContent.text.Equals("Dialogue Editor");
 
             if (CurrentAsset != null && !keepOnWindow)
@@ -299,12 +319,22 @@ namespace DialogueEditor
 
         protected void OnDestroy()
         {
+            if (Application.isPlaying)
+            {
+                return;
+            }
+
             Log("Saving conversation. Reason: Window closed.");
             Save();
         }
 
         protected void OnSelectionChange()
         {
+            if (Application.isPlaying)
+            {
+                return;
+            }
+
             // Get asset the user is selecting
             newlySelectedAsset = Selection.activeTransform;
 
@@ -360,6 +390,8 @@ namespace DialogueEditor
 
         private void Update()
         {
+            if (Application.isPlaying) { return; }
+
             switch (m_inputState)
             {
                 case eInputState.PlacingOption:
@@ -377,6 +409,12 @@ namespace DialogueEditor
 
         private void OnGUI()
         {
+            if (Application.isPlaying)
+            {
+                DrawMessageDuringPlay();
+                return;
+            }
+
             if (CurrentAsset == null)
             {
                 DrawTitleBar();
@@ -398,6 +436,17 @@ namespace DialogueEditor
 
             if (GUI.changed)
                 Repaint();
+        }
+
+        private void DrawMessageDuringPlay()
+        {
+            float width = this.position.width;
+            float centerX = width / 2;
+            float height = this.position.height;
+            float centerY = height / 2;
+            Vector2 textDimensions = GUI.skin.label.CalcSize(new GUIContent(UNAVAILABLE_DURING_PLAY_TEXT));
+            Rect textRect = new Rect(centerX - (textDimensions.x / 2), centerY - (textDimensions.y / 2), textDimensions.x, textDimensions.y);
+            EditorGUI.LabelField(textRect, UNAVAILABLE_DURING_PLAY_TEXT);
         }
 
         private void DrawTitleBar()
@@ -1063,6 +1112,16 @@ namespace DialogueEditor
             }
         }
 
+        private void MarkSceneDirty()
+        {
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
+            }
+#endif
+        }
+
 
 
 
@@ -1091,6 +1150,12 @@ namespace DialogueEditor
 
         private void Save(bool manual = false)
         {
+            if (Application.isPlaying)
+            {
+                Log("Save failed. Reason: Play mode.");
+                return;
+            }
+
             if (CurrentAsset != null)
             {
                 EditableConversation conversation = new EditableConversation();
@@ -1130,12 +1195,7 @@ namespace DialogueEditor
                     CurrentlySelectedNode = null;
                 }
 
-#if UNITY_EDITOR
-                if (!Application.isPlaying)
-                {
-                    UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
-                }
-#endif
+                MarkSceneDirty();
             }
         }
     }
