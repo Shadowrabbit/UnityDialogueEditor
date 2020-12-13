@@ -337,10 +337,6 @@ namespace DialogueEditor
             SetColorAlpha(DialogueBackground, t);
             SetColorAlpha(NpcIcon, t);
             SetColorAlpha(NameText, t);
-            TurnOnUI();
-            ClearOptions();
-            m_pendingDialogue = m_conversation.Root;
-            SetState(eState.TransitioningDialogueBoxOn);
         }
 
         private void ScrollingText_Update()

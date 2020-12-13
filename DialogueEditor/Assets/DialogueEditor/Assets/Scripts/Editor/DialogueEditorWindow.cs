@@ -241,6 +241,12 @@ namespace DialogueEditor
             panelTitleStyle = new GUIStyle();
             panelTitleStyle.alignment = TextAnchor.MiddleCenter;
             panelTitleStyle.fontStyle = FontStyle.Bold;
+            panelTitleStyle.wordWrap = true;
+            if (EditorGUIUtility.isProSkin)
+            {
+                panelTitleStyle.normal.textColor = new Color(200, 200, 200);
+            }
+
 
             // Resizer style
             resizerStyle = new GUIStyle();

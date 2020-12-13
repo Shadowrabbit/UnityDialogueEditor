@@ -9,8 +9,8 @@ namespace DialogueEditor
 {
     public enum eSaveVersion
     {
-        V1_03 = 103,
-        V1_10 = 110,
+        V1_03 = 103,    // Initial save data
+        V1_10 = 110,    // Parameters
     }
     
 
@@ -183,20 +183,23 @@ namespace DialogueEditor
             // Find the children and parents by UID
             for (int i = 0; i < allNodes.Count; i++)
             {
-                // Remove duplicate parent UIDs
-                HashSet<int> noDupes = new HashSet<int>(allNodes[i].parentUIDs);
-                allNodes[i].parentUIDs.Clear();
-                foreach (int j in noDupes)
-                    allNodes[i].parentUIDs.Add(j);
+                // New parents list 
+                allNodes[i].parents = new List<EditableConversationNode>();
 
                 // Get parents by UIDs
-                allNodes[i].parents = new List<EditableConversationNode>();
-                for (int j = 0; j < allNodes[i].parentUIDs.Count; j++)
-                {
-                    allNodes[i].parents.Add(conversation.GetNodeByUID(allNodes[i].parentUIDs[j]));
-                }
+                //-----------------------------------------------------------------------------
+                // UPDATE:  This behaviour has now been removed. Later in this function, 
+                //          the child->parent connections are constructed by using the 
+                //          parent->child connections. Having both of these behaviours run 
+                //          results in each parent being in the "parents" list twice. 
+                // 
+                // for (int j = 0; j < allNodes[i].parentUIDs.Count; j++)
+                // {
+                //     allNodes[i].parents.Add(conversation.GetNodeByUID(allNodes[i].parentUIDs[j]));
+                // }
+                //-----------------------------------------------------------------------------
 
-                // Construct the connections
+                // Construct the parent->child connections
                 //
                 // V1.03
                 if (conversation.SaveVersion <= (int)eSaveVersion.V1_03)
