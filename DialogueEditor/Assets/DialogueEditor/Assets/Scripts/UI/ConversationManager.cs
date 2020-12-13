@@ -266,16 +266,23 @@ namespace DialogueEditor
 
         private void SetState(eState newState)
         {
+            // Exit
             switch (m_state)
             {
                 case eState.TransitioningOptionsOff:
                     m_selectedOption = null;
+                    break;
+                case eState.TransitioningDialogueBoxOn:
+                    SetColorAlpha(DialogueBackground, 1);
+                    SetColorAlpha(NpcIcon, 1);
+                    SetColorAlpha(NameText, 1);
                     break;
             }
 
             m_state = newState;
             m_stateTime = 0f;
 
+            // Enter 
             switch (m_state)
             {
                 case eState.TransitioningDialogueBoxOn:
@@ -330,6 +337,10 @@ namespace DialogueEditor
             SetColorAlpha(DialogueBackground, t);
             SetColorAlpha(NpcIcon, t);
             SetColorAlpha(NameText, t);
+            TurnOnUI();
+            ClearOptions();
+            m_pendingDialogue = m_conversation.Root;
+            SetState(eState.TransitioningDialogueBoxOn);
         }
 
         private void ScrollingText_Update()
