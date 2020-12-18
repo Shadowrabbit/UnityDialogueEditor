@@ -318,5 +318,13 @@ namespace DialogueEditor
         {
             return EditorGUIUtility.isProSkin ? new Color32(56, 56, 56, 255) : new Color32(194, 194, 194, 255);
         }
+
+        public static Color ProSkinTextColour
+        {
+            get
+            {
+                return new Color(200, 200, 200);
+            }
+        }
     }
 }

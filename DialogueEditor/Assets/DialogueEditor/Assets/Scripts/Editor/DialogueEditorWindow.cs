@@ -244,7 +244,7 @@ namespace DialogueEditor
             panelTitleStyle.wordWrap = true;
             if (EditorGUIUtility.isProSkin)
             {
-                panelTitleStyle.normal.textColor = new Color(200, 200, 200);
+                panelTitleStyle.normal.textColor = DialogueEditorUtil.ProSkinTextColour;
             }
 
 

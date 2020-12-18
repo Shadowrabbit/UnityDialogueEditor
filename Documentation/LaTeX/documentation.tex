@@ -64,6 +64,9 @@
 \includegraphics[width=250pt, keepaspectratio]{img/CardImage.png}
 \end{figure}
 
+
+
+
 % Links
 \section{Links}
 \begin{itemize}
@@ -74,8 +77,10 @@
 \end{itemize}
 
 
+
+
 % Sections
-\section{Tutorial}
+\section{Written Tutorial}
 \begin{itemize}
 \setlength\itemsep{1pt}
 	\item \hyperlink{_whatis}{What is Dialogue Editor?}
@@ -88,9 +93,11 @@
 \end{itemize}
 
 
+
+
 % What is Dialogue Editor
-\section{What is Dialogue Editor?}
 \hypertarget{_whatis}{}
+\section{What is Dialogue Editor?}
 Dialogue Editor is a Unity tool that allows you to quickly and easily add conversations into your game.
 \newline
 The tool comes with an editor window that allows you to create and edit conversations.
@@ -99,9 +106,11 @@ This tool also comes with a pre-made, customisable UI prefab so that no UI progr
 \newpage
 
 
+
+
 % Editor Window
-\section{Editor Window}
 \hypertarget{_editorwindow}{}
+\section{Editor Window}
 
 \subsection{Intro}
 Conversations are made up of Speech nodes and Option nodes. Speech nodes represent something a character will say, and Option nodes represent the options available to the player. The connections between these nodes show the flow of the conversation. 
@@ -300,12 +309,22 @@ int iVal = ConversationManager.Instance.GetInt("IntName");
 \newpage
 
 
+
+
 % Conversation Manager 
-\section{Conversation Manager}
 \hypertarget{_conversationmanager}{}
-A pre-made, customisable UI prefab is provided. The ConversationManager prefab can be dragged as a child of a Canvas. 
+\section{Conversation Manager}
+A pre-made, customisable UI prefab is provided. The ConversationManager contains all of the UI, therefore, to add it into the scene, you drag it as a child of a UI Canvas. 
 \newline
-Recommended settings:
+\newline
+When you drag the ConversationMaanager prefab into your scene, if you do not have TextMeshPro in the Unity project, it will prompt you to Import TMP Essentials. After importing, please delete the ConversationManager from the hierarchy, and then re-add it back into the hierarchy, so that it can render correctly with TMP.
+\newline
+\begin{figure}[h]
+\centering
+\includegraphics[width=400pt, keepaspectratio]{img/ImportTMPEssentials.png}
+\end{figure}
+\newline
+Recommended canvas settings:
 \begin{itemize}
 \setlength\itemsep{1pt}
 	\item \textbf{Canvas - Render Mode}: Screen Space - Overlay
@@ -328,6 +347,8 @@ Recommended settings:
 \includegraphics[width=250pt, keepaspectratio]{img/CanvasScalarComponent.png}
 \end{figure}
 
+\newpage
+
 The ConversationManager provides options for the Background image of the Dialogue box and the Options box. These images can be optionally 9-sliced images. A preview render is displayed above the options. You can also select text-scrolling options.
 
 \begin{figure}[h]
@@ -340,16 +361,15 @@ The ConversationManager provides options for the Background image of the Dialogu
 
 
 
-
 % Triggering a conversation
-\section{Triggering a Conversation}
 \hypertarget{_triggering}{}
+\section{Triggering a Conversation}
 
-If you are using the ConversationManager UI Prefab, conversations can be triggered by calling a single function:
+If you are using the ConversationManager UI Prefab, conversations can be triggered by calling a single function, and passing through an NPCConversation variable:
 \bigskip
 
 \begin{lstlisting}
-ConversationManager.Instance.StartConversation();
+ConversationManager.Instance.StartConversation(/*NPCConversation*/);
 \end{lstlisting}
 \bigskip
 
@@ -370,6 +390,7 @@ using DialogueEditor;
 
 public class NPC : MonoBehaviour
 {
+	// NPCConversation Variable (assigned in Inspector)
 	public NPCConversation Conversation;
 
 	private void OnMouseOver()
@@ -404,17 +425,10 @@ ConversationManager.Instance.EndConversation();
 
 
 
-
-
-
-
-
-
-
 % Custom Input
-\section{Custom Input}
 \hypertarget{_custominput}{}
-Dialogue Editor provides some basic functions which allows you to interact with the Conversation UI. This enables you to support any input method that your game supports, such as Keyboard + Mouse or a Controller
+\section{Custom Input}
+Dialogue Editor provides some basic functions which allows you to interact with the Conversation UI. This enables you to support any input method that your game supports, such as Keyboard + Mouse or a Controller.
 \newline
 Three basic functions allow you to cycle to the next or previous option, and to press the currently selected option:
 \bigskip
@@ -468,9 +482,13 @@ There is also an option on the Conversation Manager prefab which allows you to c
 
 \newpage
 
+
+
+
+
 % Callbacks
-\section{Callbacks}
 \hypertarget{_callbacks}{}
+\section{Callbacks}
 
 If you are using the ConversationManager UI Prefab, there are two callbacks available to you which are invoked when a conversation starts and ends, respectively.
 \bigskip
@@ -525,11 +543,12 @@ public class ExampleClass : MonoBehaviour
 \newpage
 
 % Datastructure
-\section{Conversation Datastructure}
 \hypertarget{_datastructure}{}
+\section{Conversation Datastructure}
 
-If you wish to write your own custom UI, and only use the editor-window for creating the conversation object, the conversation object can be deserialized into a simple and easy-to-use datastructure.
+This section contains information for people who want to code their own custom UI implementation. If you want to use the pre-made UI that comes with the tool, this section can be ignored.
 
+\subsection{Deserialising}
 Note: You will need to add the "DialogueEditor" namespace to your script. This can be done by adding the following line at the top:
 \bigskip
 
@@ -547,68 +566,269 @@ Conversation conversation = NPCConv.Deserialize();
 \end{lstlisting}
 \bigskip
 
-A NPCConversation deserializes into a tree-like data structure. A "Conversation" object contains a single member which is the root speech node of the conversation. From here, the nodes are connected in a tree-like pattern. The following classes make up the tree-like structure of a Conversation:
-\bigskip
+Here are the classes that you will need to be concerned with when creating your custom UI implementation: 
 
+
+\subsection{Converstion}
+An NPCConversation deserializes into a tree-like data structure. Deserialising will return you an object of type "Conversation". A Conversation object contains a SpeechNode; the root of the conversation - from here, the nodes are connected in a tree-like pattern. The Conversation object also contains all the Parameters of a conversation, and functionality to Set and Get parameter values. 
 \begin{lstlisting}
 public class Conversation
 {
-	public SpeechNode Root;
-}
+	public Conversation()
+	{
+		Parameters = new List<Parameter>();
+	}
 
+	/// <summary> The start of the conversation </summary>
+	public SpeechNode Root;
+
+	/// <summary> The parameters of this conversation, and their values </summary>
+	public List<Parameter> Parameters;
+
+	/* Method implementation and private methods ommitted */
+
+	public void SetInt(string paramName, int value, out eParamStatus status);
+	public void SetBool(string paramName, bool value, out eParamStatus status)
+	public int GetInt(string paramName, out eParamStatus status);	
+	public bool GetBool(string paramName, out eParamStatus status);
+}
+\end{lstlisting}
+\newpage
+
+
+\subsection{ConversationNode}
+A ConversationNode is either a SpeechNode or an OptionNode. A ConversationNode contains all data about that node (E.g. Dialogue text, TMP Font, UnityEvent, Param Actions, etc) as well as all Connections that node has. 
+\begin{lstlisting}
 public abstract class ConversationNode
 {
-	// The main body text
+	public enum eNodeType
+	{
+		Speech,
+		Option
+	}
+
+	public ConversationNode()
+	{
+		Connections = new List<Connection>();
+		ParamActions = new List<SetParamAction>();
+	}
+
+	public abstract eNodeType NodeType { get; }
+	public Connection.eConnectionType ConnectionType { get { /* Ommited */ } }
+
+	/// <summary> The body text of the node. </summary>
 	public string Text;
-	
+
+	/// <summary> The child connections this node has. </summary>
+	public List<Connection> Connections;
+
+	/// <summary> This nodes parameter actions. </summary>
+	public List<SetParamAction> ParamActions;
+
+	/// <summary> The Text Mesh Pro FontAsset for the text of this node. </summary>
 	public TMPro.TMP_FontAsset TMPFont;
 }
 
+
 public class SpeechNode : ConversationNode
 {
-	// The name of the speaker
+	public override eNodeType NodeType { get { return eNodeType.Speech; } }
+
+	/// <summary> The name of the NPC who is speaking. </summary>
 	public string Name;
-	
-	// Should this dialogue node automatically advance?
-	public bool AutomaticallyAdvance; 
-	
-	// Should the "Continue" / "End" buttons still be visible?
-	public bool AutoAdvanceShouldDisplayOption; 
-	
-	// How long to wait before advancing
-	public float TimeUntilAdvance; 
-	
-	// The Icon of the spaker
+
+	/// <summary> Should this speech node go onto the next one automatically? </summary>
+	public bool AutomaticallyAdvance;
+
+	/// <summary> Should this speech node, althought auto-advance, also display a "continue" or "end" option, for users to click through quicker? </summary>
+	public bool AutoAdvanceShouldDisplayOption;
+
+	/// <summary> If AutomaticallyAdvance==True, how long should this speech node display before going onto the next one? </summary>
+	public float TimeUntilAdvance;
+
+	/// <summary> The Icon of the speaking NPC </summary>
 	public Sprite Icon;
-	
-	// Audio to play
+
 	public AudioClip Audio;
-	
-	// Normalised volume, 0-1, of the audio
 	public float Volume;
-	
-	// The Options available on this Speech node, if any.
-	public List<OptionNode> Options;
-	
-	// The Speech node following this, if any.	
-	public SpeechNode Dialogue; 
-	
-	// The UnityEvent
+
+	/// <summary> UnityEvent, to betriggered when this Node starts. </summary>
 	public UnityEngine.Events.UnityEvent Event;
 }
 
+
 public class OptionNode : ConversationNode
 {
-	// The dialogue following this option.
-	public SpeechNode Dialogue;
+	public override eNodeType NodeType { get { return eNodeType.Option; } }
+}
+\end{lstlisting}
+\newpage
+
+\subsection{Connection}
+Each ConversationNode has a list of 0 or more Connections. A Connection contains a SpeechNode or OptionNode, as well as  list of Conditions. 
+\begin{lstlisting}
+public abstract class Connection
+{
+	public enum eConnectionType
+	{
+		None,
+		Speech,
+		Option
+	}
+
+	public Connection()
+	{
+		Conditions = new List<Condition>();
+	}
+
+	public abstract eConnectionType ConnectionType { get; }
+
+	public List<Condition> Conditions;
+}
+
+public class SpeechConnection : Connection
+{
+	public SpeechConnection(SpeechNode node)
+	{
+		SpeechNode = node;
+	}
+
+	public override eConnectionType ConnectionType { get { return eConnectionType.Speech; } }
+
+	public SpeechNode SpeechNode;
+}
+
+public class OptionConnection : Connection
+{
+	public OptionConnection(OptionNode node)
+	{
+		OptionNode = node;
+	}
+
+	public override eConnectionType ConnectionType { get { return eConnectionType.Option; } }
+
+	public OptionNode OptionNode;
+}
+\end{lstlisting}
+\newpage
+
+
+\subsection{Condition}
+Each Connection has a list of 0 or more Conditions. Each Condition contains the name of the parameter, a CheckType (e.g. EqualTo, GreaterThan) and the RequiredValue.
+\begin{lstlisting}
+public abstract class Condition
+{
+	public enum eConditionType
+	{
+		IntCondition,
+		BoolCondition
+	}
+
+	public abstract eConditionType ConditionType { get; }
+
+	public string ParameterName;
+}
+
+public class IntCondition : Condition
+{
+	public enum eCheckType
+	{
+		equal,
+		lessThan,
+		greaterThan
+	}
+
+	public override eConditionType ConditionType { get { return eConditionType.IntCondition; } }
+
+	public eCheckType CheckType;
+	public int RequiredValue;
+}
+
+public class BoolCondition : Condition
+{
+	public enum eCheckType
+	{
+		equal,
+		notEqual
+	}
+
+	public override eConditionType ConditionType { get { return eConditionType.BoolCondition; } }
+
+	public eCheckType CheckType;
+	public bool RequiredValue;
+}
+\end{lstlisting}
+\newpage
+
+
+\subsection{Parameter}
+Each Conversation can have unique Parameters. Each Parameter has a Name and a Value. These Parameters are used to create Conditions for Connections
+\begin{lstlisting}
+public abstract class Parameter
+{
+	public Parameter(string name)
+	{
+		ParameterName = name;
+	}
+
+	public string ParameterName;
+}
+
+public class BoolParameter : Parameter
+{
+	public BoolParameter(string name, bool defaultValue) : base(name)
+	{
+		BoolValue = defaultValue;
+	}
+
+	public bool BoolValue;
+}
+
+public class IntParameter : Parameter
+{
+	public IntParameter(string name, int defalutValue) : base(name)
+	{
+		IntValue = defalutValue;
+	}
+
+	public int IntValue;
+}
+\end{lstlisting}
+\newpage
+
+
+\subsection{SetParamAction}
+The SetParamAction class defines a Parameter Name and a Value. Each ConversationNode has a list of 0 or more ParamActions - when this ConversationNode is either played (Speech node) or selected by the user (Option node) the ParamActions should be executed - the parameters defined by ParameterName should be set to the specified Value.
+\begin{lstlisting}
+public abstract class SetParamAction
+{
+	public enum eParamActionType
+	{
+		Int,
+		Bool
+	}
+
+	public abstract eParamActionType ParamActionType { get; }
+
+	public string ParameterName;
+}
+
+public class SetIntParamAction : SetParamAction
+{
+	public override eParamActionType ParamActionType { get { return eParamActionType.Int; } }
+
+	public int Value;
+}
+
+public class SetBoolParamAction : SetParamAction
+{
+	public override eParamActionType ParamActionType { get { return eParamActionType.Bool; } }
+
+	public bool Value;
 }
 \end{lstlisting}
 
 
+
 \newpage
-
-
-
-
-
 \end{document}

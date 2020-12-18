@@ -21,6 +21,13 @@ namespace DialogueEditor
             regularStyle = new GUIStyle();
             regularStyle.alignment = TextAnchor.MiddleLeft;
             regularStyle.wordWrap = true;
+
+
+            if (EditorGUIUtility.isProSkin)
+            {
+                boldStyle.normal.textColor = DialogueEditorUtil.ProSkinTextColour;
+                regularStyle.normal.textColor = DialogueEditorUtil.ProSkinTextColour;
+            }
         }
 
         public override void OnInspectorGUI()
@@ -39,15 +46,10 @@ namespace DialogueEditor
     [CustomEditor(typeof(NodeEventHolder))]
     public class NodeEventHolderEditor : Editor
     {
-        private static GUIStyle s;
         private NodeEventHolder n;
 
         void OnEnable()
         {
-            s = new GUIStyle();
-            s.alignment = TextAnchor.MiddleCenter;
-            s.wordWrap = true;
-
             n = (base.target as NodeEventHolder);
         }
 
