@@ -671,12 +671,23 @@ namespace DialogueEditor
                     {
                         UIConversationButton uiOption = CreateButton();
                         SpeechNode next = GetValidSpeechOfNode(m_currentSpeech);
-                        uiOption.SetupButton(UIConversationButton.eButtonType.Speech, next);
+
+                        // If there was no valid speech node (due to no conditions being met) this becomes a None button type
+                        if (next == null)
+                        {
+                            uiOption.SetupButton(UIConversationButton.eButtonType.None, null);
+                        }
+                        // Else, valid speech node found
+                        else
+                        {
+                            uiOption.SetupButton(UIConversationButton.eButtonType.Speech, next);
+                        }
+                        
                     }
                     else if (m_currentSpeech.ConnectionType == Connection.eConnectionType.None)
                     {
-                        UIConversationButton option = CreateButton();
-                        option.SetupButton(UIConversationButton.eButtonType.None, null);
+                        UIConversationButton uiOption = CreateButton();
+                        uiOption.SetupButton(UIConversationButton.eButtonType.None, null);
                     }
                 }
 
