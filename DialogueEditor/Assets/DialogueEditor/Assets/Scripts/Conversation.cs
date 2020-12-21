@@ -8,57 +8,94 @@ using UnityEngine;
 
 namespace DialogueEditor
 {
+    public enum eParamStatus
+    {
+        OK = 0,
+        NoParamFound = 1,
+    }
+
     public class Conversation
     {
+        public Conversation()
+        {
+            Parameters = new List<Parameter>();
+        }
+
+        /// <summary> The start of the conversation </summary>
         public SpeechNode Root;
-    }
 
-    public abstract class ConversationNode
-    {
-        public string Text;
-        public TMPro.TMP_FontAsset TMPFont;
-    }
+        /// <summary> The parameters of this conversation, and their values </summary>
+        public List<Parameter> Parameters;
 
-    public class SpeechNode : ConversationNode
-    {
-        public string Name;
+        // ---
 
-        /// <summary>
-        /// Should this speech node go onto the next one automatically?
-        /// </summary>
-        public bool AutomaticallyAdvance;
+        public void SetInt(string paramName, int value, out eParamStatus status)
+        {
+            IntParameter param = GetParameter(paramName) as IntParameter;
+            if (param != null)
+            {
+                param.IntValue = value;
+                status = eParamStatus.OK;
+            }
+            else
+            {
+                status = eParamStatus.NoParamFound;
+            }
+        }
 
-        /// <summary>
-        /// Should this speech node display a "continue" or "end" option?
-        /// </summary>
-        public bool AutoAdvanceShouldDisplayOption;
+        public void SetBool(string paramName, bool value, out eParamStatus status)
+        {
+            BoolParameter param = GetParameter(paramName) as BoolParameter;
+            if (param != null)
+            {
+                param.BoolValue = value;
+                status = eParamStatus.OK;
+            }
+            else
+            {
+                status = eParamStatus.NoParamFound;
+            }
+        }
 
-        /// <summary>
-        /// If AutomaticallyAdvance==True, how long should this speech node 
-        /// display before going onto the next one?
-        /// </summary>
-        public float TimeUntilAdvance;
+        public int GetInt(string paramName, out eParamStatus status)
+        {
+            IntParameter param = GetParameter(paramName) as IntParameter;
+            if (param != null)
+            {
+                status = eParamStatus.OK;
+                return param.IntValue;
+            }
+            else
+            {
+                status = eParamStatus.NoParamFound;
+            }
+            return 0;
+        }
 
-        public Sprite Icon;
-        public AudioClip Audio;
-        public float Volume;
+        public bool GetBool(string paramName, out eParamStatus status)
+        {
+            BoolParameter param = GetParameter(paramName) as BoolParameter;
+            if (param != null)
+            {
+                status = eParamStatus.OK;
+                return param.BoolValue;
+                
+            }
+            else
+            {
+                status = eParamStatus.NoParamFound;
+            }
+            return false;
+        }
 
-        /// <summary>
-        /// The Options available on this Speech node, if any.
-        /// </summary>
-        public List<OptionNode> Options;
-
-        /// <summary>
-        /// The Speech node following the current, if any.
-        /// </summary>
-        public SpeechNode Dialogue;
-
-        public UnityEngine.Events.UnityEvent Event;
-    }
-
-    public class OptionNode : ConversationNode
-    {
-        public SpeechNode Dialogue;
+        private Parameter GetParameter(string name)
+        {
+            for (int i = 0; i < Parameters.Count; i++)
+            {
+                if (Parameters[i].ParameterName == name)
+                    return Parameters[i];
+            }
+            return null;
+        }
     }
 }
-

@@ -1,0 +1,11 @@
+V1.03
+-Added methods to allow users to write their own custom UI input 
+-Added mouse selection interaction 
+-Added ability to disable mouse UI interaction 
+
+V1.02
+-Added automatically advance option 
+-Update the way TMPFonts, Icons, AudioClips, etc are serialised to fix build issues with UnityEditor.AssetDatabase 
+
+V1.0
+-Original release 
