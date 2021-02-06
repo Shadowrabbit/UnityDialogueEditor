@@ -140,6 +140,10 @@ namespace DialogueEditor
             Log("Loading new asset: " + CurrentAsset.name);
 
             // Clear all current UI Nodes
+            if (uiNodes == null)
+            {
+                uiNodes = new List<UINode>();
+            }
             uiNodes.Clear();
 
             // Deseralize the asset and get the conversation root
@@ -215,7 +219,9 @@ namespace DialogueEditor
         private void OnEnable()
         {
             if (uiNodes == null)
+            {
                 uiNodes = new List<UINode>();
+            }
 
             InitGUIStyles();
 
@@ -279,6 +285,11 @@ namespace DialogueEditor
                 return;
             }
 
+            if (uiNodes == null)
+            {
+                uiNodes = new List<UINode>();
+            }
+
             // Get asset the user is selecting
             newlySelectedAsset = Selection.activeTransform;
 
@@ -330,6 +341,11 @@ namespace DialogueEditor
             if (Application.isPlaying)
             {
                 return;
+            }
+
+            if (uiNodes == null)
+            {
+                uiNodes = new List<UINode>();
             }
 
             // Get asset the user is selecting
