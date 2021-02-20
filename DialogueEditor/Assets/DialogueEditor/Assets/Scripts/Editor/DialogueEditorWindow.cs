@@ -101,7 +101,7 @@ namespace DialogueEditor
         // Open window
         //--------------------------------------
 
-        [MenuItem("Window/DialogueEditor")]
+        [MenuItem("Window/DialogueEditor/Editor")]
         public static DialogueEditorWindow ShowWindow()
         {
             return EditorWindow.GetWindow<DialogueEditorWindow>("Dialogue Editor");
@@ -252,7 +252,6 @@ namespace DialogueEditor
             {
                 panelTitleStyle.normal.textColor = DialogueEditorUtil.ProSkinTextColour;
             }
-
 
             // Resizer style
             resizerStyle = new GUIStyle();

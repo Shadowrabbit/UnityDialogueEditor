@@ -323,7 +323,7 @@ namespace DialogueEditor
         {
             get
             {
-                return new Color(200, 200, 200);
+                return new Color(190, 190, 190);
             }
         }
     }
