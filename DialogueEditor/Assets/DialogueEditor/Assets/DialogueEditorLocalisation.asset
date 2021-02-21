@@ -12,4 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f24b2a568d86e0e47bf52699a1289dab, type: 3}
   m_Name: DialogueEditorLocalisation
   m_EditorClassIdentifier: 
-  LocalisationEntries: []
+  Database:
+    m_localisationEntries:
+    - m_id: GREETING
+      m_languageData:
+      - m_language: 10
+        m_languageAsString: English
+        m_text: Hello sir
+    - m_id: START_QUEST
+      m_languageData:
+      - m_language: 10
+        m_languageAsString: English
+        m_text: Would you like to begin the quest?
+    m_supportedLanguages: 0a000000

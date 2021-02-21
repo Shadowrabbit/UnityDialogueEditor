@@ -25,6 +25,11 @@ namespace DialogueEditor
         private const int LARGE_PADDING = 15;
 
 
+        // Private variables:     
+        private DialogueEditorLocalisation CurrentAsset; // The Localisation scriptable object that is currently being viewed/edited
+
+
+
         //--------------------------------------
         // Open window
         //--------------------------------------
@@ -38,12 +43,12 @@ namespace DialogueEditor
         [UnityEditor.Callbacks.OnOpenAsset(1)]
         public static bool OpenDialogue(int assetInstanceID, int line)
         {
-            NPCConversation conversation = EditorUtility.InstanceIDToObject(assetInstanceID) as NPCConversation;
+            DialogueEditorLocalisation locale = EditorUtility.InstanceIDToObject(assetInstanceID) as DialogueEditorLocalisation;
 
-            if (conversation != null)
+            if (locale != null)
             {
                 DialogueLocaleWindow window = ShowWindow();
-                window.LoadNewAsset(conversation);
+                window.LoadNewAsset(locale);
                 return true;
             }
             return false;
@@ -56,13 +61,15 @@ namespace DialogueEditor
         // Load New Asset
         //--------------------------------------
 
-        public void LoadNewAsset(NPCConversation asset)
+        public void LoadNewAsset(DialogueEditorLocalisation asset)
         {
             if (Application.isPlaying)
             {
                 Log("Load new asset aborted. Will not open assets during play.");
                 return;
             }
+
+            CurrentAsset = asset;
         }
 
 
@@ -116,6 +123,24 @@ namespace DialogueEditor
             {
                 return;
             }
+
+            // Get asset the user is selecting
+            Object newlySelectedAsset = Selection.activeObject;
+
+            // If it's not null
+            if (newlySelectedAsset != null)
+            {
+                DialogueEditorLocalisation newLocale = newlySelectedAsset as DialogueEditorLocalisation;
+                if (newLocale != null)
+                {
+                    LoadNewAsset(newLocale);
+                    Repaint();
+                    return;
+                }
+            }
+
+            CurrentAsset = null;
+            Repaint();
         }
 
         [UnityEditor.Callbacks.DidReloadScripts]
@@ -160,16 +185,18 @@ namespace DialogueEditor
                 return;
             }
 
-            if (DialogueEditorLocalisation.Instance == null)
+            if (CurrentAsset == null)
             {
-                DrawMessage("No database exists.");
+                DrawMessage("No Localisation selected");
                 return;
             }
 
-            if (DialogueEditorLocalisation.Instance.Database == null)
+            if (CurrentAsset.Database == null)
             {
-                DialogueEditorLocalisation.Instance.CreateDatabase();
+                CurrentAsset.CreateDatabase();
             }
+
+
 
 
             //-------------------------
@@ -225,7 +252,7 @@ namespace DialogueEditor
                     {
                         continue;
                     }
-                    bool isSupported = DialogueEditorLocalisation.Instance.Database.IsLanguageSupported(lang);
+                    bool isSupported = CurrentAsset.Database.IsLanguageSupported(lang);
 
                     // Handle opening horizontal layout
                     if (!openedHorizontal)
@@ -242,14 +269,14 @@ namespace DialogueEditor
                     {
                         if (GUILayout.Button("Remove"))
                         {
-                            DialogueEditorLocalisation.Instance.Database.RemoveLanguage(lang);
+                            CurrentAsset.Database.RemoveLanguage(lang);
                         }
                     }
                     else
                     {
                         if (GUILayout.Button("Add"))
                         {
-                            DialogueEditorLocalisation.Instance.Database.AddLanguage(lang);
+                            CurrentAsset.Database.AddLanguage(lang);
                         }
                     }
                     GUILayout.EndHorizontal();
@@ -273,7 +300,7 @@ namespace DialogueEditor
             }
             GUILayout.Space(SMALL_PADDING);
 
-            List<SystemLanguage> supportedLanguages = DialogueEditorLocalisation.Instance.Database.GetSupportedLanguages;
+            List<SystemLanguage> supportedLanguages = CurrentAsset.Database.GetSupportedLanguages;
             supportedLanguages.Sort();
 
             string supportedString = "";
@@ -323,7 +350,7 @@ namespace DialogueEditor
                 // Button
                 if (GUILayout.Button("Add Entry", GUILayout.Width(100)))
                 {
-                    DialogueEditorLocalisation.Instance.Database.AddNewEntry(_newID, _newEnglish);
+                    CurrentAsset.Database.AddNewEntry(_newID, _newEnglish);
 
                     _newID = "";
                     _newEnglish = "";
@@ -342,7 +369,7 @@ namespace DialogueEditor
 
             m_gridScrollView = EditorGUILayout.BeginScrollView(m_gridScrollView, GUILayout.Height(LOCALE_GRID_HEIGHT));
 
-            int numEntries = DialogueEditorLocalisation.Instance.Database.GetLocalisationEntryCount;
+            int numEntries = CurrentAsset.Database.GetLocalisationEntryCount;
             int startIndex = m_currentPage * MAX_PER_PAGE;
             int endIndex = startIndex + MAX_PER_PAGE - 1;
             if (endIndex > numEntries - 1)
@@ -352,7 +379,7 @@ namespace DialogueEditor
             {
                 GUILayout.BeginHorizontal();
 
-                LocaleEntry entry = DialogueEditorLocalisation.Instance.Database.GetEntryByIndex(i);
+                LocaleEntry entry = CurrentAsset.Database.GetEntryByIndex(i);
                 const float SPACE = 15;
 
                 // Entry num
@@ -376,7 +403,7 @@ namespace DialogueEditor
                 // Button
                 if (GUILayout.Button("Delete Entry"))
                 {
-                    DialogueEditorLocalisation.Instance.Database.DeleteEntry(i);
+                    CurrentAsset.Database.DeleteEntry(i);
 
                     if (m_currentPage > MaxPage)
                         m_currentPage = MaxPage;
@@ -418,6 +445,9 @@ namespace DialogueEditor
 
 
 
+            GUILayout.FlexibleSpace();
+
+            // Entire window scroll view end
             GUILayout.EndScrollView();
 
 
@@ -425,11 +455,10 @@ namespace DialogueEditor
             //-------------------------
             // DEBUG DEBUG DEBUG
 
-            GUILayout.FlexibleSpace();
             GUILayout.Label("Debug area:");
             if (GUILayout.Button("DEBUG Reset"))
             {
-                DialogueEditorLocalisation.Instance.CreateDatabase();
+                CurrentAsset.CreateDatabase();
             }
         }
 
@@ -437,7 +466,7 @@ namespace DialogueEditor
         {
             get
             {
-                float numPages = DialogueEditorLocalisation.Instance.Database.GetLocalisationEntryCount / MAX_PER_PAGE;
+                float numPages = CurrentAsset.Database.GetLocalisationEntryCount / MAX_PER_PAGE;
 
                 int pg = Mathf.CeilToInt(numPages);
 
@@ -524,7 +553,7 @@ namespace DialogueEditor
         private void ExportToJson()
         {
             // JSONify
-            LocalisationDatabase db = DialogueEditorLocalisation.Instance.Database;
+            LocalisationDatabase db = CurrentAsset.Database;
 
             // Create a new DataBase, only copy over data for the Supported Languages 
             //
@@ -568,7 +597,7 @@ namespace DialogueEditor
         private void ExportToCSV()
         {
             var csv = new System.Text.StringBuilder();
-            List<SystemLanguage> languages = DialogueEditorLocalisation.Instance.Database.GetSupportedLanguages;
+            List<SystemLanguage> languages = CurrentAsset.Database.GetSupportedLanguages;
 
             // First row - ID and Languages (column declaration)
             csv.Append("ID,");
@@ -581,10 +610,10 @@ namespace DialogueEditor
             csv.AppendLine();
 
             // Second row and beyond - localisation data
-            int numEntries = DialogueEditorLocalisation.Instance.Database.GetLocalisationEntryCount;
+            int numEntries = CurrentAsset.Database.GetLocalisationEntryCount;
             for (int i = 0; i < numEntries; i++)
             {
-                LocaleEntry entry = DialogueEditorLocalisation.Instance.Database.GetEntryByIndex(i);
+                LocaleEntry entry = CurrentAsset.Database.GetEntryByIndex(i);
 
                 string id = entry.ID;
                 csv.Append(id + ",");

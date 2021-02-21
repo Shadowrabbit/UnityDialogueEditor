@@ -6,8 +6,8 @@ using System.Runtime.Serialization.Json;
 
 namespace DialogueEditor
 {
-    [System.Serializable]
     [DataContract]
+    [System.Serializable]
     public class LocalisationDatabase
     {
         public LocalisationDatabase()
@@ -15,23 +15,25 @@ namespace DialogueEditor
             AddLanguage(SystemLanguage.English);
         }
 
-        public int GetLocalisationEntryCount { get { return m_LocalisationEntries.Count; } }
-        public List<SystemLanguage> GetSupportedLanguages { get { return m_SupportedLanguages; } }
+        public int GetLocalisationEntryCount { get { return m_localisationEntries.Count; } }
+        public List<SystemLanguage> GetSupportedLanguages { get { return m_supportedLanguages; } }
 
         [DataMember]
-        private List<LocaleEntry> m_LocalisationEntries = new List<LocaleEntry>();
+        [SerializeField]
+        private List<LocaleEntry> m_localisationEntries = new List<LocaleEntry>();
         [DataMember]
-        private List<UnityEngine.SystemLanguage> m_SupportedLanguages = new List<SystemLanguage>();
+        [SerializeField]
+        private List<UnityEngine.SystemLanguage> m_supportedLanguages = new List<SystemLanguage>();
 
         // ---
 
         public LocaleEntry GetEntryByID(string id)
         {
-            for (int i = 0; i < m_LocalisationEntries.Count; i++)
+            for (int i = 0; i < m_localisationEntries.Count; i++)
             {
-                if (m_LocalisationEntries[i].ID == id)
+                if (m_localisationEntries[i].ID == id)
                 {
-                    return m_LocalisationEntries[i];
+                    return m_localisationEntries[i];
                 }
             }
 
@@ -41,30 +43,30 @@ namespace DialogueEditor
         public LocaleEntry GetEntryByIndex(int index)
         {
             int i = Mathf.Clamp(index, 0, GetLocalisationEntryCount - 1);
-            return m_LocalisationEntries[i];
+            return m_localisationEntries[i];
         }
 
         public void DeleteEntry(int index)
         {
             int i = Mathf.Clamp(index, 0, GetLocalisationEntryCount - 1);
-            m_LocalisationEntries.RemoveAt(i);
+            m_localisationEntries.RemoveAt(i);
         }
 
         public bool IsLanguageSupported(SystemLanguage lang)
         {
-            return m_SupportedLanguages.Contains(lang);
+            return m_supportedLanguages.Contains(lang);
         }
 
         public void AddLanguage(SystemLanguage lang)
         {
-            m_SupportedLanguages.Add(lang);
+            m_supportedLanguages.Add(lang);
 
             // For each entry, add a 
-            for (int i = 0; i < m_LocalisationEntries.Count; i++)
+            for (int i = 0; i < m_localisationEntries.Count; i++)
             {
-                if (!m_LocalisationEntries[i].HasLanguage(lang))
+                if (!m_localisationEntries[i].HasLanguage(lang))
                 {
-                    m_LocalisationEntries[i].AddLanguage(lang);
+                    m_localisationEntries[i].AddLanguage(lang);
                 }
             }
         }
@@ -77,7 +79,7 @@ namespace DialogueEditor
                 return;
             }
 
-            m_SupportedLanguages.Remove(lang);
+            m_supportedLanguages.Remove(lang);
         }
 
         public void AddNewEntry(string id, string englishText)
@@ -99,14 +101,14 @@ namespace DialogueEditor
 
             LocaleEntry newEntry = new LocaleEntry(id);
             newEntry.SetLanguageText(SystemLanguage.English, englishText); 
-            m_LocalisationEntries.Add(newEntry);
+            m_localisationEntries.Add(newEntry);
         }
 
         public bool DoesIDExist(string id)
         {
-            for (int i = 0; i < m_LocalisationEntries.Count; i++)
+            for (int i = 0; i < m_localisationEntries.Count; i++)
             {
-                if (m_LocalisationEntries[i].ID == id)
+                if (m_localisationEntries[i].ID == id)
                 {
                     return true;
                 }
@@ -116,36 +118,40 @@ namespace DialogueEditor
         }
     }
 
-
-    [System.Serializable]
+    
     [DataContract]
+    [System.Serializable]
     public class LocaleEntry
     {
         public LocaleEntry(string id)
         {
-            ID = id;
-            m_LanguageData = new List<LanguageData>();
+            m_id = id;
+            m_languageData = new List<LanguageData>();
         }
 
+        public string ID { get { return m_id; } }
+
         [DataMember]
-        public string ID { get; private set; }
+        [SerializeField]
+        private string m_id;
         [DataMember]
-        private List<LanguageData> m_LanguageData = new List<LanguageData>();
+        [SerializeField]
+        private List<LanguageData> m_languageData = new List<LanguageData>();
 
         // ----
 
         public void SetLanguageText(SystemLanguage lang, string txt)
         {
-            for (int i = 0; i < m_LanguageData.Count; i++)
+            for (int i = 0; i < m_languageData.Count; i++)
             {
-                if (m_LanguageData[i].Language == lang)
+                if (m_languageData[i].Language == lang)
                 {
-                    m_LanguageData[i].SetText(txt);
+                    m_languageData[i].SetText(txt);
                     return;
                 }
             }
 
-            m_LanguageData.Add(new LanguageData(lang, txt));
+            m_languageData.Add(new LanguageData(lang, txt));
         }
 
         public void AddLanguage(SystemLanguage lang)
@@ -155,14 +161,14 @@ namespace DialogueEditor
                 return;
             }
 
-            m_LanguageData.Add(new LanguageData(lang, ""));
+            m_languageData.Add(new LanguageData(lang, ""));
         }
 
         public bool HasLanguage(SystemLanguage lang)
         {
-            for (int i = 0; i < m_LanguageData.Count; i++)
+            for (int i = 0; i < m_languageData.Count; i++)
             {
-                if (m_LanguageData[i].Language == lang)
+                if (m_languageData[i].Language == lang)
                 {
                     return true;
                 }
@@ -173,11 +179,11 @@ namespace DialogueEditor
 
         public string GetLanguageText(UnityEngine.SystemLanguage lang)
         {
-            for (int i = 0; i < m_LanguageData.Count; i++)
+            for (int i = 0; i < m_languageData.Count; i++)
             {
-                if (m_LanguageData[i].Language == lang)
+                if (m_languageData[i].Language == lang)
                 {
-                    return m_LanguageData[i].Text;
+                    return m_languageData[i].Text;
                 }
             }
 
@@ -186,29 +192,35 @@ namespace DialogueEditor
     }
 
 
-    [System.Serializable]
     [DataContract]
+    [System.Serializable]
     public class LanguageData
     {
         public LanguageData(UnityEngine.SystemLanguage lang, string txt)
         {
-            Language = lang;
-            LanguageAsString = lang.ToString();
-            Text = txt;
+            m_language = lang;
+            m_languageAsString = lang.ToString();
+            m_text = txt;
         }
 
         // ----
 
+        public SystemLanguage Language { get { return m_language; } }
+        public string Text { get { return m_text; } }
+
         [DataMember]
-        public UnityEngine.SystemLanguage Language { get; private set; }
+        [SerializeField]
+        public UnityEngine.SystemLanguage m_language;
         [DataMember]
-        public string LanguageAsString { get; private set; }
+        [SerializeField]
+        public string m_languageAsString;
         [DataMember]
-        public string Text { get; private set; }
+        [SerializeField]
+        public string m_text;
 
         public void SetText(string txt)
         {
-            Text = txt;
+            m_text = txt;
         }
     }
 }
