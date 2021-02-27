@@ -564,7 +564,10 @@ namespace DialogueEditor
             List<SystemLanguage> supportedLanguages = db.GetSupportedLanguages;
             for (int i = 0; i < supportedLanguages.Count; i++)
             {
-                copy.AddLanguage(supportedLanguages[i]);
+                if (!copy.IsLanguageSupported(supportedLanguages[i]))
+                {
+                    copy.AddLanguage(supportedLanguages[i]);
+                }
             }
 
             // Copy entries
@@ -584,13 +587,20 @@ namespace DialogueEditor
 
             // Write to Json
             System.IO.MemoryStream ms = new System.IO.MemoryStream();
-
             DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(LocalisationDatabase));
             ser.WriteObject(ms, copy);
             byte[] jsonData = ms.ToArray();
             ms.Close();
             string toJson = System.Text.Encoding.UTF8.GetString(jsonData, 0, jsonData.Length);
 
+            // Save to file
+            var path = EditorUtility.SaveFilePanel( "Save Localisation as JSON", "", "localisation.json", "json");
+            if (path.Length != 0)
+            {
+                System.IO.File.WriteAllText(path, toJson);
+            }
+
+            // Debug
             Debug.Log(toJson);
         }
 
@@ -630,9 +640,15 @@ namespace DialogueEditor
                     csv.AppendLine();
             }
 
-            Debug.Log(csv.ToString());
+            // Save to file
+            var path = EditorUtility.SaveFilePanel("Save Localisation as CSV", "", "localisation.csv", "csv");
+            if (path.Length != 0)
+            {
+                System.IO.File.WriteAllText(path, csv.ToString());
+            }
 
-            // File.WriteAllText(filePath, csv.ToString());
+            // Debug
+            Debug.Log(csv.ToString());
         }
 
 
