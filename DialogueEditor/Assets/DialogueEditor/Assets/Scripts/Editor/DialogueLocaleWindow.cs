@@ -522,7 +522,7 @@ namespace DialogueEditor
             GUILayout.Space(5);
             if (GUILayout.Button("Import from JSON", EditorStyles.toolbarButton))
             {
-
+                LoadFromJSON();
             }
             if (GUILayout.Button("Import from CSV", EditorStyles.toolbarButton))
             {
@@ -651,24 +651,50 @@ namespace DialogueEditor
             Debug.Log(csv.ToString());
         }
 
-
-
-
-
-        private EditableConversation Dejsonify()
+        private void LoadFromJSON()
         {
+            // Get file, load text
+            string path = EditorUtility.OpenFilePanel("Select Localisation json", "", "json");
             string json = "";
+            if (path.Length != 0)
+            {
+                json = System.IO.File.ReadAllText(path);
+            }
 
             if (json == null || json == "")
-                return null;
+            {
+                return;
+            }
 
-            EditableConversation conversation = new EditableConversation();
+            // De-jsonify into Database
+            LocalisationDatabase db = new LocalisationDatabase ();
             System.IO.MemoryStream ms = new System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(json));
-            DataContractJsonSerializer ser = new DataContractJsonSerializer(conversation.GetType());
-            conversation = ser.ReadObject(ms) as EditableConversation;
+            DataContractJsonSerializer ser = new DataContractJsonSerializer(db.GetType());
+            db = ser.ReadObject(ms) as LocalisationDatabase;
             ms.Close();
 
-            return conversation;
+            // Apply to CurrentAsset
+            int entryCount = db.GetLocalisationEntryCount;
+
+            // For each entry...
+            for (int i = 0; i < entryCount; i++)
+            {
+                LocaleEntry entry = db.GetEntryByIndex(i);
+
+                // If entry doesn't exist, add it
+                if (!CurrentAsset.Database.DoesIDExist(entry.ID))
+                {
+                    CurrentAsset.Database.AddNewEntry(entry.ID, entry.GetLanguageText(SystemLanguage.English));
+                }
+
+                // For each language...
+                foreach (SystemLanguage lang in db.GetSupportedLanguages)
+                {
+                    // Update the language entry
+                    string langText = entry.GetLanguageText(lang);
+                    CurrentAsset.Database.GetEntryByID(entry.ID).SetLanguageText(lang, langText);
+                }
+            }
         }
     }
 }
