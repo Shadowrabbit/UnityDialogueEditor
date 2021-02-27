@@ -181,13 +181,13 @@ namespace DialogueEditor
         {
             if (Application.isPlaying)
             {
-                DrawMessage(UNAVAILABLE_DURING_PLAY_TEXT);
+                DrawWindowMessage(UNAVAILABLE_DURING_PLAY_TEXT);
                 return;
             }
 
             if (CurrentAsset == null)
             {
-                DrawMessage("No Localisation selected");
+                DrawWindowMessage("No Localisation selected");
                 return;
             }
 
@@ -223,8 +223,6 @@ namespace DialogueEditor
             // TITLE 
 
             DrawTitleBar();
-
-
 
             m_windowScrollView = GUILayout.BeginScrollView(m_windowScrollView);
 
@@ -388,7 +386,7 @@ namespace DialogueEditor
                 GUILayout.EndHorizontal();
 
                 // ID
-                DrawEntry("ID:", entry.ID);
+                DrawLanguageEntry("ID:", entry.ID);
                 GUILayout.Space(SPACE);
 
                 // Each language
@@ -396,7 +394,7 @@ namespace DialogueEditor
                 {
                     SystemLanguage lang = supportedLanguages[j];
 
-                    DrawEntry(lang.ToString(), entry.GetLanguageText(lang));
+                    DrawLanguageEntry(lang.ToString(), entry.GetLanguageText(lang));
                     GUILayout.Space(SPACE);
                 }
                 
@@ -474,7 +472,7 @@ namespace DialogueEditor
             }
         }
 
-        private void DrawEntry(string prefixText, string labelText)
+        private void DrawLanguageEntry(string prefixText, string labelText)
         {
             GUIStyle style = new GUIStyle();
             style.stretchWidth = false;
@@ -491,7 +489,7 @@ namespace DialogueEditor
             GUILayout.EndHorizontal();
         }
 
-        private void DrawMessage(string msg)
+        private void DrawWindowMessage(string msg)
         {
             float width = this.position.width;
             float centerX = width / 2;
@@ -526,7 +524,7 @@ namespace DialogueEditor
             }
             if (GUILayout.Button("Import from CSV", EditorStyles.toolbarButton))
             {
-
+                LoadFromCSV();
             }
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Help", EditorStyles.toolbarButton))
@@ -693,6 +691,73 @@ namespace DialogueEditor
                     // Update the language entry
                     string langText = entry.GetLanguageText(lang);
                     CurrentAsset.Database.GetEntryByID(entry.ID).SetLanguageText(lang, langText);
+                }
+            }
+        }
+
+        private void LoadFromCSV()
+        {
+            // Get file, load text
+            string path = EditorUtility.OpenFilePanel("Select Localisation csv", "", "csv");
+            string csv = "";
+            if (path.Length != 0)
+            {
+                csv = System.IO.File.ReadAllText(path);
+            }
+
+            if (csv == null || csv == "")
+            {
+                return;
+            }
+
+            // Split the CSV into lines
+            string[] lines = csv.Split('\n');
+
+            // Clean the strings
+            for (int i = 0; i < lines.Length; i++)
+            {
+                lines[i] = lines[i].Replace("\r", "");
+            }
+
+            // Create a dictionary to store the column index of each language
+            Dictionary<int, UnityEngine.SystemLanguage> langColDict = new Dictionary<int, SystemLanguage>();
+            string[] keys = lines[0].Split(',');
+
+            for (int i = 0; i < keys.Length; i++)
+            {
+                if (keys[i] == "ID")
+                {
+                    continue;
+                }
+
+                int index = i;
+
+                // For each language... 
+                foreach (SystemLanguage lang in System.Enum.GetValues(typeof(SystemLanguage)))
+                {
+                    string langToString = lang.ToString();
+                    if (keys[i].Equals(langToString))
+                    {
+                        langColDict.Add(index, lang);
+                    }
+                }
+            }
+
+            // Go through the csv and update the database 
+            for (int i = 1; i < lines.Length; i++)
+            {
+                string[] entries = lines[i].Split(',');
+
+                string id = entries[0];
+                LocaleEntry localeEntry = CurrentAsset.Database.GetEntryByID(id);
+
+                for (int j = 1; j < entries.Length; j++)
+                {
+                    int currentColumnIndex = j;
+                    SystemLanguage lang = langColDict[currentColumnIndex];
+                    string txt = entries[currentColumnIndex];
+
+                    localeEntry.SetLanguageText(lang, txt);
                 }
             }
         }
