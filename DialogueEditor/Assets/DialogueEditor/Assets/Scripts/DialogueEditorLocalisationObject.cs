@@ -8,7 +8,7 @@ using DialogueEditor;
 
 [CreateAssetMenu(fileName = "DialogueEditorLocalisation", menuName ="DialogueEditor/Localisation")]
 [System.Serializable]
-public class DialogueEditorLocalisation : ScriptableObject
+public class DialogueEditorLocalisationObject : ScriptableObject
 {
     [SerializeField]
     public LocalisationDatabase Database;

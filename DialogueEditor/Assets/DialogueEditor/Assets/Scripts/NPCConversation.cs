@@ -11,6 +11,7 @@ namespace DialogueEditor
     {
         V1_03 = 103,    // Initial save data
         V1_10 = 110,    // Parameters
+        V1_20 = 120,    // Localisation
     }
     
 

@@ -390,8 +390,12 @@ namespace DialogueEditor
             // Clear our reffrence to the CurrentAsset on script reload in order to prevent 
             // save detection overwriting the object with an empty conversation (save triggerred 
             // with no uiNodes present in window due to recompile). 
-            Log("Scripts reloaded. Clearing current asset.");
-            ShowWindow().CurrentAsset = null;
+
+            // UPDATE 2021/03/06 - This is no longer neccessary as a better fix has been put in place. Thus, 
+            // this can be commented out, and this also prevents the window from opening up again after every recompile. 
+
+            //Log("Scripts reloaded. Clearing current asset.");
+            //ShowWindow().CurrentAsset = null;
         }
 
 

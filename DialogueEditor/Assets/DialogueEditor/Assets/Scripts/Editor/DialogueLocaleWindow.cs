@@ -18,7 +18,7 @@ namespace DialogueEditor
         private const string CONTROL_NAME = "DEFAULT_LOCALE_CONTROL";
         private const string UNAVAILABLE_DURING_PLAY_TEXT = "Dialogue Editor unavaiable during play mode.";
 
-        private const int LOCALE_GRID_HEIGHT = 225;
+
         private const int MAX_PER_PAGE = 10;
 
         private const int SMALL_PADDING = 5;
@@ -26,7 +26,7 @@ namespace DialogueEditor
 
 
         // Private variables:     
-        private DialogueEditorLocalisation CurrentAsset; // The Localisation scriptable object that is currently being viewed/edited
+        private DialogueEditorLocalisationObject CurrentAsset; // The Localisation scriptable object that is currently being viewed/edited
 
 
 
@@ -43,7 +43,7 @@ namespace DialogueEditor
         [UnityEditor.Callbacks.OnOpenAsset(1)]
         public static bool OpenDialogue(int assetInstanceID, int line)
         {
-            DialogueEditorLocalisation locale = EditorUtility.InstanceIDToObject(assetInstanceID) as DialogueEditorLocalisation;
+            DialogueEditorLocalisationObject locale = EditorUtility.InstanceIDToObject(assetInstanceID) as DialogueEditorLocalisationObject;
 
             if (locale != null)
             {
@@ -61,7 +61,7 @@ namespace DialogueEditor
         // Load New Asset
         //--------------------------------------
 
-        public void LoadNewAsset(DialogueEditorLocalisation asset)
+        public void LoadNewAsset(DialogueEditorLocalisationObject asset)
         {
             if (Application.isPlaying)
             {
@@ -130,7 +130,7 @@ namespace DialogueEditor
             // If it's not null
             if (newlySelectedAsset != null)
             {
-                DialogueEditorLocalisation newLocale = newlySelectedAsset as DialogueEditorLocalisation;
+                DialogueEditorLocalisationObject newLocale = newlySelectedAsset as DialogueEditorLocalisationObject;
                 if (newLocale != null)
                 {
                     LoadNewAsset(newLocale);
@@ -143,11 +143,6 @@ namespace DialogueEditor
             Repaint();
         }
 
-        [UnityEditor.Callbacks.DidReloadScripts]
-        private static void OnScriptsReloaded()
-        {
-
-        }
 
 
 
@@ -175,6 +170,8 @@ namespace DialogueEditor
         private Vector2 m_langScrollView;
 
         private Vector2 m_windowScrollView;
+
+        private const float SIDE_PADDING = 5;
 
 
         private void OnGUI()
@@ -231,9 +228,17 @@ namespace DialogueEditor
             //-------------------------
             // SUPPORTED LANGUAGES
 
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(SIDE_PADDING);
             GUILayout.Label("Choose languages: ", _boldStyle);
+            GUILayout.EndHorizontal();
+
             GUILayout.Space(SMALL_PADDING);
-            m_langScrollView = GUILayout.BeginScrollView(m_langScrollView, GUILayout.Height(100));
+
+            GUIStyle paddingStyle = new GUIStyle();
+            int offx = 15;
+            paddingStyle.margin = new RectOffset(offx, offx, 0, offx);
+            m_langScrollView = GUILayout.BeginScrollView(m_langScrollView, paddingStyle, GUILayout.Height(100));
             {
                 var allLanguages = System.Enum.GetValues(typeof(SystemLanguage));
 
@@ -297,6 +302,8 @@ namespace DialogueEditor
                 }
             }
             GUILayout.Space(SMALL_PADDING);
+
+
 
             List<SystemLanguage> supportedLanguages = CurrentAsset.Database.GetSupportedLanguages;
             supportedLanguages.Sort();
@@ -364,54 +371,60 @@ namespace DialogueEditor
 
             GUILayout.Label("Entries:", _boldStyle);
 
-
-            m_gridScrollView = EditorGUILayout.BeginScrollView(m_gridScrollView, GUILayout.Height(LOCALE_GRID_HEIGHT));
+            const float LOCALE_BOX_TOP_PADDING = 20;
+            const float LOCALE_BOX_ENTRY_HEIGHT = 22.5f;
 
             int numEntries = CurrentAsset.Database.GetLocalisationEntryCount;
             int startIndex = m_currentPage * MAX_PER_PAGE;
             int endIndex = startIndex + MAX_PER_PAGE - 1;
             if (endIndex > numEntries - 1)
                 endIndex = numEntries - 1;
+            int numToDisplay = (endIndex - startIndex);
+            float locale_box_height = LOCALE_BOX_TOP_PADDING + (LOCALE_BOX_ENTRY_HEIGHT * numToDisplay);
 
-            for (int i = startIndex; i <= endIndex; i++)
+            m_gridScrollView = EditorGUILayout.BeginScrollView(m_gridScrollView, GUILayout.Height(locale_box_height));         
             {
-                GUILayout.BeginHorizontal();
-
-                LocaleEntry entry = CurrentAsset.Database.GetEntryByIndex(i);
-                const float SPACE = 15;
-
-                // Entry num
-                GUILayout.BeginHorizontal(GUILayout.Width(45));
-                GUILayout.Label("[" + (int)(i+1) + "]");
-                GUILayout.EndHorizontal();
-
-                // ID
-                DrawLanguageEntry("ID:", entry.ID);
-                GUILayout.Space(SPACE);
-
-                // Each language
-                for (int j = 0; j < supportedLanguages.Count; j++)
+                for (int i = startIndex; i <= endIndex; i++)
                 {
-                    SystemLanguage lang = supportedLanguages[j];
+                    GUILayout.BeginHorizontal();
 
-                    DrawLanguageEntry(lang.ToString(), entry.GetLanguageText(lang));
+                    LocaleEntry entry = CurrentAsset.Database.GetEntryByIndex(i);
+                    const float SPACE = 15;
+
+                    // Entry num
+                    GUILayout.BeginHorizontal(GUILayout.Width(45));
+                    GUILayout.Label("[" + (int)(i+1) + "]");
+                    GUILayout.EndHorizontal();
+
+                    // ID
+                    DrawLanguageEntry("ID:", entry.ID);
                     GUILayout.Space(SPACE);
-                }
+
+                    // Each language
+                    for (int j = 0; j < supportedLanguages.Count; j++)
+                    {
+                        SystemLanguage lang = supportedLanguages[j];
+
+                        DrawLanguageEntry(lang.ToString(), entry.GetLanguageText(lang));
+                        GUILayout.Space(SPACE);
+                    }
                 
-                // Button
-                if (GUILayout.Button("Delete Entry"))
-                {
-                    CurrentAsset.Database.DeleteEntry(i);
+                    // Button
+                    if (GUILayout.Button("Delete Entry"))
+                    {
+                        CurrentAsset.Database.DeleteEntry(i);
 
-                    if (m_currentPage > MaxPage)
-                        m_currentPage = MaxPage;
-                    return;
+                        if (m_currentPage > MaxPage)
+                            m_currentPage = MaxPage;
+                        return;
+                    }
+                    GUILayout.FlexibleSpace();
+
+                    GUILayout.EndHorizontal();
                 }
-                GUILayout.FlexibleSpace();
-
-                GUILayout.EndHorizontal();
             }
             EditorGUILayout.EndScrollView();
+
 
             // SCROLL PAGE
             EditorGUILayout.BeginHorizontal();
@@ -442,22 +455,10 @@ namespace DialogueEditor
             DrawLine();
 
 
-
             GUILayout.FlexibleSpace();
 
             // Entire window scroll view end
             GUILayout.EndScrollView();
-
-
-
-            //-------------------------
-            // DEBUG DEBUG DEBUG
-
-            GUILayout.Label("Debug area:");
-            if (GUILayout.Button("DEBUG Reset"))
-            {
-                CurrentAsset.CreateDatabase();
-            }
         }
 
         private int MaxPage
@@ -526,6 +527,15 @@ namespace DialogueEditor
             {
                 LoadFromCSV();
             }
+            GUILayout.FlexibleSpace();
+            //-------------------------
+            // DEBUG DEBUG DEBUG
+            if (GUILayout.Button("DEBUG Reset"))
+            {
+                CurrentAsset.CreateDatabase();
+            }
+            // END END END
+            //-------------------------
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Help", EditorStyles.toolbarButton))
             {
