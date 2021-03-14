@@ -46,10 +46,22 @@ namespace DialogueEditor
             return m_localisationEntries[i];
         }
 
-        public void DeleteEntry(int index)
+        public void DeleteEntryByIndex(int index)
         {
             int i = Mathf.Clamp(index, 0, GetLocalisationEntryCount - 1);
             m_localisationEntries.RemoveAt(i);
+        }
+
+        public void DeleteEntryByID(string id)
+        {
+            for (int i = 0; i < m_localisationEntries.Count; i++)
+            {
+                if (m_localisationEntries[i].ID == id)
+                {
+                    m_localisationEntries.RemoveAt(i);
+                    return;
+                }
+            }
         }
 
         public bool IsLanguageSupported(SystemLanguage lang)

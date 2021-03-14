@@ -7,6 +7,8 @@ namespace DialogueEditor
 {
     public static class DialogueEditorUtil
     {
+        public static string HELP_URL = "https://josephbarber96.github.io/dialogueeditor.html";
+
         public static bool IsPointerNearConnection(List<UINode> uiNodes, Vector2 mousePos, 
             out EditableConversationNode par, out EditableConversationNode child)
         {
