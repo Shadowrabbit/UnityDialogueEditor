@@ -352,7 +352,8 @@ namespace DialogueEditor
                 GUI.DrawTexture(icon, SpeechNode.Icon.texture, ScaleMode.ScaleToFit);
 
             // Text
-            DrawInternalText(SpeechNode.Text, SPRITE_SZ + 5, NAME_HEIGHT + NAME_PADDING);
+            string nodeText = SpeechNode.UseLocalisationID ? SpeechNode.LocalisationID : SpeechNode.Text;
+            DrawInternalText(nodeText, SPRITE_SZ + 5, NAME_HEIGHT + NAME_PADDING);
         }
 
 
@@ -448,7 +449,8 @@ namespace DialogueEditor
         public override void OnDraw()
         {
             DrawTitle( isSelected ? "Option node (selected)." : "Option node.");
-            DrawInternalText(OptionNode.Text);
+            string nodeText = OptionNode.UseLocalisationID ? OptionNode.LocalisationID : OptionNode.Text;
+            DrawInternalText(nodeText);
         }
 
 

@@ -47,10 +47,13 @@ namespace DialogueEditor
 
         // ----
         // Serialized Node data
+        [DataMember] public bool UseLocalisationID;
+        [DataMember] public string LocalisationID;
         [DataMember] public string Text;
         [DataMember] public List<EditableConnection> Connections;
         [DataMember] public List<int> parentUIDs;
         [DataMember] public List<EditableSetParamAction> ParamActions;
+
         /// <summary> Deprecated as of V1.03 </summary>
         [DataMember] public string TMPFontGUID;
 

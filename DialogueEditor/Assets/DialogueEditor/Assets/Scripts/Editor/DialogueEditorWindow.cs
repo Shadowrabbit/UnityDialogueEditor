@@ -57,6 +57,8 @@ namespace DialogueEditor
         private const string CONTROL_NAME = "DEFAULT_CONTROL";
         public const int MIN_PANEL_WIDTH = 180;
         private const string UNAVAILABLE_DURING_PLAY_TEXT = "Dialogue Editor unavaiable during play mode.";
+        private const int PANEL_VERTICAL_GAP = 20;
+        private const int PANEL_VERTICAL_PADDING = 10;
 
         // Static properties
         public static bool SelectableClickedOnThisUpdate { get; set; }
@@ -66,6 +68,7 @@ namespace DialogueEditor
         private NPCConversation CurrentAsset;           // The Conversation scriptable object that is currently being viewed/edited
         public static EditableSpeechNode ConversationRoot { get; private set; }    // The root node of the conversation
         private List<UINode> uiNodes;                   // List of all UI nodes
+        private DialogueEditorLocalisationObject m_localisationObject;
 
         // Selected asset logic
         private NPCConversation currentlySelectedAsset;
@@ -80,6 +83,7 @@ namespace DialogueEditor
         private Rect panelResizerRect;
         private GUIStyle resizerStyle;
         private SelectableUI m_cachedSelectedObject;
+        private string m_currentLocalisationInputID;
 
         // Dragging information
         private bool dragging;
@@ -437,6 +441,8 @@ namespace DialogueEditor
                 return;
             }
 
+            ValidateLocalisation();
+
             // Process interactions
             ProcessInput();
 
@@ -578,9 +584,6 @@ namespace DialogueEditor
 
         private void DrawPanel()
         {
-            const int VERTICAL_GAP = 20;
-            const int VERTICAL_PADDING = 10;
-
             panelRect = new Rect(position.width - panelWidth, TOOLBAR_HEIGHT, panelWidth, position.height - TOOLBAR_HEIGHT);
             if (panelStyle.normal.background == null)
                 InitGUIStyles();
@@ -594,12 +597,13 @@ namespace DialogueEditor
 
             if (CurrentlySelectedObject == null)
             {
+                GUILayout.Label("Conversation: " + CurrentAsset.gameObject.name, panelTitleStyle);
+                GUILayout.Space(PANEL_VERTICAL_GAP);
+
+
                 // Parameters
                 if (CurrentAsset.ParameterList == null)
                     CurrentAsset.ParameterList = new List<EditableParameter>();
-
-                GUILayout.Label("Conversation: " + CurrentAsset.gameObject.name, panelTitleStyle);
-                GUILayout.Space(VERTICAL_GAP);
 
                 GUILayout.Label("Parameters", panelTitleStyle);
                 GUILayout.BeginHorizontal();
@@ -620,7 +624,7 @@ namespace DialogueEditor
                     GUILayout.BeginHorizontal();
 
                     float paramNameWidth = panelWidth * 0.6f;
-                    CurrentAsset.ParameterList[i].ParameterName = GUILayout.TextField(CurrentAsset.ParameterList[i].ParameterName, 
+                    CurrentAsset.ParameterList[i].ParameterName = GUILayout.TextField(CurrentAsset.ParameterList[i].ParameterName,
                         EditableParameter.MAX_NAME_SIZE, GUILayout.Width(paramNameWidth), GUILayout.ExpandWidth(false));
 
                     if (CurrentAsset.ParameterList[i] is EditableBoolParameter)
@@ -643,7 +647,7 @@ namespace DialogueEditor
                     GUILayout.EndHorizontal();
                 }
 
-                GUILayout.Space(VERTICAL_GAP);
+                GUILayout.Space(PANEL_VERTICAL_GAP);
 
 
                 // Default options
@@ -692,8 +696,16 @@ namespace DialogueEditor
                         EditorGUILayout.Space();
 
                         GUILayout.Label("Dialogue", EditorStyles.boldLabel);
-                        node.Text = GUILayout.TextArea(node.Text);
-                        EditorGUILayout.Space();
+                        node.UseLocalisationID = GUILayout.Toggle(node.UseLocalisationID, "Use Localisation");
+                        if (node.UseLocalisationID)
+                        {
+                            DrawPanel_LocalisationForNode(node);
+                        }
+                        else
+                        {
+                            node.Text = GUILayout.TextArea(node.Text);
+                            EditorGUILayout.Space();
+                        }
 
                         // Advance
                         if (node.Connections.Count > 0 && node.Connections[0] is EditableSpeechConnection)
@@ -768,8 +780,16 @@ namespace DialogueEditor
                         EditorGUILayout.Space();
 
                         GUILayout.Label("Option text:", EditorStyles.boldLabel);
-                        node.Text = GUILayout.TextArea(node.Text);
-                        EditorGUILayout.Space();
+                        node.UseLocalisationID = GUILayout.Toggle(node.UseLocalisationID, "Use Localisation");
+                        if (node.UseLocalisationID)
+                        {
+                            DrawPanel_LocalisationForNode(node);
+                        }
+                        else
+                        {
+                            node.Text = GUILayout.TextArea(node.Text);
+                            EditorGUILayout.Space();
+                        }
 
                         GUILayout.Label("TMP Font", EditorStyles.boldLabel);
                         node.TMPFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(node.TMPFont, typeof(TMPro.TMP_FontAsset), false);
@@ -794,7 +814,6 @@ namespace DialogueEditor
                             i--;
                         }
                     }
-
 
                     // Button
                     {
@@ -835,7 +854,7 @@ namespace DialogueEditor
                     }
 
                     // Draw conditions
-                    GUILayout.Space(VERTICAL_PADDING);
+                    GUILayout.Space(PANEL_VERTICAL_PADDING);
                     GUILayout.Label("Required conditions.", EditorStyles.boldLabel);
                     float conditionNameWidth = panelWidth * 0.4f;
                     for (int i = 0; i < connection.Conditions.Count; i++)
@@ -876,6 +895,53 @@ namespace DialogueEditor
             GUILayout.EndScrollView();
             GUILayout.EndVertical();
             GUILayout.EndArea();
+        }
+
+        private void DrawPanel_LocalisationForNode(EditableConversationNode node)
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Locale ID: " + node.LocalisationID);
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            m_currentLocalisationInputID = GUILayout.TextArea(m_currentLocalisationInputID, GUILayout.MaxWidth(panelWidth * 0.5f));
+
+            // Search IDs
+            if (GUILayout.Button("Select ID"))
+            {
+                if (!string.IsNullOrEmpty(m_currentLocalisationInputID))
+                {
+                    int numEntries = m_localisationObject.Database.GetLocalisationEntryCount;
+                    string idToLower = m_currentLocalisationInputID.ToLower();
+                    List<string> possibleIDs = new List<string>();
+
+                    for (int i = 0; i < numEntries; i++)
+                    {
+                        LocaleEntry entry = m_localisationObject.Database.GetEntryByIndex(i);
+
+                        if (entry.ID.ToLower().Contains(idToLower))
+                        {
+                            possibleIDs.Add(entry.ID);
+                        }
+                    }
+
+                    if (possibleIDs.Count > 0)
+                    {
+                        GenericMenu menu = new GenericMenu();
+
+                        foreach (string id in possibleIDs)
+                        {
+                            menu.AddItem(new GUIContent(id), false, delegate
+                            {
+                                node.LocalisationID = id;
+                            });
+                        }
+
+                        menu.ShowAsContext();
+                    }
+                }
+            }
+            GUILayout.EndHorizontal();
         }
 
         private void DrawResizer()
@@ -1426,6 +1492,24 @@ namespace DialogueEditor
             }
 
             return newName;
+        }
+
+        private void ValidateLocalisation()
+        {
+            if (m_localisationObject == null)
+            {
+                string[] guids = AssetDatabase.FindAssets(string.Format("t:{0}", typeof(DialogueEditorLocalisationObject)));
+
+                for (int i = 0; i < guids.Length; i++)
+                {
+                    string assetPath = AssetDatabase.GUIDToAssetPath(guids[i]);
+                    DialogueEditorLocalisationObject asset = AssetDatabase.LoadAssetAtPath<DialogueEditorLocalisationObject>(assetPath);
+                    if (asset != null)
+                    {
+                        m_localisationObject = asset;
+                    }
+                }
+            }
         }
 
         private static void Log(string str)

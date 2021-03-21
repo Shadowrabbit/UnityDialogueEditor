@@ -24,8 +24,8 @@ namespace DialogueEditor
     public class NPCConversation : MonoBehaviour
     {
         // Consts
-        /// <summary> Version 1.10 </summary>
-        public const int CurrentVersion = (int)eSaveVersion.V1_10;
+        /// <summary> Version 1.20 </summary>
+        public const int CurrentVersion = (int)eSaveVersion.V1_20;
         private readonly string CHILD_NAME = "ConversationEventInfo";
 
         // Getters
