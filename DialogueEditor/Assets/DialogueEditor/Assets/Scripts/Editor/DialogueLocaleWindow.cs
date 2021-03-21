@@ -16,16 +16,41 @@ namespace DialogueEditor
         private const string WINDOW_NAME = "DIALOGUE_LOCALE_WINDOW";
         private const string CONTROL_NAME = "DEFAULT_LOCALE_CONTROL";
         private const string UNAVAILABLE_DURING_PLAY_TEXT = "Dialogue Editor unavaiable during play mode.";
-
-
         private const int MAX_PER_PAGE = 10;
-
         private const int SMALL_PADDING = 5;
         private const int LARGE_PADDING = 15;
+        private const float SIDE_PADDING = 5;
 
 
-        // Private variables:     
+        // -- Private variables -- :     
+
+        // Misc
         private DialogueEditorLocalisationObject CurrentAsset; // The Localisation scriptable object that is currently being viewed/edited
+        private List<SystemLanguage> _supportedLanguages = new List<SystemLanguage>();
+
+        // Add new entry
+        private string m_newID;
+        private string m_newEnglish;
+
+        // Display entries
+        private int m_currentEntriesPage;
+        private Vector2 m_entriesGridScrollView;
+
+        // Search
+        private string m_searchID;
+        private string m_searchEnglish;
+        private List<LocaleEntry> m_searchResults = new List<LocaleEntry>();
+        private int m_currentSearchPage;
+        private Vector2 m_searchGridScrollView;        
+
+        // Window
+        private Vector2 m_windowScrollView;
+
+        // Styles
+        private GUIStyle m_boldStyle;
+        private GUIStyle m_wordWrapStyle;
+        private GUIStyle m_entryStyle;
+
 
 
 
@@ -160,56 +185,42 @@ namespace DialogueEditor
         // Draw
         //--------------------------------------
 
-        private string _newID;
-        private string _newEnglish;
-
-        private string _searchID;
-        private string _searchEnglish;
-
-        private Vector2 m_entriesGridScrollView;
-        private int m_currentEntriesPage;
-
-        private Vector2 m_langScrollView;
-
-        private Vector2 m_windowScrollView;
-
-        private Texture2D m_SelectLanguageTexture;
-
-        private const float SIDE_PADDING = 5;
-
-        private List<LocaleEntry> m_searchResults = new List<LocaleEntry>();
-        private Vector2 m_searchGridScrollView;
-        private int m_currentSearchPage;
-
-        private List<SystemLanguage> _supportedLanguages = new List<SystemLanguage>();
-
-
-        private Texture2D MakeTextureBorder(int width, int height, int thickness, Color col)
+        private void ValidateStyles()
         {
-            Texture2D texture = new Texture2D(width, height);
-
-            for (int x = 0; x < width; x++)
+            if (m_boldStyle == null)
             {
-                for (int y = 0; y < height; y++)
+                m_boldStyle = new GUIStyle();
+                m_boldStyle.fontStyle = FontStyle.Bold;
+                m_boldStyle.richText = true;
+                if (EditorGUIUtility.isProSkin)
                 {
-                    bool xGood = (x < thickness || x > width - thickness);
-                    bool yGood = (y < thickness || y > height - thickness);
-
-                    if (xGood || yGood)
-                    {
-                        texture.SetPixel(x, y, col);
-                    }
-                    else
-                    {
-                        texture.SetPixel(x, y, new Color(0, 0, 0, 0));
-                    }
+                    m_boldStyle.normal.textColor = DialogueEditorUtil.ProSkinTextColour;
                 }
             }
-            texture.Apply();
-            return texture;
+
+            if (m_wordWrapStyle == null)
+            {
+                m_wordWrapStyle = new GUIStyle();
+                m_wordWrapStyle.wordWrap = true;
+                if (EditorGUIUtility.isProSkin)
+                {
+                    m_wordWrapStyle.normal.textColor = DialogueEditorUtil.ProSkinTextColour;
+                }
+            }
+
+            if (m_entryStyle == null)
+            {
+                m_entryStyle = new GUIStyle();
+                m_entryStyle.stretchWidth = false;
+            }
         }
 
 
+
+
+        //--------------------------------------
+        // Draw
+        //--------------------------------------
 
         private void OnGUI()
         {
@@ -230,43 +241,72 @@ namespace DialogueEditor
                 CurrentAsset.CreateDatabase();
             }
 
+            // Validate
+            ValidateStyles();
 
-
-
-            //-------------------------
-            // STYLES SETUP
-
-            GUIStyle _boldStyle = new GUIStyle();
-            _boldStyle.fontStyle = FontStyle.Bold;
-            _boldStyle.richText = true;
-            if (EditorGUIUtility.isProSkin)
-            {
-                _boldStyle.normal.textColor = DialogueEditorUtil.ProSkinTextColour;
-            }
-
-            GUIStyle _wordWrapStyle = new GUIStyle();
-            _wordWrapStyle.wordWrap = true;
-            if (EditorGUIUtility.isProSkin)
-            {
-                _wordWrapStyle.normal.textColor = DialogueEditorUtil.ProSkinTextColour;
-            }
-
-
-
-
-            //-------------------------
-            // TITLE 
-
+            // Draw
             DrawTitleBar();
 
+            // Entire window scroll view start
             m_windowScrollView = GUILayout.BeginScrollView(m_windowScrollView);
+            DrawSupportedLanguagues();
+            DrawAddNewEntry();
+            DrawCurrentEntries();
+            DrawSearchEntries();
+            DrawSearchResults();
+            GUILayout.FlexibleSpace();
 
+            // Entire window scroll view end
+            GUILayout.EndScrollView();
 
+            if (GUI.changed)
+                Repaint();
+        }
 
-            //-------------------------
-            // SUPPORTED LANGUAGES
+        private void DrawTitleBar()
+        {
+            GUILayout.BeginHorizontal(EditorStyles.toolbar);
+            if (GUILayout.Button("Export to JSON", EditorStyles.toolbarButton))
+            {
+                ExportToJson();
+            }
+            if (GUILayout.Button("Export to CSV", EditorStyles.toolbarButton))
+            {
+                ExportToCSV();
+            }
+            GUILayout.Space(5);
+            if (GUILayout.Button("Import from JSON", EditorStyles.toolbarButton))
+            {
+                LoadFromJSON();
+            }
+            if (GUILayout.Button("Import from CSV", EditorStyles.toolbarButton))
+            {
+                LoadFromCSV();
+            }
+            GUILayout.FlexibleSpace();
+            // Reset button
+            if (GUILayout.Button("Reset", EditorStyles.toolbarButton))
+            {
+                // Display an extra confirmation window
+                if (EditorUtility.DisplayDialog("Warning", 
+                    "Are you sure you want to Reset? This will delete all data. It is recommended to save to Json/CSV first to prevent complete data loss.", 
+                    "Confim", 
+                    "Cancel"))
+                {
+                    ResetAll();
+                }
+            }
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Help", EditorStyles.toolbarButton))
+            {
+                Application.OpenURL(DialogueEditorUtil.HELP_URL);
+            }
+            GUILayout.EndHorizontal();
+        }
 
-            DrawSectionTitle("Choose languages:", _boldStyle);
+        private void DrawSupportedLanguagues()
+        {
+            DrawSectionTitle("Choose languages:", m_boldStyle);
 
             GUILayout.BeginHorizontal(GUILayout.MaxWidth(this.position.width));
 
@@ -323,49 +363,46 @@ namespace DialogueEditor
 
             GUILayout.BeginHorizontal(GUILayout.MaxWidth(this.position.width));
             GUILayout.Space(SIDE_PADDING);
-            GUILayout.TextArea("Supported languages: " + supportedString, _wordWrapStyle);
+            GUILayout.TextArea("Supported languages: " + supportedString, m_wordWrapStyle);
             GUILayout.EndHorizontal();
-           
+
             // Draw line
             DrawLine();
+        }
 
-
-            //-------------------------
-            // ADDING NEW ENTRIES
-
-            DrawSectionTitle("Add new entry:", _boldStyle);
+        private void DrawAddNewEntry()
+        {
+            DrawSectionTitle("Add new entry:", m_boldStyle);
 
             GUILayout.BeginHorizontal(GUILayout.MaxWidth(this.position.width));
             {
                 const float LABEL_MAX_WID = 75;
                 const float BOX_MAX_WIDTH = 150;
-                GUIStyle style = new GUIStyle();
-                style.stretchWidth = false;
 
                 // ID 
-                GUILayout.BeginHorizontal(style, GUILayout.Width(150));             
+                GUILayout.BeginHorizontal(m_entryStyle, GUILayout.Width(150));
                 EditorGUILayout.LabelField("ID:", GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(LABEL_MAX_WID));
-                _newID = EditorGUILayout.TextArea(_newID, EditorStyles.textField, GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(BOX_MAX_WIDTH));
+                m_newID = EditorGUILayout.TextArea(m_newID, EditorStyles.textField, GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(BOX_MAX_WIDTH));
                 GUILayout.EndHorizontal();
 
                 GUILayout.FlexibleSpace();
 
                 // English Text
-                GUILayout.BeginHorizontal(style, GUILayout.Width(150));
+                GUILayout.BeginHorizontal(m_entryStyle, GUILayout.Width(150));
                 EditorGUILayout.LabelField("English text:", GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(LABEL_MAX_WID));
-                _newEnglish = EditorGUILayout.TextArea(_newEnglish, EditorStyles.textField, GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(BOX_MAX_WIDTH));
+                m_newEnglish = EditorGUILayout.TextArea(m_newEnglish, EditorStyles.textField, GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(BOX_MAX_WIDTH));
                 GUILayout.EndHorizontal();
 
-                
+
                 GUILayout.FlexibleSpace();
 
                 // Button
                 if (GUILayout.Button("Add Entry", GUILayout.Width(100)))
                 {
-                    CurrentAsset.Database.AddNewEntry(_newID, _newEnglish);
+                    CurrentAsset.Database.AddNewEntry(m_newID, m_newEnglish);
 
-                    _newID = "";
-                    _newEnglish = "";
+                    m_newID = "";
+                    m_newEnglish = "";
 
                     ClearSearch();
                 }
@@ -373,12 +410,11 @@ namespace DialogueEditor
             GUILayout.EndHorizontal();
             DrawLine();
 
+        }
 
-
-            //-------------------------
-            // DRAWING CURRENT ENTRIES
-
-            DrawSectionTitle("Entries:", _boldStyle);
+        private void DrawCurrentEntries()
+        {
+            DrawSectionTitle("Entries:", m_boldStyle);
 
             if (CurrentAsset.Database.GetLocalisationEntryCount > 0)
             {
@@ -471,30 +507,26 @@ namespace DialogueEditor
                 GUILayout.Label("Currently no entries.");
             }
 
-       
 
             // Draw line
             DrawLine();
 
+        }
 
-
-            //-------------------------
-            // SEARCH ENTRIES
-
-            DrawSectionTitle("Search:", _boldStyle);
+        private void DrawSearchEntries()
+        {
+            DrawSectionTitle("Search:", m_boldStyle);
 
             GUILayout.BeginHorizontal(GUILayout.MaxWidth(this.position.width));
             {
                 const float LABEL_MAX_WID = 65;
                 const float BOX_MAX_WIDTH = 125;
                 const float SEARCH_BTN_WIDTH = 85;
-                GUIStyle style = new GUIStyle();
-                style.stretchWidth = false;
 
                 // ID 
-                GUILayout.BeginHorizontal(style, GUILayout.Width(100));
+                GUILayout.BeginHorizontal(m_entryStyle, GUILayout.Width(100));
                 EditorGUILayout.LabelField("By ID:", GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(LABEL_MAX_WID));
-                _searchID = EditorGUILayout.TextArea(_searchID, EditorStyles.textField, GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(BOX_MAX_WIDTH));
+                m_searchID = EditorGUILayout.TextArea(m_searchID, EditorStyles.textField, GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(BOX_MAX_WIDTH));
                 if (GUILayout.Button("Search", GUILayout.Width(SEARCH_BTN_WIDTH)))
                 {
                     SearchByID();
@@ -504,9 +536,9 @@ namespace DialogueEditor
                 GUILayout.FlexibleSpace();
 
                 // English
-                GUILayout.BeginHorizontal(style, GUILayout.Width(100));
+                GUILayout.BeginHorizontal(m_entryStyle, GUILayout.Width(100));
                 EditorGUILayout.LabelField("By English:", GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(LABEL_MAX_WID));
-                _searchEnglish = EditorGUILayout.TextArea(_searchEnglish, EditorStyles.textField, GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(BOX_MAX_WIDTH));
+                m_searchEnglish = EditorGUILayout.TextArea(m_searchEnglish, EditorStyles.textField, GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(BOX_MAX_WIDTH));
                 if (GUILayout.Button("Search", GUILayout.Width(SEARCH_BTN_WIDTH)))
                 {
                     SearchByEnglish();
@@ -527,25 +559,152 @@ namespace DialogueEditor
                 m_searchResults = new List<LocaleEntry>();
 
             GUILayout.Space(SMALL_PADDING);
+        }
 
-            DrawSearchResults();
+        private void DrawSearchResults()
+        {
+            if (m_searchResults.Count > 0)
+            {
+                const float LOCALE_BOX_TOP_PADDING = 20;
+                const float LOCALE_BOX_ENTRY_HEIGHT = 22.5f;
+                const float LOCALE_BOX_BOTTOM_SCROLLBAR_PADDING = 20;
+
+                int search_numEntries = m_searchResults.Count;
+                int search_startIndex = m_currentSearchPage * MAX_PER_PAGE;
+                int search_endIndex = search_startIndex + MAX_PER_PAGE - 1;
+                if (search_endIndex > search_numEntries - 1)
+                    search_endIndex = search_numEntries - 1;
+                int numToDisplay = (search_endIndex - search_startIndex);
+                float locale_box_height = LOCALE_BOX_TOP_PADDING + (LOCALE_BOX_ENTRY_HEIGHT * numToDisplay) + LOCALE_BOX_BOTTOM_SCROLLBAR_PADDING;
+
+                m_searchGridScrollView = EditorGUILayout.BeginScrollView(m_searchGridScrollView, GUILayout.MaxWidth(this.position.width), GUILayout.Height(locale_box_height));
+                {
+                    for (int i = search_startIndex; i <= search_endIndex; i++)
+                    {
+                        GUILayout.BeginHorizontal();
+
+                        LocaleEntry entry = m_searchResults[i];
+                        const float SPACE = 15;
+
+                        // Entry num
+                        GUILayout.BeginHorizontal(GUILayout.Width(45));
+                        GUILayout.Label("[" + (int)(i + 1) + "]");
+                        GUILayout.EndHorizontal();
+
+                        // ID
+                        DrawLanguageEntry("ID:", entry.ID);
+                        GUILayout.Space(SPACE);
+
+                        // Each language
+                        for (int j = 0; j < _supportedLanguages.Count; j++)
+                        {
+                            SystemLanguage lang = _supportedLanguages[j];
+
+                            DrawLanguageEntry(lang.ToString(), entry.GetLanguageText(lang));
+                            GUILayout.Space(SPACE);
+                        }
+
+                        // Button
+                        if (GUILayout.Button("Delete Entry"))
+                        {
+                            CurrentAsset.Database.DeleteEntryByID(entry.ID);
+                            m_searchResults.Remove(entry);
+
+                            if (m_currentSearchPage > MaxSearchPageIndex)
+                                m_currentSearchPage = MaxSearchPageIndex;
+                            return;
+                        }
+                        GUILayout.FlexibleSpace();
+
+                        GUILayout.EndHorizontal();
+                    }
+                }
+                EditorGUILayout.EndScrollView();
+
+
+                // SCROLL SEARCH
+                GUILayout.Space(SMALL_PADDING);
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Label(string.Format("Displaying search results {0} - {1} of {2}", search_startIndex + 1, search_endIndex + 1, search_numEntries));
+                if (GUILayout.Button("|<<"))
+                {
+                    m_currentSearchPage = 0;
+                }
+                if (GUILayout.Button("<"))
+                {
+                    m_currentSearchPage--;
+                    if (m_currentSearchPage < 0)
+                        m_currentSearchPage = 0;
+                }
+                if (GUILayout.Button(">"))
+                {
+                    m_currentSearchPage++;
+                    if (m_currentSearchPage >= MaxSearchPageIndex)
+                        m_currentSearchPage = MaxSearchPageIndex;
+                }
+                if (GUILayout.Button(">>|"))
+                {
+                    m_currentSearchPage = MaxSearchPageIndex;
+                }
+                EditorGUILayout.EndHorizontal();
+            }
+            else
+            {
+                GUILayout.Label("Currently no search results.");
+            }
 
             DrawLine();
-
-
-
-
-
-
-
-            //-------------------------
-            // END
-
-            GUILayout.FlexibleSpace();
-
-            // Entire window scroll view end
-            GUILayout.EndScrollView();
         }
+
+
+        // -------- Generic draw functions --------
+
+        private void DrawSectionTitle(string title, GUIStyle style)
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(SIDE_PADDING);
+            GUILayout.Label(title, style);
+            GUILayout.EndHorizontal();
+            GUILayout.Space(SMALL_PADDING);
+        }
+
+        private void DrawLanguageEntry(string prefixText, string labelText)
+        {
+            GUILayout.BeginHorizontal(m_entryStyle, GUILayout.Width(150));
+            Vector2 textDimensions = GUI.skin.label.CalcSize(new GUIContent(prefixText));
+            float wid = textDimensions.x;
+            const float MAX_WID = 75;
+            if (wid > MAX_WID)
+                wid = MAX_WID;
+            EditorGUILayout.LabelField(prefixText, GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(wid));
+            EditorGUIUtility.labelWidth = 25;
+            EditorGUILayout.TextArea(labelText, EditorStyles.textField, GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.MaxWidth(94));
+            GUILayout.EndHorizontal();
+        }
+
+        private void DrawWindowMessage(string msg)
+        {
+            float width = this.position.width;
+            float centerX = width / 2;
+            float height = this.position.height;
+            float centerY = height / 2;
+            Vector2 textDimensions = GUI.skin.label.CalcSize(new GUIContent(msg));
+            Rect textRect = new Rect(centerX - (textDimensions.x / 2), centerY - (textDimensions.y / 2), textDimensions.x, textDimensions.y);
+            EditorGUI.LabelField(textRect, msg);
+        }
+
+        private void DrawLine()
+        {
+            GUILayout.Label("", GUI.skin.horizontalSlider);
+            GUILayout.Space(LARGE_PADDING);
+        }
+
+
+
+
+        //--------------------------------------
+        // Misc Util
+        //--------------------------------------
 
         private void ClearSearch()
         {
@@ -553,106 +712,14 @@ namespace DialogueEditor
             m_currentSearchPage = 0;
         }
 
-        private void DrawSearchResults()
-        {
-            if (m_searchResults.Count == 0)
-            {
-                return;
-            }
-
-            const float LOCALE_BOX_TOP_PADDING = 20;
-            const float LOCALE_BOX_ENTRY_HEIGHT = 22.5f;
-            const float LOCALE_BOX_BOTTOM_SCROLLBAR_PADDING = 20;
-
-            int search_numEntries = m_searchResults.Count; 
-            int search_startIndex = m_currentSearchPage * MAX_PER_PAGE;
-            int search_endIndex = search_startIndex + MAX_PER_PAGE - 1;
-            if (search_endIndex > search_numEntries - 1)
-                search_endIndex = search_numEntries - 1;
-            int numToDisplay = (search_endIndex - search_startIndex);
-            float locale_box_height = LOCALE_BOX_TOP_PADDING + (LOCALE_BOX_ENTRY_HEIGHT * numToDisplay) + LOCALE_BOX_BOTTOM_SCROLLBAR_PADDING;
-
-            m_searchGridScrollView = EditorGUILayout.BeginScrollView(m_searchGridScrollView, GUILayout.MaxWidth(this.position.width), GUILayout.Height(locale_box_height));
-            {
-                for (int i = search_startIndex; i <= search_endIndex; i++)
-                {
-                    GUILayout.BeginHorizontal();
-
-                    LocaleEntry entry = m_searchResults[i];
-                    const float SPACE = 15;
-
-                    // Entry num
-                    GUILayout.BeginHorizontal(GUILayout.Width(45));
-                    GUILayout.Label("[" + (int)(i + 1) + "]");
-                    GUILayout.EndHorizontal();
-
-                    // ID
-                    DrawLanguageEntry("ID:", entry.ID);
-                    GUILayout.Space(SPACE);
-
-                    // Each language
-                    for (int j = 0; j < _supportedLanguages.Count; j++)
-                    {
-                        SystemLanguage lang = _supportedLanguages[j];
-
-                        DrawLanguageEntry(lang.ToString(), entry.GetLanguageText(lang));
-                        GUILayout.Space(SPACE);
-                    }
-
-                    // Button
-                    if (GUILayout.Button("Delete Entry"))
-                    {
-                        CurrentAsset.Database.DeleteEntryByID(entry.ID);
-                        m_searchResults.Remove(entry);
-
-                        if (m_currentSearchPage > MaxSearchPageIndex)
-                            m_currentSearchPage = MaxSearchPageIndex;
-                        return;
-                    }
-                    GUILayout.FlexibleSpace();
-
-                    GUILayout.EndHorizontal();
-                }
-            }
-            EditorGUILayout.EndScrollView();
-
-
-            // SCROLL SEARCH
-            GUILayout.Space(SMALL_PADDING);
-            EditorGUILayout.BeginHorizontal();
-            GUILayout.Label(string.Format("Displaying search results {0} - {1} of {2}", search_startIndex + 1, search_endIndex + 1, search_numEntries));
-            if (GUILayout.Button("|<<"))
-            {
-                m_currentSearchPage = 0;
-            }
-            if (GUILayout.Button("<"))
-            {
-                m_currentSearchPage--;
-                if (m_currentSearchPage < 0)
-                    m_currentSearchPage = 0;
-            }
-            if (GUILayout.Button(">"))
-            {
-                m_currentSearchPage++;
-                if (m_currentSearchPage >= MaxSearchPageIndex)
-                    m_currentSearchPage = MaxSearchPageIndex;
-            }
-            if (GUILayout.Button(">>|"))
-            {
-                m_currentSearchPage = MaxSearchPageIndex;
-            }
-            EditorGUILayout.EndHorizontal();
-
-        }
-
         private void SearchByID()
         {
             ClearSearch();
 
-            if (string.IsNullOrEmpty(_searchID)) { return; }
+            if (string.IsNullOrEmpty(m_searchID)) { return; }
 
             int numEntries = CurrentAsset.Database.GetLocalisationEntryCount;
-            string idToLower = _searchID.ToLower();
+            string idToLower = m_searchID.ToLower();
 
             for (int i = 0; i < numEntries; i++)
             {
@@ -669,10 +736,10 @@ namespace DialogueEditor
         {
             ClearSearch();
 
-            if (string.IsNullOrEmpty(_searchEnglish)) { return; }
+            if (string.IsNullOrEmpty(m_searchEnglish)) { return; }
 
             int numEntries = CurrentAsset.Database.GetLocalisationEntryCount;
-            string engToLower = _searchEnglish.ToLower();
+            string engToLower = m_searchEnglish.ToLower();
 
             for (int i = 0; i < numEntries; i++)
             {
@@ -709,94 +776,12 @@ namespace DialogueEditor
             }
         }
 
-        private void DrawSectionTitle(string title, GUIStyle style)
+        private void ResetAll()
         {
-            GUILayout.BeginHorizontal();
-            GUILayout.Space(SIDE_PADDING);
-            GUILayout.Label(title, style);
-            GUILayout.EndHorizontal();
-            GUILayout.Space(SMALL_PADDING);
+            CurrentAsset.CreateDatabase();
+            m_currentEntriesPage = 0;
+            m_currentSearchPage = 0;
         }
-
-        private void DrawLanguageEntry(string prefixText, string labelText)
-        {
-            GUIStyle style = new GUIStyle();
-            style.stretchWidth = false;
-
-            GUILayout.BeginHorizontal(style, GUILayout.Width(150));
-            Vector2 textDimensions = GUI.skin.label.CalcSize(new GUIContent(prefixText));
-            float wid = textDimensions.x;
-            const float MAX_WID = 75;
-            if (wid > MAX_WID)
-                wid = MAX_WID;
-            EditorGUILayout.LabelField(prefixText, GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(wid));
-            EditorGUIUtility.labelWidth = 25;
-            EditorGUILayout.TextArea(labelText, EditorStyles.textField, GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.MaxWidth(94));
-            GUILayout.EndHorizontal();
-        }
-
-        private void DrawWindowMessage(string msg)
-        {
-            float width = this.position.width;
-            float centerX = width / 2;
-            float height = this.position.height;
-            float centerY = height / 2;
-            Vector2 textDimensions = GUI.skin.label.CalcSize(new GUIContent(msg));
-            Rect textRect = new Rect(centerX - (textDimensions.x / 2), centerY - (textDimensions.y / 2), textDimensions.x, textDimensions.y);
-            EditorGUI.LabelField(textRect, msg);
-        }
-
-        private void DrawLine()
-        {
-            GUILayout.Label("", GUI.skin.horizontalSlider);
-            GUILayout.Space(LARGE_PADDING);
-        }
-
-        private void DrawTitleBar()
-        {
-            GUILayout.BeginHorizontal(EditorStyles.toolbar);
-            if (GUILayout.Button("Export to JSON", EditorStyles.toolbarButton))
-            {
-                ExportToJson();
-            }
-            if (GUILayout.Button("Export to CSV", EditorStyles.toolbarButton))
-            {
-                ExportToCSV();
-            }
-            GUILayout.Space(5);
-            if (GUILayout.Button("Import from JSON", EditorStyles.toolbarButton))
-            {
-                LoadFromJSON();
-            }
-            if (GUILayout.Button("Import from CSV", EditorStyles.toolbarButton))
-            {
-                LoadFromCSV();
-            }
-            GUILayout.FlexibleSpace();
-            //-------------------------
-            // DEBUG DEBUG DEBUG
-            if (GUILayout.Button("DEBUG Reset"))
-            {
-                CurrentAsset.CreateDatabase();
-                m_currentEntriesPage = 0;
-                m_currentSearchPage = 0;
-            }
-            // END END END
-            //-------------------------
-            GUILayout.FlexibleSpace();
-            if (GUILayout.Button("Help", EditorStyles.toolbarButton))
-            {
-                Application.OpenURL(DialogueEditorUtil.HELP_URL);
-            }
-            GUILayout.EndHorizontal();
-        }
-
-
-
-
-        //--------------------------------------
-        // Misc
-        //--------------------------------------
 
         private static void Log(string str)
         {
@@ -804,6 +789,13 @@ namespace DialogueEditor
             Debug.Log("[Dialogue Locale]: " + str);
 #endif
         }
+
+
+
+
+        //--------------------------------------
+        // Read/Write - Save/Load - Json/CSV
+        //--------------------------------------
 
         private void ExportToJson()
         {
@@ -922,11 +914,16 @@ namespace DialogueEditor
             }
 
             // De-jsonify into Database
-            LocalisationDatabase db = new LocalisationDatabase ();
+            LocalisationDatabase db = new LocalisationDatabase();
             System.IO.MemoryStream ms = new System.IO.MemoryStream(System.Text.Encoding.UTF8.GetBytes(json));
             DataContractJsonSerializer ser = new DataContractJsonSerializer(db.GetType());
             db = ser.ReadObject(ms) as LocalisationDatabase;
             ms.Close();
+
+            if (db == null)
+            {
+                return;
+            }
 
             // Apply to CurrentAsset
             int entryCount = db.GetLocalisationEntryCount;
@@ -980,10 +977,13 @@ namespace DialogueEditor
             Dictionary<int, UnityEngine.SystemLanguage> langColDict = new Dictionary<int, SystemLanguage>();
             string[] keys = lines[0].Split(',');
 
+            bool idColumnFound = false;
+
             for (int i = 0; i < keys.Length; i++)
             {
                 if (keys[i] == "ID")
                 {
+                    idColumnFound = true;
                     continue;
                 }
 
@@ -998,6 +998,12 @@ namespace DialogueEditor
                         langColDict.Add(index, lang);
                     }
                 }
+            }
+
+            if (!idColumnFound || langColDict.Keys.Count == 0)
+            {
+                Log("Invalid .csv file.");
+                return;
             }
 
             // Go through the csv and update the database 
