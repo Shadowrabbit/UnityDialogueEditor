@@ -255,7 +255,8 @@ namespace DialogueEditor
             DrawSearchResults();
             GUILayout.FlexibleSpace();
             DrawLine();
-            DrawSupportedLanguagues();
+            DrawLanguages();
+            DrawLanguageFonts();
 
             // Entire window scroll view end
             GUILayout.EndScrollView();
@@ -305,9 +306,9 @@ namespace DialogueEditor
             GUILayout.EndHorizontal();
         }
 
-        private void DrawSupportedLanguagues()
+        private void DrawLanguages()
         {
-            DrawSectionTitle("Choose languages:", m_boldStyle);
+            DrawSectionTitle("Supported languages:", m_boldStyle);
 
             GUILayout.BeginHorizontal(GUILayout.MaxWidth(this.position.width));
 
@@ -369,6 +370,66 @@ namespace DialogueEditor
 
             // Draw line
             DrawLine();
+        }
+
+        private void DrawLanguageFonts()
+        {
+            DrawSectionTitle("Language Fonts:", m_boldStyle);
+
+            GUILayout.Label("You can specify any override fonts to be used for a specific language here.");
+
+            GUILayout.BeginHorizontal(GUILayout.MaxWidth(this.position.width));
+
+            if (GUILayout.Button("Add Language Font"))
+            {
+                GenericMenu menu = new GenericMenu();
+                var supportedLanguages = CurrentAsset.Database.GetSupportedLanguages;
+
+                foreach (SystemLanguage lang in supportedLanguages)
+                {
+                    if (!CurrentAsset.HasLanguageFont(lang))
+                    {
+                        menu.AddItem(new GUIContent(lang.ToString()), false, delegate
+                        {
+                            CurrentAsset.AddLanguageFont(lang);
+                        });
+                    }
+                }
+
+                menu.ShowAsContext();
+            }
+
+            if (GUILayout.Button("Remove Language Font"))
+            {
+                GenericMenu menu = new GenericMenu();
+                var supportedLanguages = CurrentAsset.Database.GetSupportedLanguages;
+
+                foreach (SystemLanguage lang in supportedLanguages)
+                {
+                    if (CurrentAsset.HasLanguageFont(lang))
+                    {
+                        menu.AddItem(new GUIContent(lang.ToString()), false, delegate
+                        {
+                            CurrentAsset.RemoveLanguageFont(lang);
+                        });
+                    }
+                }
+
+                menu.ShowAsContext();
+            }
+
+            GUILayout.EndHorizontal();
+
+            for (int i = 0; i < CurrentAsset.LanguageFontList.Count; i++)
+            {
+                GUILayout.BeginHorizontal(GUILayout.MaxWidth(this.position.width));
+                GUILayout.Label(CurrentAsset.LanguageFontList[i].Language.ToString());
+                CurrentAsset.LanguageFontList[i].Font = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField("TMProFont", CurrentAsset.LanguageFontList[i].Font, typeof(TMPro.TMP_FontAsset), allowSceneObjects: false);
+                GUILayout.EndHorizontal();
+            }
+
+            // Draw line
+            DrawLine(); 
         }
 
         private void DrawAddNewEntry()

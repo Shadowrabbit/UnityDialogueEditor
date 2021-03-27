@@ -496,16 +496,6 @@ namespace DialogueEditor
                 NpcIcon.sprite = speech.Icon;
             }
 
-            // Set font
-            if (speech.TMPFont != null)
-            {
-                DialogueText.font = speech.TMPFont;
-            }
-            else
-            {
-                DialogueText.font = null;
-            }
-
             // Set name
             NameText.text = speech.Name;
 
@@ -543,6 +533,26 @@ namespace DialogueEditor
                 {
                     DialogueText.text = speechText;
                     DialogueText.maxVisibleCharacters = speechText.Length;
+                }
+            }
+
+
+            // Set font
+            {
+                // Specific language font
+                if (speech.UseLocalisation && Localisation.HasLanguageFont(m_currentLanguage))
+                {
+                    DialogueText.font = Localisation.GetLanguageFont(m_currentLanguage);
+                }
+                // Speech specific font
+                else if (speech.TMPFont != null)
+                {
+                    DialogueText.font = speech.TMPFont;
+                }
+                // Default
+                else
+                {
+                    DialogueText.font = null;
                 }
             }
 

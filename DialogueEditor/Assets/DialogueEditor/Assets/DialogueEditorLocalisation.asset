@@ -22,6 +22,9 @@ MonoBehaviour:
       - m_language: 14
         m_languageAsString: French
         m_text: bonjour
+      - m_language: 1
+        m_languageAsString: Arabic
+        m_text: 
     - m_id: START_QUEST
       m_languageData:
       - m_language: 10
@@ -30,7 +33,10 @@ MonoBehaviour:
       - m_language: 14
         m_languageAsString: French
         m_text: french quest start
-    m_supportedLanguages: 0a0000000e000000
+      - m_language: 1
+        m_languageAsString: Arabic
+        m_text: 
+    m_supportedLanguages: 010000000a0000000e000000
   LanguageFontList:
-  - Language: 0
-    Font: {fileID: 0}
+  - Language: 1
+    Font: {fileID: 11400000, guid: d1e79b06c01ff1c4bb15552c18c4e0d3, type: 2}
