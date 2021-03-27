@@ -19,9 +19,18 @@ MonoBehaviour:
       - m_language: 10
         m_languageAsString: English
         m_text: Hello sir
+      - m_language: 14
+        m_languageAsString: French
+        m_text: bonjour
     - m_id: START_QUEST
       m_languageData:
       - m_language: 10
         m_languageAsString: English
         m_text: Would you like to begin the quest?
-    m_supportedLanguages: 0a000000
+      - m_language: 14
+        m_languageAsString: French
+        m_text: french quest start
+    m_supportedLanguages: 0a0000000e000000
+  LanguageFontList:
+  - Language: 0
+    Font: {fileID: 0}

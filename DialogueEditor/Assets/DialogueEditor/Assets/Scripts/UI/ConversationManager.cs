@@ -38,6 +38,7 @@ namespace DialogueEditor
         public Sprite OptionImage;
         public bool OptionImageSliced;
         public bool AllowMouseInteraction;
+        public DialogueEditorLocalisationObject Localisation;
 
         // Non-User facing 
         // Not exposed via custom inspector
@@ -80,6 +81,9 @@ namespace DialogueEditor
         // Selection options
         private List<UIConversationButton> m_uiOptions;
         private int m_currentSelectedIndex;
+
+        // Language
+        private SystemLanguage m_currentLanguage = SystemLanguage.English;
 
 
         //--------------------------------------
@@ -136,6 +140,7 @@ namespace DialogueEditor
                     break;
             }
         }
+
 
 
 
@@ -256,6 +261,20 @@ namespace DialogueEditor
             return value;
         }
 
+        public void SetLanguage(SystemLanguage lang)
+        {
+            if (Localisation.Database.IsLanguageSupported(lang))
+            {
+                m_currentLanguage = lang;
+            }
+            else
+            {
+                LogWarning("Language " + lang + " is not supported by the LocalisationDatabase");
+            }
+        }
+
+
+
 
         //--------------------------------------
         // Set state
@@ -327,7 +346,7 @@ namespace DialogueEditor
 
             if (t > 1)
             {
-                SetupSpeech(m_currentSpeech);
+                DoSpeech(m_currentSpeech);
                 return;
             }
 
@@ -418,7 +437,7 @@ namespace DialogueEditor
                 }
                 else
                 {
-                    SetupSpeech(nextSpeech);
+                    DoSpeech(nextSpeech);
                 }
                 return;
             }
@@ -453,7 +472,7 @@ namespace DialogueEditor
         // Do Speech
         //--------------------------------------
 
-        private void SetupSpeech(SpeechNode speech)
+        private void DoSpeech(SpeechNode speech)
         {
             if (speech == null)
             {
@@ -490,39 +509,43 @@ namespace DialogueEditor
             // Set name
             NameText.text = speech.Name;
 
-            // Set text
-            if (string.IsNullOrEmpty(speech.Text))
+            // Set text          
             {
+                string speechText = "";
+
+                // Get localisation entry for current language or body text
+                if (speech.UseLocalisation)
+                {
+                    speechText = Localisation.Database.GetEntryByID(speech.LocalisationID).GetLanguageText(m_currentLanguage);
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(speech.Text))
+                    {
+                        speechText = " ";
+                    }
+                    else
+                    {
+                        speechText = speech.Text;
+                    }
+                }
+
+                // Setup UI 
                 if (ScrollText)
                 {
-                    DialogueText.text = "";
-                    m_targetScrollTextCount = 0;
+                    DialogueText.text = speechText;
+                    m_targetScrollTextCount = speechText.Length + 1;
                     DialogueText.maxVisibleCharacters = 0;
                     m_elapsedScrollTime = 0f;
                     m_scrollIndex = 0;
                 }
                 else
                 {
-                    DialogueText.text = "";
-                    DialogueText.maxVisibleCharacters = 1;
+                    DialogueText.text = speechText;
+                    DialogueText.maxVisibleCharacters = speechText.Length;
                 }
             }
-            else
-            {
-                if (ScrollText)
-                {
-                    DialogueText.text = speech.Text;
-                    m_targetScrollTextCount = speech.Text.Length + 1;
-                    DialogueText.maxVisibleCharacters = 0;
-                    m_elapsedScrollTime = 0f;
-                    m_scrollIndex = 0;
-                }
-                else
-                {
-                    DialogueText.text = speech.Text;
-                    DialogueText.maxVisibleCharacters = speech.Text.Length;
-                }
-            }
+
 
             // Call the event
             if (speech.Event != null)
@@ -550,7 +573,7 @@ namespace DialogueEditor
 
         public void SpeechSelected(SpeechNode speech)
         {
-            SetupSpeech(speech);
+            DoSpeech(speech);
         }
 
         public void OptionSelected(OptionNode option)
@@ -580,7 +603,7 @@ namespace DialogueEditor
                 SpeechNode next = GetValidSpeechOfNode(m_currentSpeech);
                 if (next != null)
                 {
-                    SetupSpeech(next);
+                    DoSpeech(next);
                     return true;
                 }
             }

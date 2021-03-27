@@ -27,6 +27,16 @@ namespace DialogueEditor
 
         // ---
 
+        public string GetTranslation(string id, SystemLanguage language)
+        {
+            LocaleEntry entry = GetEntryByID(id);
+            if (entry != null)
+            {
+                return entry.GetLanguageText(language);
+            }
+            return "Error: No entry for id '" + id + "'";
+        }
+
         public LocaleEntry GetEntryByID(string id)
         {
             for (int i = 0; i < m_localisationEntries.Count; i++)
@@ -199,7 +209,7 @@ namespace DialogueEditor
                 }
             }
 
-            return "";
+            return "Error: No entry for language '" + lang.ToString() + "' found.";
         }
     }
 

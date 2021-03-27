@@ -33,8 +33,14 @@ namespace DialogueEditor
             }
         }
 
-        /// <summary> The body text of the node. </summary>
+        /// <summary> The body text of the node, if not using Localisation. </summary>
         public string Text;
+
+        /// <summary> Does this node use the Localisation ID? </summary>
+        public bool UseLocalisation;
+
+        /// <summary> The Localisation ID from the Localisation database. </summary>
+        public string LocalisationID;
 
         /// <summary> The child connections this node has. </summary>
         public List<Connection> Connections;

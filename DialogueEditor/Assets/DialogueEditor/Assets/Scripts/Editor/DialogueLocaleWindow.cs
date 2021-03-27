@@ -190,29 +190,29 @@ namespace DialogueEditor
             if (m_boldStyle == null)
             {
                 m_boldStyle = new GUIStyle();
-                m_boldStyle.fontStyle = FontStyle.Bold;
-                m_boldStyle.richText = true;
-                if (EditorGUIUtility.isProSkin)
-                {
-                    m_boldStyle.normal.textColor = DialogueEditorUtil.ProSkinTextColour;
-                }
+            }
+            m_boldStyle.fontStyle = FontStyle.Bold;
+            m_boldStyle.richText = true;
+            if (EditorGUIUtility.isProSkin)
+            {
+                m_boldStyle.normal.textColor = DialogueEditorUtil.ProSkinTextColour;
             }
 
             if (m_wordWrapStyle == null)
             {
                 m_wordWrapStyle = new GUIStyle();
-                m_wordWrapStyle.wordWrap = true;
-                if (EditorGUIUtility.isProSkin)
-                {
-                    m_wordWrapStyle.normal.textColor = DialogueEditorUtil.ProSkinTextColour;
-                }
+            }
+            m_wordWrapStyle.wordWrap = true;
+            if (EditorGUIUtility.isProSkin)
+            {
+                m_wordWrapStyle.normal.textColor = DialogueEditorUtil.ProSkinTextColour;
             }
 
             if (m_entryStyle == null)
             {
                 m_entryStyle = new GUIStyle();
-                m_entryStyle.stretchWidth = false;
             }
+            m_entryStyle.stretchWidth = false;
         }
 
 
@@ -249,12 +249,13 @@ namespace DialogueEditor
 
             // Entire window scroll view start
             m_windowScrollView = GUILayout.BeginScrollView(m_windowScrollView);
-            DrawSupportedLanguagues();
             DrawAddNewEntry();
             DrawCurrentEntries();
             DrawSearchEntries();
             DrawSearchResults();
             GUILayout.FlexibleSpace();
+            DrawLine();
+            DrawSupportedLanguagues();
 
             // Entire window scroll view end
             GUILayout.EndScrollView();

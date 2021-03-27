@@ -381,6 +381,8 @@ namespace DialogueEditor
             SpeechNode speech = new SpeechNode();
             speech.Name = editableNode.Name;
             speech.Text = editableNode.Text;
+            speech.UseLocalisation = editableNode.UseLocalisationID;
+            speech.LocalisationID = editableNode.LocalisationID;
             speech.AutomaticallyAdvance = editableNode.AdvanceDialogueAutomatically;
             speech.AutoAdvanceShouldDisplayOption = editableNode.AutoAdvanceShouldDisplayOption;
             speech.TimeUntilAdvance = editableNode.TimeUntilAdvance;

@@ -10,8 +10,18 @@ using DialogueEditor;
 [System.Serializable]
 public class DialogueEditorLocalisationObject : ScriptableObject
 {
+    [System.Serializable]
+    public class LanguageFonts
+    {
+        public SystemLanguage Language;
+        public TMPro.TMP_FontAsset Font;
+    }
+
     [SerializeField]
     public LocalisationDatabase Database;
+
+    [SerializeField]
+    public List<LanguageFonts> LanguageFontList = new List<LanguageFonts>();
 
     public void CreateDatabase()
     {
