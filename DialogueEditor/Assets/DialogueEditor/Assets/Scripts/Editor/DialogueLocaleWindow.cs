@@ -253,10 +253,9 @@ namespace DialogueEditor
             DrawCurrentEntries();
             DrawSearchEntries();
             DrawSearchResults();
-            GUILayout.FlexibleSpace();
-            DrawLine();
             DrawLanguages();
             DrawLanguageFonts();
+            GUILayout.FlexibleSpace();
 
             // Entire window scroll view end
             GUILayout.EndScrollView();
@@ -934,12 +933,23 @@ namespace DialogueEditor
             {
                 LocaleEntry entry = CurrentAsset.Database.GetEntryByIndex(i);
 
+                // Row ID 
                 string id = entry.ID;
                 csv.Append(id + ",");
 
+                // Localisation per language 
                 for (int j = 0; j < languages.Count; j++)
                 {
                     string txt_in_lang = entry.GetLanguageText(languages[j]);
+
+                    // If the text contains a comma, wrap the text in 
+                    // "" marks to prevent the comma from breaking the csv
+                    if (txt_in_lang.Contains(","))
+                    {
+                        txt_in_lang = txt_in_lang.Insert(0, "\"");
+                        txt_in_lang = txt_in_lang.Insert(txt_in_lang.Length, "\"");
+                    }
+
                     csv.Append(txt_in_lang);
                     if (j < languages.Count - 1)
                         csv.Append(",");
@@ -1068,21 +1078,85 @@ namespace DialogueEditor
                 return;
             }
 
-            // Go through the csv and update the database 
-            for (int i = 1; i < lines.Length; i++)
+            // Ensure all languages present in the CSV are supported in the database
+            foreach (SystemLanguage lang in langColDict.Values)
             {
-                string[] entries = lines[i].Split(',');
+                CurrentAsset.Database.AddLanguage(lang);
+            }
 
-                string id = entries[0];
-                LocaleEntry localeEntry = CurrentAsset.Database.GetEntryByID(id);
+            // Go through the csv, line by line, and update the database 
+            for (int i = 1; i <= lines.Length-1; i++)
+            {
+                string current_line = lines[i];
 
-                for (int j = 1; j < entries.Length; j++)
+                List<string> entries = new List<string>();
+                bool readingSpeechMarks = false;
+                string current_txt = "";
+
+                // Go through the line, character by character
+                foreach (char c in current_line)
                 {
-                    int currentColumnIndex = j;
-                    SystemLanguage lang = langColDict[currentColumnIndex];
-                    string txt = entries[currentColumnIndex];
+                    // We've hit a speech mark
+                    if (c == '"')
+                    {
+                        // Speech marks have opened
+                        if (!readingSpeechMarks)
+                        {
+                            readingSpeechMarks = true;
+                        }
+                        else
+                        {
+                            readingSpeechMarks = false;
+                        }
+                    }
+                    // We've hit a comma
+                    else if (c == ',')
+                    {
+                        // If the comma isn't in the middle of speechmarks, it marks the end of the column
+                        if (!readingSpeechMarks)
+                        {
+                            entries.Add(current_txt);
+                            current_txt = "";
+                        }
+                    }
+                    else
+                    {
+                        // Add onto the current string
+                        current_txt += c;
+                    }
+                }
+                // End of line...
+                entries.Add(current_txt);
+                current_txt = "";
 
-                    localeEntry.SetLanguageText(lang, txt);
+
+                // Now we have our comma-split list of each column for this line
+                if (entries.Count > 0)
+                {
+                    string id = entries[0];
+                    LocaleEntry localeEntry = CurrentAsset.Database.GetEntryByID(id);
+
+                    if (localeEntry == null)
+                    {
+                        CurrentAsset.Database.AddNewEntry(id, "");
+                        localeEntry = CurrentAsset.Database.GetEntryByID(id);
+                    }
+
+                    for (int j = 1; j < entries.Count; j++)
+                    {
+                        int currentColumnIndex = j;
+                        SystemLanguage lang = langColDict[currentColumnIndex];
+                        string entryText = entries[currentColumnIndex];
+
+                        // If the entry text is wrapped in "", remove them. 
+                        if (entryText[0] == '"' && entryText[entryText.Length - 1] == '"')
+                        {
+                            entryText.Remove(0, 1);
+                            entryText.Remove(entryText.Length - 1, 1);
+                        }
+
+                        localeEntry.SetLanguageText(lang, entryText);
+                    }
                 }
             }
         }

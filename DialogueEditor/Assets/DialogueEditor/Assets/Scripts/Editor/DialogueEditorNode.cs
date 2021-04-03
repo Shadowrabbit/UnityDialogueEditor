@@ -343,8 +343,9 @@ namespace DialogueEditor
 
             // Name
             const int NAME_PADDING = 1;
+            string nodeName = SpeechNode.UseLocalisation ? SpeechNode.NameLocalisationID : SpeechNode.Name;
             Rect name = new Rect(rect.x + TEXT_BORDER * 0.5f, rect.y + NAME_PADDING + TITLE_HEIGHT, rect.width - TEXT_BORDER * 0.5f, NAME_HEIGHT);
-            GUI.Box(name, SpeechNode.Name, npcNameStyle);
+            GUI.Box(name, nodeName, npcNameStyle);
 
             // Icon
             Rect icon = new Rect(rect.x + TEXT_BORDER * 0.5f, rect.y + TITLE_HEIGHT + TITLE_GAP + NAME_HEIGHT, SPRITE_SZ, SPRITE_SZ);
@@ -352,7 +353,7 @@ namespace DialogueEditor
                 GUI.DrawTexture(icon, SpeechNode.Icon.texture, ScaleMode.ScaleToFit);
 
             // Text
-            string nodeText = SpeechNode.UseLocalisationID ? SpeechNode.LocalisationID : SpeechNode.Text;
+            string nodeText = SpeechNode.UseLocalisation ? SpeechNode.TextLocalisationID : SpeechNode.Text;
             DrawInternalText(nodeText, SPRITE_SZ + 5, NAME_HEIGHT + NAME_PADDING);
         }
 
@@ -449,7 +450,7 @@ namespace DialogueEditor
         public override void OnDraw()
         {
             DrawTitle( isSelected ? "Option node (selected)." : "Option node.");
-            string nodeText = OptionNode.UseLocalisationID ? OptionNode.LocalisationID : OptionNode.Text;
+            string nodeText = OptionNode.UseLocalisation ? OptionNode.TextLocalisationID : OptionNode.Text;
             DrawInternalText(nodeText);
         }
 

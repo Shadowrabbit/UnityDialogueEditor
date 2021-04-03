@@ -83,7 +83,8 @@ namespace DialogueEditor
         private Rect panelResizerRect;
         private GUIStyle resizerStyle;
         private SelectableUI m_cachedSelectedObject;
-        private string m_currentLocalisationInputID;
+        private string m_currentTextLocalisationIDInput;
+        private string m_currentNameLocalisationIDInput;
 
         // Dragging information
         private bool dragging;
@@ -452,7 +453,7 @@ namespace DialogueEditor
             DrawConnections();
             DrawNodes();
             DrawPanel();
-            DrawResizer();
+            DrawPanelResizer();
             DrawTitleBar();
 
             if (GUI.changed)
@@ -599,77 +600,9 @@ namespace DialogueEditor
             {
                 GUILayout.Label("Conversation: " + CurrentAsset.gameObject.name, panelTitleStyle);
                 GUILayout.Space(PANEL_VERTICAL_GAP);
-
-
-                // Parameters
-                if (CurrentAsset.ParameterList == null)
-                    CurrentAsset.ParameterList = new List<EditableParameter>();
-
-                GUILayout.Label("Parameters", panelTitleStyle);
-                GUILayout.BeginHorizontal();
-                if (GUILayout.Button("Add bool"))
-                {
-                    string newname = GetValidParamName("New bool");
-                    CurrentAsset.ParameterList.Add(new EditableBoolParameter(newname));
-                }
-                if (GUILayout.Button("Add int"))
-                {
-                    string newname = GetValidParamName("New int");
-                    CurrentAsset.ParameterList.Add(new EditableIntParameter(newname));
-                }
-                GUILayout.EndHorizontal();
-
-                for (int i = 0; i < CurrentAsset.ParameterList.Count; i++)
-                {
-                    GUILayout.BeginHorizontal();
-
-                    float paramNameWidth = panelWidth * 0.6f;
-                    CurrentAsset.ParameterList[i].ParameterName = GUILayout.TextField(CurrentAsset.ParameterList[i].ParameterName,
-                        EditableParameter.MAX_NAME_SIZE, GUILayout.Width(paramNameWidth), GUILayout.ExpandWidth(false));
-
-                    if (CurrentAsset.ParameterList[i] is EditableBoolParameter)
-                    {
-                        EditableBoolParameter param = CurrentAsset.ParameterList[i] as EditableBoolParameter;
-                        param.BoolValue = EditorGUILayout.Toggle(param.BoolValue);
-                    }
-                    else if (CurrentAsset.ParameterList[i] is EditableIntParameter)
-                    {
-                        EditableIntParameter param = CurrentAsset.ParameterList[i] as EditableIntParameter;
-                        param.IntValue = EditorGUILayout.IntField(param.IntValue);
-                    }
-
-                    if (GUILayout.Button("X"))
-                    {
-                        CurrentAsset.ParameterList.RemoveAt(i);
-                        i--;
-                    }
-
-                    GUILayout.EndHorizontal();
-                }
-
+                DrawPanel_DrawParameters();
                 GUILayout.Space(PANEL_VERTICAL_GAP);
-
-
-                // Default options
-                GUILayout.Label("Default Speech-Node values", panelTitleStyle);
-
-                float labelWidth = panelWidth * 0.3f;
-
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Name:", GUILayout.MinWidth(labelWidth), GUILayout.MaxWidth(labelWidth));
-                CurrentAsset.DefaultName = EditorGUILayout.TextField(CurrentAsset.DefaultName);
-                EditorGUILayout.EndHorizontal();
-
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Icon:", GUILayout.MinWidth(labelWidth), GUILayout.MaxWidth(labelWidth));
-                CurrentAsset.DefaultSprite = (Sprite)EditorGUILayout.ObjectField(CurrentAsset.DefaultSprite, typeof(Sprite), false);
-                EditorGUILayout.EndHorizontal();
-
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Font:", GUILayout.MinWidth(labelWidth), GUILayout.MaxWidth(labelWidth));
-                CurrentAsset.DefaultFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(CurrentAsset.DefaultFont, typeof(TMPro.TMP_FontAsset), false);
-                EditorGUILayout.EndHorizontal();
-
+                DrawPanel_DrawDefaultOptions();
             }
             else
             {
@@ -686,209 +619,16 @@ namespace DialogueEditor
 
                     if (selectedNode is UISpeechNode)
                     {
-                        EditableSpeechNode node = (selectedNode.Info as EditableSpeechNode);
-                        GUILayout.Label("[" + node.ID + "] NPC Dialogue Node.", panelTitleStyle);
-                        EditorGUILayout.Space();
-
-                        GUILayout.Label("Character Name", EditorStyles.boldLabel);
-                        GUI.SetNextControlName(CONTROL_NAME);
-                        node.Name = GUILayout.TextField(node.Name);
-                        EditorGUILayout.Space();
-
-                        GUILayout.Label("Dialogue", EditorStyles.boldLabel);
-                        node.UseLocalisationID = GUILayout.Toggle(node.UseLocalisationID, "Use Localisation");
-                        if (node.UseLocalisationID)
-                        {
-                            DrawPanel_LocalisationForNode(node);
-                        }
-                        else
-                        {
-                            node.Text = GUILayout.TextArea(node.Text);
-                            EditorGUILayout.Space();
-                        }
-
-                        // Advance
-                        if (node.Connections.Count > 0 && node.Connections[0] is EditableSpeechConnection)
-                        {
-                            GUILayout.Label("Auto-Advance options", EditorStyles.boldLabel);
-                            node.AdvanceDialogueAutomatically = EditorGUILayout.Toggle("Automatically Advance", node.AdvanceDialogueAutomatically);
-                            if (node.AdvanceDialogueAutomatically)
-                            {
-                                node.AutoAdvanceShouldDisplayOption = EditorGUILayout.Toggle("Display continue option", node.AutoAdvanceShouldDisplayOption);
-                                node.TimeUntilAdvance = EditorGUILayout.FloatField("Dialogue Time", node.TimeUntilAdvance);
-                                if (node.TimeUntilAdvance < 0.1f)
-                                    node.TimeUntilAdvance = 0.1f;
-                            }
-                            EditorGUILayout.Space();
-                        }
-
-                        GUILayout.Label("Icon", EditorStyles.boldLabel);
-                        node.Icon = (Sprite)EditorGUILayout.ObjectField(node.Icon, typeof(Sprite), false, GUILayout.ExpandWidth(true));
-                        EditorGUILayout.Space();
-
-                        GUILayout.Label("Audio Options", EditorStyles.boldLabel);
-                        GUILayout.Label("Audio");
-                        node.Audio = (AudioClip)EditorGUILayout.ObjectField(node.Audio, typeof(AudioClip), false);
-
-                        GUILayout.Label("Audio Volume");
-                        node.Volume = EditorGUILayout.Slider(node.Volume, 0, 1);
-                        EditorGUILayout.Space();
-
-                        GUILayout.Label("TMP Font", EditorStyles.boldLabel);
-                        node.TMPFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(node.TMPFont, typeof(TMPro.TMP_FontAsset), false);
-                        EditorGUILayout.Space();
-
-                        // Event
-                        {
-                            NodeEventHolder NodeEvent = CurrentAsset.GetNodeData(node.ID);
-                            if (differentNodeSelected)
-                            {
-                                CurrentAsset.Event = NodeEvent.Event;
-                            }
-
-                            if (NodeEvent != null && NodeEvent.Event != null)
-                            {
-                                // Load the object and property of the node
-                                SerializedObject o = new SerializedObject(NodeEvent);
-                                SerializedProperty p = o.FindProperty("Event");
-
-                                // Load the dummy event
-                                SerializedObject o2 = new SerializedObject(CurrentAsset);
-                                SerializedProperty p2 = o2.FindProperty("Event");
-
-                                // Draw dummy event
-                                GUILayout.Label("Events:", EditorStyles.boldLabel);
-                                EditorGUILayout.PropertyField(p2);
-
-                                // Apply changes to dummy
-                                o2.ApplyModifiedProperties();
-
-                                // Copy dummy changes onto the nodes event
-                                p = p2;
-                                o.ApplyModifiedProperties();
-                            }
-                        }
-
-                        Panel_NodeParamActions(node);
-
-
+                        DrawPanel_DrawSpeechNode(selectedNode, differentNodeSelected);
                     }
                     else if (selectedNode is UIOptionNode)
                     {
-                        EditableOptionNode node = (selectedNode.Info as EditableOptionNode);
-                        GUILayout.Label("[" + node.ID + "] Option Node.", panelTitleStyle);
-                        EditorGUILayout.Space();
-
-                        GUILayout.Label("Option text:", EditorStyles.boldLabel);
-                        node.UseLocalisationID = GUILayout.Toggle(node.UseLocalisationID, "Use Localisation");
-                        if (node.UseLocalisationID)
-                        {
-                            DrawPanel_LocalisationForNode(node);
-                        }
-                        else
-                        {
-                            node.Text = GUILayout.TextArea(node.Text);
-                            EditorGUILayout.Space();
-                        }
-
-                        GUILayout.Label("TMP Font", EditorStyles.boldLabel);
-                        node.TMPFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(node.TMPFont, typeof(TMPro.TMP_FontAsset), false);
-                        EditorGUILayout.Space();
-
-                        Panel_NodeParamActions(node);
+                        DrawPanel_DrawOptionNode(selectedNode);
                     }
                 }
                 else if (CurrentlySelectedObject.Type == SelectableUI.eType.Connection)
                 {
-                    GUILayout.Label("Connection.", panelTitleStyle);
-                    EditorGUILayout.Space();
-
-                    EditableConnection connection = (CurrentlySelectedObject as SelectableUIConnection).Connection;
-
-                    // Validate conditions
-                    for (int i = 0; i < connection.Conditions.Count; i++)
-                    {
-                        if (CurrentAsset.GetParameter(connection.Conditions[i].ParameterName) == null)
-                        {
-                            connection.Conditions.RemoveAt(i);
-                            i--;
-                        }
-                    }
-
-                    // Button
-                    {
-                        GUILayout.BeginHorizontal();
-                        if (GUILayout.Button("Add condition"))
-                        {
-                            GenericMenu rightClickMenu = new GenericMenu();
-
-                            for (int i = 0; i < this.CurrentAsset.ParameterList.Count; i++)
-                            {
-                                // Skip if node already has action for this param
-                                if (ConnectionContainsParameter(connection, CurrentAsset.ParameterList[i].ParameterName))
-                                {
-                                    continue;
-                                }
-
-                                if (this.CurrentAsset.ParameterList[i].ParameterType == EditableParameter.eParamType.Int)
-                                {
-                                    EditableIntParameter intParam = CurrentAsset.ParameterList[i] as EditableIntParameter;
-                                    rightClickMenu.AddItem(new GUIContent(intParam.ParameterName), false, delegate
-                                    {
-                                        connection.AddCondition(new EditableIntCondition(intParam.ParameterName));
-                                    });
-                                }
-                                else if (this.CurrentAsset.ParameterList[i].ParameterType == EditableParameter.eParamType.Bool)
-                                {
-                                    EditableBoolParameter boolParam = CurrentAsset.ParameterList[i] as EditableBoolParameter;
-                                    rightClickMenu.AddItem(new GUIContent(boolParam.ParameterName), false, delegate
-                                    {
-                                        connection.AddCondition(new EditableBoolCondition(boolParam.ParameterName));
-                                    });
-                                }
-                            }
-
-                            rightClickMenu.ShowAsContext();
-                        }
-                        GUILayout.EndHorizontal();
-                    }
-
-                    // Draw conditions
-                    GUILayout.Space(PANEL_VERTICAL_PADDING);
-                    GUILayout.Label("Required conditions.", EditorStyles.boldLabel);
-                    float conditionNameWidth = panelWidth * 0.4f;
-                    for (int i = 0; i < connection.Conditions.Count; i++)
-                    {
-                        GUILayout.BeginHorizontal();
-
-                        string name = connection.Conditions[i].ParameterName;
-                        GUILayout.Label(name, GUILayout.MinWidth(conditionNameWidth), GUILayout.MaxWidth(conditionNameWidth));
-
-                        if (connection.Conditions[i].ConditionType == EditableCondition.eConditionType.IntCondition)
-                        {
-                            EditableIntCondition intCond = connection.Conditions[i] as EditableIntCondition;
-
-                            intCond.CheckType = (EditableIntCondition.eCheckType)EditorGUILayout.EnumPopup(intCond.CheckType);
-                            intCond.RequiredValue = EditorGUILayout.IntField(intCond.RequiredValue);
-
-                        }
-                        else if (connection.Conditions[i].ConditionType == EditableCondition.eConditionType.BoolCondition)
-                        {
-                            EditableBoolCondition boolCond = connection.Conditions[i] as EditableBoolCondition;
-
-                            boolCond.CheckType = (EditableBoolCondition.eCheckType)EditorGUILayout.EnumPopup(boolCond.CheckType);
-                            boolCond.RequiredValue = EditorGUILayout.Toggle(boolCond.RequiredValue);
-                        }
-
-                        if (GUILayout.Button("X"))
-                        {
-                            connection.Conditions.RemoveAt(i);
-                            i--;
-                            GUI.changed = true;
-                        }
-
-                        GUILayout.EndHorizontal();
-                    }
+                    DrawPanel_DrawConnection();
                 }
             }
 
@@ -897,54 +637,384 @@ namespace DialogueEditor
             GUILayout.EndArea();
         }
 
-        private void DrawPanel_LocalisationForNode(EditableConversationNode node)
+        private void DrawPanel_DrawParameters()
+        {
+            if (CurrentAsset.ParameterList == null)
+                CurrentAsset.ParameterList = new List<EditableParameter>();
+
+            GUILayout.Label("Parameters", panelTitleStyle);
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Add bool"))
+            {
+                string newname = GetValidParamName("New bool");
+                CurrentAsset.ParameterList.Add(new EditableBoolParameter(newname));
+            }
+            if (GUILayout.Button("Add int"))
+            {
+                string newname = GetValidParamName("New int");
+                CurrentAsset.ParameterList.Add(new EditableIntParameter(newname));
+            }
+            GUILayout.EndHorizontal();
+
+            for (int i = 0; i < CurrentAsset.ParameterList.Count; i++)
+            {
+                GUILayout.BeginHorizontal();
+
+                float paramNameWidth = panelWidth * 0.6f;
+                CurrentAsset.ParameterList[i].ParameterName = GUILayout.TextField(CurrentAsset.ParameterList[i].ParameterName,
+                    EditableParameter.MAX_NAME_SIZE, GUILayout.Width(paramNameWidth), GUILayout.ExpandWidth(false));
+
+                if (CurrentAsset.ParameterList[i] is EditableBoolParameter)
+                {
+                    EditableBoolParameter param = CurrentAsset.ParameterList[i] as EditableBoolParameter;
+                    param.BoolValue = EditorGUILayout.Toggle(param.BoolValue);
+                }
+                else if (CurrentAsset.ParameterList[i] is EditableIntParameter)
+                {
+                    EditableIntParameter param = CurrentAsset.ParameterList[i] as EditableIntParameter;
+                    param.IntValue = EditorGUILayout.IntField(param.IntValue);
+                }
+
+                if (GUILayout.Button("X"))
+                {
+                    CurrentAsset.ParameterList.RemoveAt(i);
+                    i--;
+                }
+
+                GUILayout.EndHorizontal();
+            }
+        }
+
+        private void DrawPanel_DrawDefaultOptions()
+        {
+            GUILayout.Label("Default Speech-Node values", panelTitleStyle);
+
+            float labelWidth = panelWidth * 0.3f;
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Name:", GUILayout.MinWidth(labelWidth), GUILayout.MaxWidth(labelWidth));
+            CurrentAsset.DefaultName = EditorGUILayout.TextField(CurrentAsset.DefaultName);
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Icon:", GUILayout.MinWidth(labelWidth), GUILayout.MaxWidth(labelWidth));
+            CurrentAsset.DefaultSprite = (Sprite)EditorGUILayout.ObjectField(CurrentAsset.DefaultSprite, typeof(Sprite), false);
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Font:", GUILayout.MinWidth(labelWidth), GUILayout.MaxWidth(labelWidth));
+            CurrentAsset.DefaultFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(CurrentAsset.DefaultFont, typeof(TMPro.TMP_FontAsset), false);
+            EditorGUILayout.EndHorizontal();
+        }
+
+        private void DrawPanel_DrawSpeechNode(UINode selectedNode, bool differentNodeSelected)
+        {
+            EditableSpeechNode node = (selectedNode.Info as EditableSpeechNode);
+            GUILayout.Label("[" + node.ID + "] NPC Dialogue Node.", panelTitleStyle);
+            EditorGUILayout.Space();
+
+            GUILayout.Label("Localisation", EditorStyles.boldLabel);
+            node.UseLocalisation = GUILayout.Toggle(node.UseLocalisation, "Use Localisation");
+            EditorGUILayout.Space();
+
+            if (node.UseLocalisation)
+            {
+                GUILayout.Label("Character Name", EditorStyles.boldLabel);
+                DrawPanel_LocalisationForName(node);
+
+                GUILayout.Label("Dialogue", EditorStyles.boldLabel);
+                DrawPanel_LocalisationForText(node);
+            }
+            else
+            {
+                GUILayout.Label("Character Name", EditorStyles.boldLabel);
+                GUI.SetNextControlName(CONTROL_NAME);
+                node.Name = GUILayout.TextField(node.Name);
+                EditorGUILayout.Space();
+
+                GUILayout.Label("Dialogue", EditorStyles.boldLabel);
+                node.Text = GUILayout.TextArea(node.Text);
+                EditorGUILayout.Space();
+            }
+
+            // Advance
+            if (node.Connections.Count > 0 && node.Connections[0] is EditableSpeechConnection)
+            {
+                GUILayout.Label("Auto-Advance options", EditorStyles.boldLabel);
+                node.AdvanceDialogueAutomatically = EditorGUILayout.Toggle("Automatically Advance", node.AdvanceDialogueAutomatically);
+                if (node.AdvanceDialogueAutomatically)
+                {
+                    node.AutoAdvanceShouldDisplayOption = EditorGUILayout.Toggle("Display continue option", node.AutoAdvanceShouldDisplayOption);
+                    node.TimeUntilAdvance = EditorGUILayout.FloatField("Dialogue Time", node.TimeUntilAdvance);
+                    if (node.TimeUntilAdvance < 0.1f)
+                        node.TimeUntilAdvance = 0.1f;
+                }
+                EditorGUILayout.Space();
+            }
+
+            GUILayout.Label("Icon", EditorStyles.boldLabel);
+            node.Icon = (Sprite)EditorGUILayout.ObjectField(node.Icon, typeof(Sprite), false, GUILayout.ExpandWidth(true));
+            EditorGUILayout.Space();
+
+            GUILayout.Label("Audio Options", EditorStyles.boldLabel);
+            GUILayout.Label("Audio");
+            node.Audio = (AudioClip)EditorGUILayout.ObjectField(node.Audio, typeof(AudioClip), false);
+
+            GUILayout.Label("Audio Volume");
+            node.Volume = EditorGUILayout.Slider(node.Volume, 0, 1);
+            EditorGUILayout.Space();
+
+            GUILayout.Label("TMP Font", EditorStyles.boldLabel);
+            node.TMPFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(node.TMPFont, typeof(TMPro.TMP_FontAsset), false);
+            EditorGUILayout.Space();
+
+            // Event
+            {
+                NodeEventHolder NodeEvent = CurrentAsset.GetNodeData(node.ID);
+                if (differentNodeSelected)
+                {
+                    CurrentAsset.Event = NodeEvent.Event;
+                }
+
+                if (NodeEvent != null && NodeEvent.Event != null)
+                {
+                    // Load the object and property of the node
+                    SerializedObject o = new SerializedObject(NodeEvent);
+                    SerializedProperty p = o.FindProperty("Event");
+
+                    // Load the dummy event
+                    SerializedObject o2 = new SerializedObject(CurrentAsset);
+                    SerializedProperty p2 = o2.FindProperty("Event");
+
+                    // Draw dummy event
+                    GUILayout.Label("Events:", EditorStyles.boldLabel);
+                    EditorGUILayout.PropertyField(p2);
+
+                    // Apply changes to dummy
+                    o2.ApplyModifiedProperties();
+
+                    // Copy dummy changes onto the nodes event
+                    p = p2;
+                    o.ApplyModifiedProperties();
+                }
+            }
+
+            Panel_NodeParamActions(node);
+
+
+        }
+
+        private void DrawPanel_DrawOptionNode(UINode selectedNode)
+        {
+            EditableOptionNode node = (selectedNode.Info as EditableOptionNode);
+            GUILayout.Label("[" + node.ID + "] Option Node.", panelTitleStyle);
+            EditorGUILayout.Space();
+
+            GUILayout.Label("Localisation", EditorStyles.boldLabel);
+            node.UseLocalisation = GUILayout.Toggle(node.UseLocalisation, "Use Localisation");
+            EditorGUILayout.Space();
+
+            if (node.UseLocalisation)
+            {
+                GUILayout.Label("Option text:", EditorStyles.boldLabel);
+                DrawPanel_LocalisationForText(node);
+            }
+            else
+            {
+                GUILayout.Label("Option text:", EditorStyles.boldLabel);
+                node.Text = GUILayout.TextArea(node.Text);
+                EditorGUILayout.Space();
+            }
+
+            GUILayout.Label("TMP Font", EditorStyles.boldLabel);
+            node.TMPFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(node.TMPFont, typeof(TMPro.TMP_FontAsset), false);
+            EditorGUILayout.Space();
+
+            Panel_NodeParamActions(node);
+        }
+
+        private void DrawPanel_DrawConnection()
+        {
+            GUILayout.Label("Connection.", panelTitleStyle);
+            EditorGUILayout.Space();
+
+            EditableConnection connection = (CurrentlySelectedObject as SelectableUIConnection).Connection;
+
+            // Validate conditions
+            for (int i = 0; i < connection.Conditions.Count; i++)
+            {
+                if (CurrentAsset.GetParameter(connection.Conditions[i].ParameterName) == null)
+                {
+                    connection.Conditions.RemoveAt(i);
+                    i--;
+                }
+            }
+
+            // Button
+            {
+                GUILayout.BeginHorizontal();
+                if (GUILayout.Button("Add condition"))
+                {
+                    GenericMenu rightClickMenu = new GenericMenu();
+
+                    for (int i = 0; i < this.CurrentAsset.ParameterList.Count; i++)
+                    {
+                        // Skip if node already has action for this param
+                        if (ConnectionContainsParameter(connection, CurrentAsset.ParameterList[i].ParameterName))
+                        {
+                            continue;
+                        }
+
+                        if (this.CurrentAsset.ParameterList[i].ParameterType == EditableParameter.eParamType.Int)
+                        {
+                            EditableIntParameter intParam = CurrentAsset.ParameterList[i] as EditableIntParameter;
+                            rightClickMenu.AddItem(new GUIContent(intParam.ParameterName), false, delegate
+                            {
+                                connection.AddCondition(new EditableIntCondition(intParam.ParameterName));
+                            });
+                        }
+                        else if (this.CurrentAsset.ParameterList[i].ParameterType == EditableParameter.eParamType.Bool)
+                        {
+                            EditableBoolParameter boolParam = CurrentAsset.ParameterList[i] as EditableBoolParameter;
+                            rightClickMenu.AddItem(new GUIContent(boolParam.ParameterName), false, delegate
+                            {
+                                connection.AddCondition(new EditableBoolCondition(boolParam.ParameterName));
+                            });
+                        }
+                    }
+
+                    rightClickMenu.ShowAsContext();
+                }
+                GUILayout.EndHorizontal();
+            }
+
+            // Draw conditions
+            GUILayout.Space(PANEL_VERTICAL_PADDING);
+            GUILayout.Label("Required conditions.", EditorStyles.boldLabel);
+            float conditionNameWidth = panelWidth * 0.4f;
+            for (int i = 0; i < connection.Conditions.Count; i++)
+            {
+                GUILayout.BeginHorizontal();
+
+                string name = connection.Conditions[i].ParameterName;
+                GUILayout.Label(name, GUILayout.MinWidth(conditionNameWidth), GUILayout.MaxWidth(conditionNameWidth));
+
+                if (connection.Conditions[i].ConditionType == EditableCondition.eConditionType.IntCondition)
+                {
+                    EditableIntCondition intCond = connection.Conditions[i] as EditableIntCondition;
+
+                    intCond.CheckType = (EditableIntCondition.eCheckType)EditorGUILayout.EnumPopup(intCond.CheckType);
+                    intCond.RequiredValue = EditorGUILayout.IntField(intCond.RequiredValue);
+
+                }
+                else if (connection.Conditions[i].ConditionType == EditableCondition.eConditionType.BoolCondition)
+                {
+                    EditableBoolCondition boolCond = connection.Conditions[i] as EditableBoolCondition;
+
+                    boolCond.CheckType = (EditableBoolCondition.eCheckType)EditorGUILayout.EnumPopup(boolCond.CheckType);
+                    boolCond.RequiredValue = EditorGUILayout.Toggle(boolCond.RequiredValue);
+                }
+
+                if (GUILayout.Button("X"))
+                {
+                    connection.Conditions.RemoveAt(i);
+                    i--;
+                    GUI.changed = true;
+                }
+
+                GUILayout.EndHorizontal();
+            }
+        }
+
+        private void DrawPanel_LocalisationForName(EditableSpeechNode node)
         {
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Locale ID: " + node.LocalisationID);
+            GUILayout.Label("Locale ID: " + (string.IsNullOrEmpty(node.NameLocalisationID) ? "(None selected.)" : node.NameLocalisationID));
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            m_currentLocalisationInputID = GUILayout.TextArea(m_currentLocalisationInputID, GUILayout.MaxWidth(panelWidth * 0.5f));
+            m_currentNameLocalisationIDInput = GUILayout.TextArea(m_currentNameLocalisationIDInput, GUILayout.MaxWidth(panelWidth * 0.5f));
 
             // Search IDs
             if (GUILayout.Button("Select ID"))
             {
-                if (!string.IsNullOrEmpty(m_currentLocalisationInputID))
+                List<string> possibleIDs = GetPossibleIDs(m_currentNameLocalisationIDInput);
+
+                if (possibleIDs.Count > 0)
                 {
-                    int numEntries = m_localisationObject.Database.GetLocalisationEntryCount;
-                    string idToLower = m_currentLocalisationInputID.ToLower();
-                    List<string> possibleIDs = new List<string>();
+                    GenericMenu menu = new GenericMenu();
 
-                    for (int i = 0; i < numEntries; i++)
+                    foreach (string id in possibleIDs)
                     {
-                        LocaleEntry entry = m_localisationObject.Database.GetEntryByIndex(i);
-
-                        if (entry.ID.ToLower().Contains(idToLower))
+                        menu.AddItem(new GUIContent(id), false, delegate
                         {
-                            possibleIDs.Add(entry.ID);
-                        }
+                            node.NameLocalisationID = id;
+                        });
                     }
 
-                    if (possibleIDs.Count > 0)
-                    {
-                        GenericMenu menu = new GenericMenu();
-
-                        foreach (string id in possibleIDs)
-                        {
-                            menu.AddItem(new GUIContent(id), false, delegate
-                            {
-                                node.LocalisationID = id;
-                            });
-                        }
-
-                        menu.ShowAsContext();
-                    }
+                    menu.ShowAsContext();
                 }
             }
             GUILayout.EndHorizontal();
         }
 
-        private void DrawResizer()
+        private void DrawPanel_LocalisationForText(EditableConversationNode node)
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Locale ID: " + (string.IsNullOrEmpty(node.TextLocalisationID) ? "(None selected.)" : node.TextLocalisationID));
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            m_currentTextLocalisationIDInput = GUILayout.TextArea(m_currentTextLocalisationIDInput, GUILayout.MaxWidth(panelWidth * 0.5f));
+
+            // Search IDs
+            if (GUILayout.Button("Select ID"))
+            {
+                List<string> possibleIDs = GetPossibleIDs(m_currentTextLocalisationIDInput);
+
+                if (possibleIDs.Count > 0)
+                {
+                    GenericMenu menu = new GenericMenu();
+
+                    foreach (string id in possibleIDs)
+                    {
+                        menu.AddItem(new GUIContent(id), false, delegate
+                        {
+                            node.TextLocalisationID = id;
+                        });
+                    }
+
+                    menu.ShowAsContext();
+                }
+            }
+            GUILayout.EndHorizontal();
+        }
+
+        private List<string> GetPossibleIDs(string idInput)
+        {
+            if (!string.IsNullOrEmpty(idInput))
+            {
+                int numEntries = m_localisationObject.Database.GetLocalisationEntryCount;
+                string idToLower = idInput.ToLower();
+                List<string> possibleIDs = new List<string>();
+
+                for (int i = 0; i < numEntries; i++)
+                {
+                    LocaleEntry entry = m_localisationObject.Database.GetEntryByIndex(i);
+
+                    if (entry.ID.ToLower().Contains(idToLower))
+                    {
+                        possibleIDs.Add(entry.ID);
+                    }
+                }
+
+                return possibleIDs;
+            }
+
+            return new List<string>();
+        }
+
+        private void DrawPanelResizer()
         {
             panelResizerRect = new Rect(
                 position.width - panelWidth - 2,

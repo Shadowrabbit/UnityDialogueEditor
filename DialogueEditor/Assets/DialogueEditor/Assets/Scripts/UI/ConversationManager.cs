@@ -506,7 +506,7 @@ namespace DialogueEditor
                 // Get localisation entry for current language or body text
                 if (speech.UseLocalisation)
                 {
-                    speechText = Localisation.Database.GetEntryByID(speech.LocalisationID).GetLanguageText(m_currentLanguage);
+                    speechText = Localisation.Database.GetTranslation(speech.TextLocalisationID, m_currentLanguage);
                 }
                 else
                 {
@@ -567,7 +567,7 @@ namespace DialogueEditor
             if (speech.Audio != null)
             {
                 AudioPlayer.clip = speech.Audio;
-                AudioPlayer.volume = speech.Volume;
+                AudioPlayer.volume = Mathf.Clamp01(speech.Volume);
                 AudioPlayer.Play();
             }
 

@@ -47,8 +47,8 @@ namespace DialogueEditor
 
         // ----
         // Serialized Node data
-        [DataMember] public bool UseLocalisationID;
-        [DataMember] public string LocalisationID;
+        [DataMember] public bool UseLocalisation;
+        [DataMember] public string TextLocalisationID;
         [DataMember] public string Text;
         [DataMember] public List<EditableConnection> Connections;
         [DataMember] public List<int> parentUIDs;
@@ -182,15 +182,14 @@ namespace DialogueEditor
         /// <summary> The NPC Name </summary>
         [DataMember] public string Name;
 
+        /// <summary> The Localisation ID for the name of the NPC who is speaking, from the Localisation database. </summary>
+        [DataMember] public string NameLocalisationID;
+
         /// <summary> The NPC Icon </summary>
         public Sprite Icon;
-        /// <summary> Deprecated as of V1.03 </summary>
-        [DataMember] public string IconGUID;
 
         /// <summary> The Audio Clip acompanying this Speech. </summary>
         public AudioClip Audio;
-        /// <summary> Deprecated as of V1.03 </summary>
-        [DataMember] public string AudioGUID;
 
         /// <summary> The Volume for the AudioClip; </summary>
         [DataMember] public float Volume;
@@ -210,6 +209,10 @@ namespace DialogueEditor
         //--------
         // Deprecated
 
+        /// <summary> Deprecated as of V1.03 </summary>
+        [DataMember] public string IconGUID;
+        /// <summary> Deprecated as of V1.03 </summary>
+        [DataMember] public string AudioGUID;
         /// <summary> Deprecated as of V1.1 </summary>
         public List<EditableOptionNode> Options;
         /// <summary> Deprecated as of V1.1 </summary>
@@ -218,7 +221,6 @@ namespace DialogueEditor
         public EditableSpeechNode Speech;
         /// <summary> Deprecated as of V1.1 </summary>
         [DataMember] public int SpeechUID;
-
 
         // ------------------------------
 

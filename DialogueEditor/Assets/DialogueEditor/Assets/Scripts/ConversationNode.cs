@@ -39,8 +39,8 @@ namespace DialogueEditor
         /// <summary> Does this node use the Localisation ID? </summary>
         public bool UseLocalisation;
 
-        /// <summary> The Localisation ID from the Localisation database. </summary>
-        public string LocalisationID;
+        /// <summary> The Localisation ID for the body text, from the Localisation database. </summary>
+        public string TextLocalisationID;
 
         /// <summary> The child connections this node has. </summary>
         public List<Connection> Connections;
@@ -57,8 +57,11 @@ namespace DialogueEditor
     {
         public override eNodeType NodeType { get { return eNodeType.Speech; } }
 
-        /// <summary> The name of the NPC who is speaking. </summary>
+        /// <summary> The name of the NPC who is speaking, if not using Localisation. </summary>
         public string Name;
+
+        /// <summary> The Localisation ID for the name of the NPC who is speaking, from the Localisation database. </summary>
+        public string NameLocalisationID;
 
         /// <summary> Should this speech node go onto the next one automatically? </summary>
         public bool AutomaticallyAdvance;
@@ -73,7 +76,10 @@ namespace DialogueEditor
         /// <summary> The Icon of the speaking NPC </summary>
         public Sprite Icon;
 
+        /// <summary> Audio to play. </summary>
         public AudioClip Audio;
+
+        /// <summary> Volume of audio, 0-1. 0=Silent. 1=Max. </summary>
         public float Volume;
 
         /// <summary> UnityEvent, to betriggered when this Node starts. </summary>

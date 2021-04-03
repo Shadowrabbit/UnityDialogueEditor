@@ -81,8 +81,12 @@ namespace DialogueEditor
 
         public void AddLanguage(SystemLanguage lang)
         {
-            m_supportedLanguages.Add(lang);
+            if (!IsLanguageSupported(lang))
+            {
+                m_supportedLanguages.Add(lang);
 
+            }
+          
             // For each entry, add a 
             for (int i = 0; i < m_localisationEntries.Count; i++)
             {
