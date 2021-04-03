@@ -997,26 +997,33 @@ namespace DialogueEditor
                 return;
             }
 
-            // Apply to CurrentAsset
-            int entryCount = db.GetLocalisationEntryCount;
+            // Make sure each language is supported
+            foreach (SystemLanguage lang in db.GetSupportedLanguages)
+            {
+                if (!CurrentAsset.Database.IsLanguageSupported(lang))
+                {
+                    CurrentAsset.Database.AddLanguage(lang);
+                }
+            }
 
             // For each entry...
+            int entryCount = db.GetLocalisationEntryCount;
             for (int i = 0; i < entryCount; i++)
             {
-                LocaleEntry entry = db.GetEntryByIndex(i);
+                LocaleEntry importedEntry = db.GetEntryByIndex(i);
 
                 // If entry doesn't exist, add it
-                if (!CurrentAsset.Database.DoesIDExist(entry.ID))
+                if (!CurrentAsset.Database.DoesIDExist(importedEntry.ID))
                 {
-                    CurrentAsset.Database.AddNewEntry(entry.ID, entry.GetLanguageText(SystemLanguage.English));
+                    CurrentAsset.Database.AddNewEntry(importedEntry.ID, importedEntry.GetLanguageText(SystemLanguage.English));
                 }
 
                 // For each language...
                 foreach (SystemLanguage lang in db.GetSupportedLanguages)
                 {
                     // Update the language entry
-                    string langText = entry.GetLanguageText(lang);
-                    CurrentAsset.Database.GetEntryByID(entry.ID).SetLanguageText(lang, langText);
+                    string langText = importedEntry.GetLanguageText(lang);
+                    CurrentAsset.Database.GetEntryByID(importedEntry.ID).SetLanguageText(lang, langText);
                 }
             }
         }
