@@ -431,7 +431,10 @@ namespace DialogueEditor
             if (CurrentAsset == null)
             {
                 DrawTitleBar();
-                Repaint();
+                if (GUI.changed)
+                {
+                    Repaint();
+                }
                 return;
             }
 
