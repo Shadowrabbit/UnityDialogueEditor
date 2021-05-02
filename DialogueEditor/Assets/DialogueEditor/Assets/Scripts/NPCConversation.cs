@@ -39,6 +39,7 @@ namespace DialogueEditor
         [SerializeField] public TMPro.TMP_FontAsset DefaultFont;
         [FormerlySerializedAs("Events")]
         [SerializeField] private List<NodeEventHolder> NodeSerializedDataList;
+        [SerializeField] TMPro.TMP_FontAsset ContinueAndEndFont;
 
         // Runtime vars
         public UnityEngine.Events.UnityEvent Event;

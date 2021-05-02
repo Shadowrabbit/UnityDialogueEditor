@@ -648,29 +648,29 @@ namespace DialogueEditor
                     GUILayout.EndHorizontal();
                 }
 
-                GUILayout.Space(VERTICAL_GAP);
+                EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
 
 
                 // Default options
                 GUILayout.Label("Default Speech-Node values", panelTitleStyle);
 
-                float labelWidth = panelWidth * 0.3f;
+                float labelWidth = panelWidth * 0.4f;
+                float fieldWidth = panelWidth * 0.6f;
 
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Name:", GUILayout.MinWidth(labelWidth), GUILayout.MaxWidth(labelWidth));
-                CurrentAsset.DefaultName = EditorGUILayout.TextField(CurrentAsset.DefaultName);
+                EditorGUILayout.LabelField("Default Name:", GUILayout.MinWidth(labelWidth), GUILayout.MaxWidth(labelWidth));
+                CurrentAsset.DefaultName = EditorGUILayout.TextField(CurrentAsset.DefaultName, GUILayout.MaxWidth(fieldWidth));
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Icon:", GUILayout.MinWidth(labelWidth), GUILayout.MaxWidth(labelWidth));
-                CurrentAsset.DefaultSprite = (Sprite)EditorGUILayout.ObjectField(CurrentAsset.DefaultSprite, typeof(Sprite), false);
+                EditorGUILayout.LabelField("Default Icon:", GUILayout.MinWidth(labelWidth), GUILayout.MaxWidth(labelWidth));
+                CurrentAsset.DefaultSprite = (Sprite)EditorGUILayout.ObjectField(CurrentAsset.DefaultSprite, typeof(Sprite), false, GUILayout.MaxWidth(fieldWidth));
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Font:", GUILayout.MinWidth(labelWidth), GUILayout.MaxWidth(labelWidth));
-                CurrentAsset.DefaultFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(CurrentAsset.DefaultFont, typeof(TMPro.TMP_FontAsset), false);
+                EditorGUILayout.LabelField("Default Font:", GUILayout.MinWidth(labelWidth), GUILayout.MaxWidth(labelWidth));
+                CurrentAsset.DefaultFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(CurrentAsset.DefaultFont, typeof(TMPro.TMP_FontAsset), false, GUILayout.MaxWidth(fieldWidth));
                 EditorGUILayout.EndHorizontal();
-
             }
             else
             {

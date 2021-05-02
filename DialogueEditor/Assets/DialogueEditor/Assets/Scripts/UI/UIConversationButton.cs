@@ -190,6 +190,15 @@ namespace DialogueEditor
                     TextMesh.text = "End.";
                     break;
             }
+
+            if (node.TMPFont != null)
+            {
+                TextMesh.font = node.TMPFont;
+            }
+            else
+            {
+                TextMesh.font = null;
+            }
         }
 
 
