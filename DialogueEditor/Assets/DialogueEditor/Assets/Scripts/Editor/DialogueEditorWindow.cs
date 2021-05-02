@@ -80,6 +80,7 @@ namespace DialogueEditor
         private GUIStyle panelStyle;
         private GUIStyle panelTitleStyle;
         private GUIStyle panelPropertyStyle;
+        private GUIStyle conversationNameStyle;
         private Rect panelResizerRect;
         private GUIStyle resizerStyle;
         private SelectableUI m_cachedSelectedObject;
@@ -260,6 +261,11 @@ namespace DialogueEditor
             // Resizer style
             resizerStyle = new GUIStyle();
             resizerStyle.normal.background = EditorGUIUtility.Load("icons/d_AvatarBlendBackground.png") as Texture2D;
+
+            // Misc
+            conversationNameStyle = new GUIStyle();
+            conversationNameStyle.wordWrap = true;
+            conversationNameStyle.fontSize = 12;
         }
 
         private void OnDisable()
@@ -503,7 +509,7 @@ namespace DialogueEditor
             {
                 for (int i = 0; i < uiNodes.Count; i++)
                 {
-                    uiNodes[i].Draw();
+                    uiNodes[i].Draw(CurrentAsset.UseLocalisation);
                 }
             }
         }
@@ -599,16 +605,22 @@ namespace DialogueEditor
 
             GUILayout.Space(10);
 
+            // Nothing selected... Draw conversation variables
             if (CurrentlySelectedObject == null)
             {
-                GUILayout.Label("Conversation: " + CurrentAsset.gameObject.name, panelTitleStyle);
-                GUILayout.Space(PANEL_VERTICAL_GAP);
+                GUILayout.Label("Conversation:", panelTitleStyle);
+                GUILayout.Label(CurrentAsset.gameObject.name, conversationNameStyle);
+                DrawLine();
                 DrawPanel_DrawParameters();
-                GUILayout.Space(PANEL_VERTICAL_GAP);
+                DrawLine();
+                DrawPanel_DrawLocalisationOptions();
+                DrawLine();
                 DrawPanel_DrawDefaultOptions();
             }
+            // Else, something selected..
             else
             {
+                // Did we select something *different*?
                 bool differentNodeSelected = (m_cachedSelectedObject != CurrentlySelectedObject);
                 m_cachedSelectedObject = CurrentlySelectedObject;
                 if (differentNodeSelected)
@@ -616,6 +628,7 @@ namespace DialogueEditor
                     GUI.FocusControl(CONTROL_NAME);
                 }
 
+                // If we've selected a NODE...
                 if (CurrentlySelectedObject.Type == SelectableUI.eType.Node)
                 {
                     UINode selectedNode = (CurrentlySelectedObject as SelectableUINode).Node;
@@ -629,6 +642,7 @@ namespace DialogueEditor
                         DrawPanel_DrawOptionNode(selectedNode);
                     }
                 }
+                // If we've selected a CONNECTION...
                 else if (CurrentlySelectedObject.Type == SelectableUI.eType.Connection)
                 {
                     DrawPanel_DrawConnection();
@@ -683,10 +697,14 @@ namespace DialogueEditor
                     CurrentAsset.ParameterList.RemoveAt(i);
                     i--;
                 }
-                EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
-
                 GUILayout.EndHorizontal();
             }
+        }
+
+        private void DrawPanel_DrawLocalisationOptions()
+        {
+            GUILayout.Label("Localisation", panelTitleStyle);
+            CurrentAsset.UseLocalisation = EditorGUILayout.Toggle("Use Localisation", CurrentAsset.UseLocalisation);
         }
 
         private void DrawPanel_DrawDefaultOptions()
@@ -711,34 +729,39 @@ namespace DialogueEditor
             EditorGUILayout.EndHorizontal();
         }
 
+        private void DrawLine()
+        {
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+        }
+
         private void DrawPanel_DrawSpeechNode(UINode selectedNode, bool differentNodeSelected)
         {
             EditableSpeechNode node = (selectedNode.Info as EditableSpeechNode);
             GUILayout.Label("[" + node.ID + "] NPC Dialogue Node.", panelTitleStyle);
             EditorGUILayout.Space();
 
-            GUILayout.Label("Localisation", EditorStyles.boldLabel);
-            node.UseLocalisation = GUILayout.Toggle(node.UseLocalisation, "Use Localisation");
-            EditorGUILayout.Space();
-
-            if (node.UseLocalisation)
+            // Localisation
+            if (CurrentAsset.UseLocalisation)
             {
                 GUILayout.Label("Character Name", EditorStyles.boldLabel);
                 DrawPanel_LocalisationForName(node);
+                DrawLine();
 
                 GUILayout.Label("Dialogue", EditorStyles.boldLabel);
                 DrawPanel_LocalisationForText(node);
+                DrawLine();
             }
+            // No Localisation
             else
             {
                 GUILayout.Label("Character Name", EditorStyles.boldLabel);
                 GUI.SetNextControlName(CONTROL_NAME);
                 node.Name = GUILayout.TextField(node.Name);
-                EditorGUILayout.Space();
+                DrawLine();
 
                 GUILayout.Label("Dialogue", EditorStyles.boldLabel);
                 node.Text = GUILayout.TextArea(node.Text);
-                EditorGUILayout.Space();
+                DrawLine();
             }
 
             // Advance
@@ -753,12 +776,12 @@ namespace DialogueEditor
                     if (node.TimeUntilAdvance < 0.1f)
                         node.TimeUntilAdvance = 0.1f;
                 }
-                EditorGUILayout.Space();
+                DrawLine();
             }
 
             GUILayout.Label("Icon", EditorStyles.boldLabel);
             node.Icon = (Sprite)EditorGUILayout.ObjectField(node.Icon, typeof(Sprite), false, GUILayout.ExpandWidth(true));
-            EditorGUILayout.Space();
+            DrawLine();
 
             GUILayout.Label("Audio Options", EditorStyles.boldLabel);
             GUILayout.Label("Audio");
@@ -766,11 +789,11 @@ namespace DialogueEditor
 
             GUILayout.Label("Audio Volume");
             node.Volume = EditorGUILayout.Slider(node.Volume, 0, 1);
-            EditorGUILayout.Space();
+            DrawLine();
 
             GUILayout.Label("TMP Font", EditorStyles.boldLabel);
             node.TMPFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(node.TMPFont, typeof(TMPro.TMP_FontAsset), false);
-            EditorGUILayout.Space();
+            DrawLine();
 
             // Event
             {
@@ -800,6 +823,7 @@ namespace DialogueEditor
                     // Copy dummy changes onto the nodes event
                     p = p2;
                     o.ApplyModifiedProperties();
+                    DrawLine();
                 }
             }
 
@@ -814,11 +838,8 @@ namespace DialogueEditor
             GUILayout.Label("[" + node.ID + "] Option Node.", panelTitleStyle);
             EditorGUILayout.Space();
 
-            GUILayout.Label("Localisation", EditorStyles.boldLabel);
-            node.UseLocalisation = GUILayout.Toggle(node.UseLocalisation, "Use Localisation");
-            EditorGUILayout.Space();
-
-            if (node.UseLocalisation)
+            // Localisation
+            if (CurrentAsset.UseLocalisation)
             {
                 GUILayout.Label("Option text:", EditorStyles.boldLabel);
                 DrawPanel_LocalisationForText(node);
@@ -933,14 +954,14 @@ namespace DialogueEditor
         private void DrawPanel_LocalisationForName(EditableSpeechNode node)
         {
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Locale ID: " + (string.IsNullOrEmpty(node.NameLocalisationID) ? "(None selected.)" : node.NameLocalisationID));
+            GUILayout.Label("Name locale ID: " + (string.IsNullOrEmpty(node.NameLocalisationID) ? "(None selected.)" : node.NameLocalisationID));
             GUILayout.EndHorizontal();
-
+            GUILayout.Label("Search:");
             GUILayout.BeginHorizontal();
-            m_currentNameLocalisationIDInput = GUILayout.TextArea(m_currentNameLocalisationIDInput, GUILayout.MaxWidth(panelWidth * 0.5f));
+            m_currentNameLocalisationIDInput = GUILayout    .TextArea(m_currentNameLocalisationIDInput, GUILayout.MaxWidth(panelWidth * 0.5f));
 
             // Search IDs
-            if (GUILayout.Button("Select ID"))
+            if (GUILayout.Button("Search for ID"))
             {
                 List<string> possibleIDs = GetPossibleIDs(m_currentNameLocalisationIDInput);
 
@@ -965,14 +986,15 @@ namespace DialogueEditor
         private void DrawPanel_LocalisationForText(EditableConversationNode node)
         {
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Locale ID: " + (string.IsNullOrEmpty(node.TextLocalisationID) ? "(None selected.)" : node.TextLocalisationID));
+            GUILayout.Label("Text locale ID: " + (string.IsNullOrEmpty(node.TextLocalisationID) ? "(None selected.)" : node.TextLocalisationID));
             GUILayout.EndHorizontal();
 
+            GUILayout.Label("Search:");
             GUILayout.BeginHorizontal();
             m_currentTextLocalisationIDInput = GUILayout.TextArea(m_currentTextLocalisationIDInput, GUILayout.MaxWidth(panelWidth * 0.5f));
 
             // Search IDs
-            if (GUILayout.Button("Select ID"))
+            if (GUILayout.Button("Search for ID"))
             {
                 List<string> possibleIDs = GetPossibleIDs(m_currentTextLocalisationIDInput);
 
@@ -1113,6 +1135,7 @@ namespace DialogueEditor
                     GUILayout.EndHorizontal();
                 }
             }
+            EditorGUILayout.Space();
         }
 
 

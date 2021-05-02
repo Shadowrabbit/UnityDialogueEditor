@@ -16,8 +16,8 @@ namespace DialogueEditor
         public enum eButtonType
         {
             Option,
-            Speech,
-            None
+            Continue,
+            End
         }
 
         // Getters
@@ -171,7 +171,7 @@ namespace DialogueEditor
             TextMesh.color = c_text;
         }
 
-        public void SetupButton(eButtonType buttonType, ConversationNode node)
+        public void SetupButton(eButtonType buttonType, ConversationNode node, bool useLocalisation, SystemLanguage currentLanguage, DialogueEditorLocalisationObject locale)
         {
             m_buttonType = buttonType;
             m_node = node;
@@ -179,15 +179,42 @@ namespace DialogueEditor
             switch (m_buttonType)
             {
                 case eButtonType.Option:
-                    TextMesh.text = node.Text;
+                    {
+                        if (useLocalisation)
+                        {
+                            TextMesh.text = locale.Database.GetTranslation(node.TextLocalisationID, currentLanguage);
+                        }
+                        else
+                        {
+                            TextMesh.text = node.Text;
+                        }
+                    }
                     break;
 
-                case eButtonType.Speech:
-                    TextMesh.text = "Continue.";
+                case eButtonType.Continue:
+                    {
+                        if (useLocalisation)
+                        {
+                            TextMesh.text = "Continue."; // todo 'continue' locale;
+                        }
+                        else
+                        {
+                            TextMesh.text = "Continue.";
+                        }
+                    }
                     break;
 
-                case eButtonType.None:
-                    TextMesh.text = "End.";
+                case eButtonType.End:
+                    {
+                        if (useLocalisation)
+                        {
+                            TextMesh.text = "End."; // todo 'end' locale;
+                        }
+                        else
+                        {
+                            TextMesh.text = "End.";
+                        }
+                    }
                     break;
             }
 
@@ -212,7 +239,7 @@ namespace DialogueEditor
         {
             switch (m_buttonType)
             {
-                case eButtonType.Speech:
+                case eButtonType.Continue:
                     ConversationManager.Instance.SpeechSelected(m_node as SpeechNode);
                     break;
 
@@ -220,7 +247,7 @@ namespace DialogueEditor
                     ConversationManager.Instance.OptionSelected(m_node as OptionNode);
                     break;
 
-                case eButtonType.None:
+                case eButtonType.End:
                     ConversationManager.Instance.EndButtonSelected();
                     break;
             }

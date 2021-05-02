@@ -24,6 +24,9 @@ namespace DialogueEditor
         /// <summary> The start of the conversation </summary>
         public SpeechNode Root;
 
+        /// <summary> Whether or not Localisation should be used </summary>
+        public bool UseLocalisation;
+
         /// <summary> The parameters of this conversation, and their values </summary>
         public List<Parameter> Parameters;
 

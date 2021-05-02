@@ -33,7 +33,7 @@ namespace DialogueEditor
             ScrollTextProperty = serializedObject.FindProperty("ScrollText");
             ScrollTextSpeedProperty = serializedObject.FindProperty("ScrollSpeed");
             AllowMouseInteractionProperty = serializedObject.FindProperty("AllowMouseInteraction");
-            LocalisationProperty = serializedObject.FindProperty("Localisation");
+            LocalisationProperty = serializedObject.FindProperty("LocalisationObject");
         }
 
         public override void OnInspectorGUI()

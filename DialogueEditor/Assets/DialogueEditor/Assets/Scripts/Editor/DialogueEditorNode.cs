@@ -94,12 +94,12 @@ namespace DialogueEditor
         // Drawing
         //---------------------------------
 
-        public void Draw()
+        public void Draw(bool useLocale)
         {
             // Box
             GUI.Box(rect, title, currentBoxStyle);
 
-            OnDraw();
+            OnDraw(useLocale);
         }
 
         protected void DrawTitle(string text)
@@ -261,7 +261,7 @@ namespace DialogueEditor
         // Abstract methods
         //---------------------------------
 
-        public abstract void OnDraw();
+        public abstract void OnDraw(bool useLocale);
         protected abstract void ProcessContextMenu();
         protected abstract void OnSetSelected(bool selected);
     }
@@ -334,7 +334,7 @@ namespace DialogueEditor
         // Drawing
         //---------------------------------
 
-        public override void OnDraw()
+        public override void OnDraw(bool useLocale)
         {
             if (DialogueEditorWindow.ConversationRoot == SpeechNode)
                 DrawTitle(isSelected ? "[Root]Speech node (selected)." : "[Root] Speech node.");
@@ -343,7 +343,7 @@ namespace DialogueEditor
 
             // Name
             const int NAME_PADDING = 1;
-            string nodeName = SpeechNode.UseLocalisation ? SpeechNode.NameLocalisationID : SpeechNode.Name;
+            string nodeName = useLocale ? SpeechNode.NameLocalisationID : SpeechNode.Name;
             Rect name = new Rect(rect.x + TEXT_BORDER * 0.5f, rect.y + NAME_PADDING + TITLE_HEIGHT, rect.width - TEXT_BORDER * 0.5f, NAME_HEIGHT);
             GUI.Box(name, nodeName, npcNameStyle);
 
@@ -353,7 +353,7 @@ namespace DialogueEditor
                 GUI.DrawTexture(icon, SpeechNode.Icon.texture, ScaleMode.ScaleToFit);
 
             // Text
-            string nodeText = SpeechNode.UseLocalisation ? SpeechNode.TextLocalisationID : SpeechNode.Text;
+            string nodeText = useLocale ? SpeechNode.TextLocalisationID : SpeechNode.Text;
             DrawInternalText(nodeText, SPRITE_SZ + 5, NAME_HEIGHT + NAME_PADDING);
         }
 
@@ -447,10 +447,10 @@ namespace DialogueEditor
         // Drawing
         //---------------------------------
 
-        public override void OnDraw()
+        public override void OnDraw(bool useLocale)
         {
             DrawTitle( isSelected ? "Option node (selected)." : "Option node.");
-            string nodeText = OptionNode.UseLocalisation ? OptionNode.TextLocalisationID : OptionNode.Text;
+            string nodeText = useLocale ? OptionNode.TextLocalisationID : OptionNode.Text;
             DrawInternalText(nodeText);
         }
 

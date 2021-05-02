@@ -31,17 +31,32 @@ namespace DialogueEditor
         // Getters
         public int Version { get { return saveVersion; } }
 
+
+        //---------------------
         // Serialized data
+
+        // Node IDs
         [SerializeField] public int CurrentIDCounter = 1;
+
+        // Save data
         [SerializeField] private string json;
         [SerializeField] private int saveVersion;
+
+        // Default values 
         [SerializeField] public string DefaultName;
         [SerializeField] public Sprite DefaultSprite;
         [SerializeField] public TMPro.TMP_FontAsset DefaultFont;
-        [FormerlySerializedAs("Events")]
-        [SerializeField] private List<NodeEventHolder> NodeSerializedDataList;
         [SerializeField] TMPro.TMP_FontAsset ContinueAndEndFont;
 
+        // Node Event and Serialized data 
+        [FormerlySerializedAs("Events")]
+        [SerializeField] private List<NodeEventHolder> NodeSerializedDataList;
+
+        // Localisation
+        [SerializeField] public bool UseLocalisation;
+
+
+        //---------------------
         // Runtime vars
         public UnityEngine.Events.UnityEvent Event;
         public List<EditableParameter> ParameterList; // Serialized into the json string
@@ -158,6 +173,7 @@ namespace DialogueEditor
                 conversation = new EditableConversation();
             }
 
+            // Save version
             conversation.SaveVersion = this.saveVersion;
 
             // Clear our dummy event
@@ -333,6 +349,9 @@ namespace DialogueEditor
             // Construct the parameters
             CreateParameters(ec, conversation);
 
+            // Construct the misc vars
+            conversation.UseLocalisation = this.UseLocalisation;
+
             // Create a dictionary to store our created nodes by UID
             Dictionary<int, SpeechNode> speechByID = new Dictionary<int, SpeechNode>();
             Dictionary<int, OptionNode> optionsByID = new Dictionary<int, OptionNode>();
@@ -382,7 +401,6 @@ namespace DialogueEditor
             SpeechNode speech = new SpeechNode();
             speech.Name = editableNode.Name;
             speech.Text = editableNode.Text;
-            speech.UseLocalisation = editableNode.UseLocalisation;
             speech.TextLocalisationID = editableNode.TextLocalisationID;
             speech.AutomaticallyAdvance = editableNode.AdvanceDialogueAutomatically;
             speech.AutoAdvanceShouldDisplayOption = editableNode.AutoAdvanceShouldDisplayOption;
@@ -407,6 +425,7 @@ namespace DialogueEditor
         {
             OptionNode option = new OptionNode();
             option.Text = editableNode.Text;
+            option.TextLocalisationID = editableNode.TextLocalisationID;
             option.TMPFont = editableNode.TMPFont;
 
             CopyParamActions(editableNode, option);

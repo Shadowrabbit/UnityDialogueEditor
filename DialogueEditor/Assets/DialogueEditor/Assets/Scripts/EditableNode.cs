@@ -47,7 +47,6 @@ namespace DialogueEditor
 
         // ----
         // Serialized Node data
-        [DataMember] public bool UseLocalisation;
         [DataMember] public string TextLocalisationID;
         [DataMember] public string Text;
         [DataMember] public List<EditableConnection> Connections;

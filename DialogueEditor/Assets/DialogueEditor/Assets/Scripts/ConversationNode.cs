@@ -36,9 +36,6 @@ namespace DialogueEditor
         /// <summary> The body text of the node, if not using Localisation. </summary>
         public string Text;
 
-        /// <summary> Does this node use the Localisation ID? </summary>
-        public bool UseLocalisation;
-
         /// <summary> The Localisation ID for the body text, from the Localisation database. </summary>
         public string TextLocalisationID;
 

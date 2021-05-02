@@ -38,7 +38,7 @@ namespace DialogueEditor
         public Sprite OptionImage;
         public bool OptionImageSliced;
         public bool AllowMouseInteraction;
-        public DialogueEditorLocalisationObject Localisation;
+        public DialogueEditorLocalisationObject LocalisationObject;
 
         // Non-User facing 
         // Not exposed via custom inspector
@@ -74,7 +74,7 @@ namespace DialogueEditor
         private eState m_state;
         private float m_stateTime;
         
-        private Conversation m_conversation;
+        private Conversation m_currentConversation;
         private SpeechNode m_currentSpeech;
         private OptionNode m_selectedOption;
 
@@ -150,12 +150,12 @@ namespace DialogueEditor
 
         public void StartConversation(NPCConversation conversation)
         {
-            m_conversation = conversation.Deserialize();
+            m_currentConversation = conversation.Deserialize();
             if (OnConversationStarted != null)
                 OnConversationStarted.Invoke();
 
             TurnOnUI();
-            m_currentSpeech = m_conversation.Root;
+            m_currentSpeech = m_currentConversation.Root;
             SetState(eState.TransitioningDialogueBoxOn);
         }
 
@@ -216,7 +216,7 @@ namespace DialogueEditor
         public void SetInt(string paramName, int value)
         {
             eParamStatus status;
-            m_conversation.SetInt(paramName, value, out status);
+            m_currentConversation.SetInt(paramName, value, out status);
 
             if (status == eParamStatus.NoParamFound)
             {
@@ -227,7 +227,7 @@ namespace DialogueEditor
         public void SetBool(string paramName, bool value)
         {
             eParamStatus status;
-            m_conversation.SetBool(paramName, value, out status);
+            m_currentConversation.SetBool(paramName, value, out status);
 
             if (status == eParamStatus.NoParamFound)
             {
@@ -238,7 +238,7 @@ namespace DialogueEditor
         public int GetInt(string paramName)
         {
             eParamStatus status;
-            int value = m_conversation.GetInt(paramName, out status);
+            int value = m_currentConversation.GetInt(paramName, out status);
 
             if (status == eParamStatus.NoParamFound)
             {
@@ -251,7 +251,7 @@ namespace DialogueEditor
         public bool GetBool(string paramName)
         {
             eParamStatus status;
-            bool value = m_conversation.GetBool(paramName, out status);
+            bool value = m_currentConversation.GetBool(paramName, out status);
 
             if (status == eParamStatus.NoParamFound)
             {
@@ -263,7 +263,7 @@ namespace DialogueEditor
 
         public void SetLanguage(SystemLanguage lang)
         {
-            if (Localisation.Database.IsLanguageSupported(lang))
+            if (LocalisationObject.Database.IsLanguageSupported(lang))
             {
                 m_currentLanguage = lang;
             }
@@ -504,9 +504,9 @@ namespace DialogueEditor
                 string speechText = "";
 
                 // Get localisation entry for current language or body text
-                if (speech.UseLocalisation)
+                if (m_currentConversation.UseLocalisation)
                 {
-                    speechText = Localisation.Database.GetTranslation(speech.TextLocalisationID, m_currentLanguage);
+                    speechText = LocalisationObject.Database.GetTranslation(speech.TextLocalisationID, m_currentLanguage);
                 }
                 else
                 {
@@ -540,9 +540,9 @@ namespace DialogueEditor
             // Set font
             {
                 // Specific language font
-                if (speech.UseLocalisation && Localisation.HasLanguageFont(m_currentLanguage))
+                if (m_currentConversation.UseLocalisation)
                 {
-                    DialogueText.font = Localisation.GetLanguageFont(m_currentLanguage);
+                    DialogueText.font = LocalisationObject.GetLanguageFont(m_currentLanguage);
                 }
                 // Speech specific font
                 else if (speech.TMPFont != null)
@@ -680,12 +680,12 @@ namespace DialogueEditor
             if (m_currentSpeech.ConnectionType == Connection.eConnectionType.Option)
             {
                 for (int i = 0; i < m_currentSpeech.Connections.Count; i++)
-                {
+                    {
                     OptionConnection connection = m_currentSpeech.Connections[i] as OptionConnection;
                     if (ConditionsMet(connection))
                     {
                         UIConversationButton uiOption = CreateButton();
-                        uiOption.SetupButton(UIConversationButton.eButtonType.Option, connection.OptionNode);
+                        uiOption.SetupButton(UIConversationButton.eButtonType.Option, connection.OptionNode, m_currentConversation.UseLocalisation, m_currentLanguage, this.LocalisationObject);
                     }
                 }
             }
@@ -705,19 +705,19 @@ namespace DialogueEditor
                         // If there was no valid speech node (due to no conditions being met) this becomes a None button type
                         if (next == null)
                         {
-                            uiOption.SetupButton(UIConversationButton.eButtonType.None, null);
+                            uiOption.SetupButton(UIConversationButton.eButtonType.End, null, m_currentConversation.UseLocalisation, m_currentLanguage, this.LocalisationObject);
                         }
                         // Else, valid speech node found
                         else
                         {
-                            uiOption.SetupButton(UIConversationButton.eButtonType.Speech, next);
+                            uiOption.SetupButton(UIConversationButton.eButtonType.Continue, next, m_currentConversation.UseLocalisation, m_currentLanguage, this.LocalisationObject);
                         }
                         
                     }
                     else if (m_currentSpeech.ConnectionType == Connection.eConnectionType.None)
                     {
                         UIConversationButton uiOption = CreateButton();
-                        uiOption.SetupButton(UIConversationButton.eButtonType.None, null);
+                        uiOption.SetupButton(UIConversationButton.eButtonType.End, null, m_currentConversation.UseLocalisation, m_currentLanguage, this.LocalisationObject);
                     }
                 }
 
@@ -794,7 +794,7 @@ namespace DialogueEditor
                     string paramName = condition.ParameterName;
                     int requiredValue = condition.RequiredValue;
                     eParamStatus status;
-                    int currentValue = m_conversation.GetInt(paramName, out status);
+                    int currentValue = m_currentConversation.GetInt(paramName, out status);
 
                     switch (condition.CheckType)
                     {
@@ -819,7 +819,7 @@ namespace DialogueEditor
                     string paramName = condition.ParameterName;
                     bool requiredValue = condition.RequiredValue;
                     eParamStatus status;
-                    bool currentValue = m_conversation.GetBool(paramName, out status);
+                    bool currentValue = m_currentConversation.GetBool(paramName, out status);
 
                     switch (condition.CheckType)
                     {
