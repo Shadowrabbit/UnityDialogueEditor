@@ -108,20 +108,12 @@ namespace DialogueEditor
         {
             if (!ConversationManager.Instance.AllowMouseInteraction) { return; }
 
-            switch (m_buttonType)
-            {
-                case eButtonType.Speech:
-                    ConversationManager.Instance.SpeechSelected(m_node as SpeechNode);
-                    break;
+            DoClickBehaviour();
+        }
 
-                case eButtonType.Option:
-                    ConversationManager.Instance.OptionSelected(m_node as OptionNode);
-                    break;
-
-                case eButtonType.None:
-                    ConversationManager.Instance.EndButtonSelected();
-                    break;
-            }
+        public void OnButtonPressed()
+        {
+            DoClickBehaviour();
         }
 
 
@@ -196,6 +188,40 @@ namespace DialogueEditor
 
                 case eButtonType.None:
                     TextMesh.text = "End.";
+                    break;
+            }
+
+            if (node.TMPFont != null)
+            {
+                TextMesh.font = node.TMPFont;
+            }
+            else
+            {
+                TextMesh.font = null;
+            }
+        }
+
+
+
+
+        //--------------------------------------
+        // Private logic
+        //--------------------------------------
+
+        private void DoClickBehaviour()
+        {
+            switch (m_buttonType)
+            {
+                case eButtonType.Speech:
+                    ConversationManager.Instance.SpeechSelected(m_node as SpeechNode);
+                    break;
+
+                case eButtonType.Option:
+                    ConversationManager.Instance.OptionSelected(m_node as OptionNode);
+                    break;
+
+                case eButtonType.None:
+                    ConversationManager.Instance.EndButtonSelected();
                     break;
             }
         }

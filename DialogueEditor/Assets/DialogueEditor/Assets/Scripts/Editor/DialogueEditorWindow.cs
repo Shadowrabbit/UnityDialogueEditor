@@ -438,7 +438,10 @@ namespace DialogueEditor
             if (CurrentAsset == null)
             {
                 DrawTitleBar();
-                Repaint();
+                if (GUI.changed)
+                {
+                    Repaint();
+                }
                 return;
             }
 
@@ -680,6 +683,7 @@ namespace DialogueEditor
                     CurrentAsset.ParameterList.RemoveAt(i);
                     i--;
                 }
+                EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
 
                 GUILayout.EndHorizontal();
             }

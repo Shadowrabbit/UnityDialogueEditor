@@ -195,7 +195,7 @@ namespace DialogueEditor
             if (m_uiOptions.Count == 0) { return; }
 
             UIConversationButton button = m_uiOptions[m_currentSelectedIndex];
-            button.OnClick();
+            button.OnButtonPressed();
         }
 
         public void AlertHover(UIConversationButton button)
