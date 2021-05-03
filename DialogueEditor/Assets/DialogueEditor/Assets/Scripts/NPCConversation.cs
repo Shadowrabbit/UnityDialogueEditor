@@ -51,6 +51,8 @@ namespace DialogueEditor
         // Node Event and Serialized data 
         [FormerlySerializedAs("Events")]
         [SerializeField] private List<NodeEventHolder> NodeSerializedDataList;
+        [SerializeField] public TMPro.TMP_FontAsset ContinueFont;
+        [SerializeField] public TMPro.TMP_FontAsset EndConversationFont;
 
         // Localisation
         [SerializeField] public bool UseLocalisation;
@@ -349,8 +351,10 @@ namespace DialogueEditor
             // Construct the parameters
             CreateParameters(ec, conversation);
 
-            // Construct the misc vars
+            // Construct the Conversation-Based variables (not node-based)
             conversation.UseLocalisation = this.UseLocalisation;
+            conversation.ContinueFont = this.ContinueFont;
+            conversation.EndConversationFont = this.EndConversationFont;
 
             // Create a dictionary to store our created nodes by UID
             Dictionary<int, SpeechNode> speechByID = new Dictionary<int, SpeechNode>();

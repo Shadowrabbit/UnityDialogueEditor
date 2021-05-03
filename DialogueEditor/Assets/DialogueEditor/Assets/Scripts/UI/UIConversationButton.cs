@@ -171,64 +171,58 @@ namespace DialogueEditor
             TextMesh.color = c_text;
         }
 
-        public void SetupButton(eButtonType buttonType, ConversationNode node, bool useLocalisation, SystemLanguage currentLanguage, DialogueEditorLocalisationObject locale)
+        public void SetAsOptionButton(ConversationNode node, bool useLocalisation, SystemLanguage currentLanguage, DialogueEditorLocalisationObject locale)
         {
-            m_buttonType = buttonType;
+            m_buttonType = eButtonType.Option;
             m_node = node;
 
-            switch (m_buttonType)
+            if (useLocalisation)
             {
-                case eButtonType.Option:
-                    {
-                        if (useLocalisation)
-                        {
-                            TextMesh.text = locale.Database.GetTranslation(node.TextLocalisationID, currentLanguage);
-                        }
-                        else
-                        {
-                            TextMesh.text = node.Text;
-                        }
-                    }
-                    break;
-
-                case eButtonType.Continue:
-                    {
-                        if (useLocalisation)
-                        {
-                            TextMesh.text = "Continue."; // todo 'continue' locale;
-                        }
-                        else
-                        {
-                            TextMesh.text = "Continue.";
-                        }
-                    }
-                    break;
-
-                case eButtonType.End:
-                    {
-                        if (useLocalisation)
-                        {
-                            TextMesh.text = "End."; // todo 'end' locale;
-                        }
-                        else
-                        {
-                            TextMesh.text = "End.";
-                        }
-                    }
-                    break;
-            }
-
-            if (node.TMPFont != null)
-            {
-                TextMesh.font = node.TMPFont;
+                TextMesh.text = locale.Database.GetTranslation(node.TextLocalisationID, currentLanguage);
             }
             else
             {
-                TextMesh.font = null;
+                TextMesh.text = node.Text;
             }
+
+            TextMesh.font = node.TMPFont;
         }
 
+        public void SetAsContinueButton(ConversationNode node, bool useLocalisation, SystemLanguage currentLanguage, DialogueEditorLocalisationObject locale, TMPro.TMP_FontAsset continueFont = null)
+        {
+            m_buttonType = eButtonType.Continue;
+            m_node = node;
 
+            if (useLocalisation)
+            {
+                TextMesh.text = "Continue"; // locale todo
+            }
+            else
+            {
+                TextMesh.text = "Continue";
+            }
+
+            TextMesh.font = continueFont;
+        }
+
+        public void SetAsEndButton(bool useLocalisation, SystemLanguage currentLanguage, DialogueEditorLocalisationObject locale, TMPro.TMP_FontAsset endFont = null)
+        {
+            m_buttonType = eButtonType.End;
+            m_node = null;
+
+            if (useLocalisation)
+            {
+                TextMesh.text = "End"; // locale todo
+            }
+            else
+            {
+                TextMesh.text = "End";
+            }
+
+            TextMesh.font = endFont;
+        }
+
+    
 
 
         //--------------------------------------

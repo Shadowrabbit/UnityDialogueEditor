@@ -685,7 +685,7 @@ namespace DialogueEditor
                     if (ConditionsMet(connection))
                     {
                         UIConversationButton uiOption = CreateButton();
-                        uiOption.SetupButton(UIConversationButton.eButtonType.Option, connection.OptionNode, m_currentConversation.UseLocalisation, m_currentLanguage, this.LocalisationObject);
+                        uiOption.SetAsOptionButton(connection.OptionNode, m_currentConversation.UseLocalisation, m_currentLanguage, this.LocalisationObject);
                     }
                 }
             }
@@ -705,19 +705,19 @@ namespace DialogueEditor
                         // If there was no valid speech node (due to no conditions being met) this becomes a None button type
                         if (next == null)
                         {
-                            uiOption.SetupButton(UIConversationButton.eButtonType.End, null, m_currentConversation.UseLocalisation, m_currentLanguage, this.LocalisationObject);
+                            uiOption.SetAsEndButton(m_currentConversation.UseLocalisation, m_currentLanguage, this.LocalisationObject, m_currentConversation.EndConversationFont); 
                         }
                         // Else, valid speech node found
                         else
                         {
-                            uiOption.SetupButton(UIConversationButton.eButtonType.Continue, next, m_currentConversation.UseLocalisation, m_currentLanguage, this.LocalisationObject);
+                            uiOption.SetAsContinueButton(next, m_currentConversation.UseLocalisation, m_currentLanguage, this.LocalisationObject, m_currentConversation.ContinueFont); 
                         }
                         
                     }
                     else if (m_currentSpeech.ConnectionType == Connection.eConnectionType.None)
                     {
                         UIConversationButton uiOption = CreateButton();
-                        uiOption.SetupButton(UIConversationButton.eButtonType.End, null, m_currentConversation.UseLocalisation, m_currentLanguage, this.LocalisationObject);
+                        uiOption.SetAsEndButton(m_currentConversation.UseLocalisation, m_currentLanguage, this.LocalisationObject, m_currentConversation.EndConversationFont);
                     }
                 }
 

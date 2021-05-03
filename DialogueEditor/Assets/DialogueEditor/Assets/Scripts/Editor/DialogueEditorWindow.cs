@@ -711,7 +711,7 @@ namespace DialogueEditor
         {
             GUILayout.Label("Default Speech-Node values", panelTitleStyle);
 
-            float labelWidth = panelWidth * 0.3f;
+            float labelWidth = panelWidth * 0.4f;
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("Name:", GUILayout.MinWidth(labelWidth), GUILayout.MaxWidth(labelWidth));
@@ -727,6 +727,21 @@ namespace DialogueEditor
             EditorGUILayout.LabelField("Font:", GUILayout.MinWidth(labelWidth), GUILayout.MaxWidth(labelWidth));
             CurrentAsset.DefaultFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(CurrentAsset.DefaultFont, typeof(TMPro.TMP_FontAsset), false);
             EditorGUILayout.EndHorizontal();
+
+            DrawLine();
+
+            // Font options
+            GUILayout.Label("'Continue' and 'End' button font", panelTitleStyle);
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("'Continue' font:", GUILayout.MinWidth(labelWidth), GUILayout.MaxWidth(labelWidth));
+            CurrentAsset.ContinueFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(CurrentAsset.ContinueFont, typeof(TMPro.TMP_FontAsset), false);
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("'End' font:", GUILayout.MinWidth(labelWidth), GUILayout.MaxWidth(labelWidth));
+            CurrentAsset.EndConversationFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(CurrentAsset.EndConversationFont, typeof(TMPro.TMP_FontAsset), false);
+            EditorGUILayout.EndHorizontal();
         }
 
         private void DrawLine()
@@ -739,6 +754,7 @@ namespace DialogueEditor
             EditableSpeechNode node = (selectedNode.Info as EditableSpeechNode);
             GUILayout.Label("[" + node.ID + "] NPC Dialogue Node.", panelTitleStyle);
             EditorGUILayout.Space();
+            DrawLine();
 
             // Localisation
             if (CurrentAsset.UseLocalisation)
@@ -837,6 +853,7 @@ namespace DialogueEditor
             EditableOptionNode node = (selectedNode.Info as EditableOptionNode);
             GUILayout.Label("[" + node.ID + "] Option Node.", panelTitleStyle);
             EditorGUILayout.Space();
+            DrawLine();
 
             // Localisation
             if (CurrentAsset.UseLocalisation)
@@ -851,9 +868,13 @@ namespace DialogueEditor
                 EditorGUILayout.Space();
             }
 
+            DrawLine();
+
             GUILayout.Label("TMP Font", EditorStyles.boldLabel);
             node.TMPFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(node.TMPFont, typeof(TMPro.TMP_FontAsset), false);
             EditorGUILayout.Space();
+
+            DrawLine();
 
             Panel_NodeParamActions(node);
         }
