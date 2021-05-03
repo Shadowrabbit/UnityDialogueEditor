@@ -39,7 +39,8 @@ namespace DialogueEditor
         [SerializeField] public TMPro.TMP_FontAsset DefaultFont;
         [FormerlySerializedAs("Events")]
         [SerializeField] private List<NodeEventHolder> NodeSerializedDataList;
-        [SerializeField] TMPro.TMP_FontAsset ContinueAndEndFont;
+        [SerializeField] public TMPro.TMP_FontAsset ContinueFont;
+        [SerializeField] public TMPro.TMP_FontAsset EndConversationFont;
 
         // Runtime vars
         public UnityEngine.Events.UnityEvent Event;
@@ -331,6 +332,10 @@ namespace DialogueEditor
 
             // Construct the parameters
             CreateParameters(ec, conversation);
+
+            // Construct the Conversation-Based variables (not node-based)
+            conversation.ContinueFont = this.ContinueFont;
+            conversation.EndConversationFont = this.EndConversationFont;
 
             // Create a dictionary to store our created nodes by UID
             Dictionary<int, SpeechNode> speechByID = new Dictionary<int, SpeechNode>();

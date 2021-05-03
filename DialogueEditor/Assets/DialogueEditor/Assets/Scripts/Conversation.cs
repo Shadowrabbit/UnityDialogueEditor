@@ -27,6 +27,12 @@ namespace DialogueEditor
         /// <summary> The parameters of this conversation, and their values </summary>
         public List<Parameter> Parameters;
 
+        /// <summary> The font used for the 'Continue' button. </summary>
+        public TMPro.TMP_FontAsset ContinueFont;
+
+        /// <summary> The font used for the 'End' button. </summary>
+        public TMPro.TMP_FontAsset EndConversationFont;
+
         // ---
 
         public void SetInt(string paramName, int value, out eParamStatus status)

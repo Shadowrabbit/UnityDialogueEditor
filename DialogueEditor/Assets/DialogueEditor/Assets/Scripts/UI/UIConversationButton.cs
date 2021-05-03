@@ -17,7 +17,7 @@ namespace DialogueEditor
         {
             Option,
             Speech,
-            None
+            End
         }
 
         // Getters
@@ -171,7 +171,7 @@ namespace DialogueEditor
             TextMesh.color = c_text;
         }
 
-        public void SetupButton(eButtonType buttonType, ConversationNode node)
+        public void SetupButton(eButtonType buttonType, ConversationNode node, TMPro.TMP_FontAsset continueFont = null, TMPro.TMP_FontAsset endFont = null)
         {
             m_buttonType = buttonType;
             m_node = node;
@@ -179,25 +179,25 @@ namespace DialogueEditor
             switch (m_buttonType)
             {
                 case eButtonType.Option:
-                    TextMesh.text = node.Text;
+                    {
+                        TextMesh.text = node.Text;
+                        TextMesh.font = node.TMPFont;
+                    }
                     break;
 
                 case eButtonType.Speech:
-                    TextMesh.text = "Continue.";
+                    {
+                        TextMesh.text = "Continue.";
+                        TextMesh.font = continueFont;
+                    }
                     break;
 
-                case eButtonType.None:
-                    TextMesh.text = "End.";
+                case eButtonType.End:
+                    {
+                        TextMesh.text = "End.";
+                        TextMesh.font = endFont;
+                    }
                     break;
-            }
-
-            if (node.TMPFont != null)
-            {
-                TextMesh.font = node.TMPFont;
-            }
-            else
-            {
-                TextMesh.font = null;
             }
         }
 
@@ -220,7 +220,7 @@ namespace DialogueEditor
                     ConversationManager.Instance.OptionSelected(m_node as OptionNode);
                     break;
 
-                case eButtonType.None:
+                case eButtonType.End:
                     ConversationManager.Instance.EndButtonSelected();
                     break;
             }

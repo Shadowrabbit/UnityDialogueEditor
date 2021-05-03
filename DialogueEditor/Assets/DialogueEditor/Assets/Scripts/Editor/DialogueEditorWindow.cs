@@ -671,6 +671,21 @@ namespace DialogueEditor
                 EditorGUILayout.LabelField("Default Font:", GUILayout.MinWidth(labelWidth), GUILayout.MaxWidth(labelWidth));
                 CurrentAsset.DefaultFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(CurrentAsset.DefaultFont, typeof(TMPro.TMP_FontAsset), false, GUILayout.MaxWidth(fieldWidth));
                 EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+
+                // Font options
+                GUILayout.Label("'Continue' and 'End' button font", panelTitleStyle);
+
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("'Continue' font:", GUILayout.MinWidth(labelWidth), GUILayout.MaxWidth(labelWidth));
+                CurrentAsset.ContinueFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(CurrentAsset.ContinueFont, typeof(TMPro.TMP_FontAsset), false, GUILayout.MaxWidth(fieldWidth));
+                EditorGUILayout.EndHorizontal();
+
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("'End' font:", GUILayout.MinWidth(labelWidth), GUILayout.MaxWidth(labelWidth));
+                CurrentAsset.EndConversationFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(CurrentAsset.EndConversationFont, typeof(TMPro.TMP_FontAsset), false, GUILayout.MaxWidth(fieldWidth));
+                EditorGUILayout.EndHorizontal();
             }
             else
             {
