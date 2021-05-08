@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿    using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -24,7 +24,7 @@ namespace DialogueEditor
         private const float SIDE_PADDING = 5;
         private const float LOCALE_ENTRY_BOX_TOP_PADDING = 20;
         private const float LOCALE_ENTRY_BOX_ENTRY_HEIGHT = 22.5f;
-        private const float LOCALE_ENTRY_BOX_BOTTOM_SCROLLBAR_PADDING = 25;
+        private const float LOCALE_ENTRY_BOX_BOTTOM_SCROLLBAR_PADDING = 40;
 
         // -- Enums -- :
 
@@ -44,6 +44,7 @@ namespace DialogueEditor
         private DialogueEditorLocalisationObject CurrentAsset; // The Localisation scriptable object that is currently being viewed/edited
         private List<SystemLanguage> _supportedLanguages = new List<SystemLanguage>();
         private eWindowMode m_windowMode;
+        private List<DialogueEditorLocalisationObject> _FoundAssets = new List<DialogueEditorLocalisationObject>();
 
         // Add new entry
         private string m_newID;
@@ -81,20 +82,6 @@ namespace DialogueEditor
             return EditorWindow.GetWindow<DialogueLocaleWindow>("Dialogue Editor Locale");
         }
 
-        [UnityEditor.Callbacks.OnOpenAsset(1)]
-        public static bool OpenDialogue(int assetInstanceID, int line)
-        {
-            DialogueEditorLocalisationObject locale = EditorUtility.InstanceIDToObject(assetInstanceID) as DialogueEditorLocalisationObject;
-
-            if (locale != null)
-            {
-                DialogueLocaleWindow window = ShowWindow();
-                window.LoadNewAsset(locale);
-                return true;
-            }
-            return false;
-        }
-
 
 
 
@@ -114,6 +101,8 @@ namespace DialogueEditor
         }
 
 
+
+
         //--------------------------------------
         // OnEnable, OnDisable, OnFocus, LostFocus, 
         // Destroy, SelectionChange, ReloadScripts
@@ -121,7 +110,7 @@ namespace DialogueEditor
 
         private void OnEnable()
         {
-
+            CurrentAsset = null;
         }
 
         private void InitGUIStyles()
@@ -131,7 +120,7 @@ namespace DialogueEditor
 
         private void OnDisable()
         {
-
+            CurrentAsset = null;
         }
 
         protected void OnFocus()
@@ -165,23 +154,23 @@ namespace DialogueEditor
                 return;
             }
 
-            // Get asset the user is selecting
-            Object newlySelectedAsset = Selection.activeObject;
+            //// Get asset the user is selecting
+            //Object newlySelectedAsset = Selection.activeObject;
 
-            // If it's not null
-            if (newlySelectedAsset != null)
-            {
-                DialogueEditorLocalisationObject newLocale = newlySelectedAsset as DialogueEditorLocalisationObject;
-                if (newLocale != null)
-                {
-                    LoadNewAsset(newLocale);
-                    Repaint();
-                    return;
-                }
-            }
+            //// If it's not null
+            //if (newlySelectedAsset != null)
+            //{
+            //    DialogueEditorLocalisationObject newLocale = newlySelectedAsset as DialogueEditorLocalisationObject;
+            //    if (newLocale != null)
+            //    {
+            //        LoadNewAsset(newLocale);
+            //        Repaint();
+            //        return;
+            //    }
+            //}
 
-            CurrentAsset = null;
-            Repaint();
+            //CurrentAsset = null;
+            //Repaint();
         }
 
 
@@ -193,7 +182,10 @@ namespace DialogueEditor
 
         private void Update()
         {
-
+            if (CurrentAsset == null)
+            {
+                TryLookForAsset();
+            }
         }
 
 
@@ -207,29 +199,29 @@ namespace DialogueEditor
             if (m_boldStyle == null)
             {
                 m_boldStyle = new GUIStyle();
-            }
-            m_boldStyle.fontStyle = FontStyle.Bold;
-            m_boldStyle.richText = true;
-            if (EditorGUIUtility.isProSkin)
-            {
-                m_boldStyle.normal.textColor = DialogueEditorUtil.ProSkinTextColour;
+                m_boldStyle.fontStyle = FontStyle.Bold;
+                m_boldStyle.richText = true;
+                if (EditorGUIUtility.isProSkin)
+                {
+                    m_boldStyle.normal.textColor = DialogueEditorUtil.ProSkinTextColour;
+                }
             }
 
             if (m_wordWrapStyle == null)
             {
                 m_wordWrapStyle = new GUIStyle();
-            }
-            m_wordWrapStyle.wordWrap = true;
-            if (EditorGUIUtility.isProSkin)
-            {
-                m_wordWrapStyle.normal.textColor = DialogueEditorUtil.ProSkinTextColour;
+                m_wordWrapStyle.wordWrap = true;
+                if (EditorGUIUtility.isProSkin)
+                {
+                    m_wordWrapStyle.normal.textColor = DialogueEditorUtil.ProSkinTextColour;
+                }
             }
 
             if (m_entryStyle == null)
             {
                 m_entryStyle = new GUIStyle();
+                m_entryStyle.stretchWidth = false;
             }
-            m_entryStyle.stretchWidth = false;
         }
 
 
@@ -247,18 +239,23 @@ namespace DialogueEditor
                 return;
             }
 
-            if (CurrentAsset == null)
+            if (m_assetStatus == eAssetStatus.NoAssetsFound)
             {
-                DrawWindowMessage("No Localisation selected");
+                DrawWindowMessage("No Localisation object found in assets.");
+                return;
+            }
+            else if (m_assetStatus == eAssetStatus.MultipleAssetsFound)
+            {
+                DrawMultipleAssets();
                 return;
             }
 
+
+            // Validate
             if (CurrentAsset.Database == null)
             {
                 CurrentAsset.CreateDatabase();
             }
-
-            // Validate
             ValidateStyles();
 
             // Draw
@@ -296,9 +293,37 @@ namespace DialogueEditor
             // Entire window scroll view end
             GUILayout.EndScrollView();
 
+            GUILayout.BeginHorizontal(GUI.skin.box);
+            EditorGUILayout.LabelField("Currently editing: " + CurrentAsset.name);
+            GUILayout.EndHorizontal();
+
             if (GUI.changed)
                 Repaint();
         }
+
+
+        private void DrawMultipleAssets()
+        {
+            if (_FoundAssets.Count > 0)
+            {
+                EditorGUILayout.LabelField("More than 1 Localisation object has been found. Only 1 should be present in the project.");
+                EditorGUILayout.Space();
+
+                for (int i = 0; i < _FoundAssets.Count; i++)
+                {
+                    string path = AssetDatabase.GetAssetPath(_FoundAssets[i]);
+                    int count = _FoundAssets[i].Database.GetLocalisationEntryCount;
+                    string printToScreen = i + ")  " + path + " \t | \t " + count + " locale entries.";
+                    EditorGUILayout.LabelField(printToScreen);
+                }
+
+            }
+            else
+            {
+                DrawWindowMessage("No valid localisation object found in assets.");
+            }
+        }
+
 
         private void DrawTitleBar()
         {
@@ -345,21 +370,21 @@ namespace DialogueEditor
 
             eWindowMode startingMode = m_windowMode;
 
-            // Add
-            if (startingMode == eWindowMode.AddNewEntry)
-                GUI.enabled = false;
-            if (GUILayout.Button("Add", EditorStyles.toolbarButton))
-            {
-                m_windowMode = eWindowMode.AddNewEntry;
-            }
-            GUI.enabled = true;
-
             // View
             if (startingMode == eWindowMode.ViewEntries)
                 GUI.enabled = false;
             if (GUILayout.Button("View", EditorStyles.toolbarButton))
             {
                 m_windowMode = eWindowMode.ViewEntries;
+            }
+            GUI.enabled = true;
+
+            // Add
+            if (startingMode == eWindowMode.AddNewEntry)
+                GUI.enabled = false;
+            if (GUILayout.Button("Add", EditorStyles.toolbarButton))
+            {
+                m_windowMode = eWindowMode.AddNewEntry;
             }
             GUI.enabled = true;
 
@@ -870,6 +895,80 @@ namespace DialogueEditor
         //--------------------------------------
         // Misc Util
         //--------------------------------------
+
+        private enum eAssetStatus
+        {
+            NoAssetsFound,
+            AssetFound,
+            MultipleAssetsFound
+        }
+
+        private eAssetStatus m_assetStatus;
+
+        private void TryLookForAsset()
+        {
+            string[] uids = AssetDatabase.FindAssets("t:DialogueEditorLocalisationObject");
+            List<DialogueEditorLocalisationObject> objs = new List<DialogueEditorLocalisationObject>();
+
+            // None found 
+            if (uids.Length == 0)
+            {
+                if (m_assetStatus != eAssetStatus.NoAssetsFound)
+                {
+                    m_assetStatus = eAssetStatus.NoAssetsFound;
+                    Repaint();
+                }
+            }
+
+            // One found 
+            else if (uids.Length == 1)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(uids[0]);
+                CurrentAsset = (DialogueEditorLocalisationObject)AssetDatabase.LoadAssetAtPath(path, typeof(DialogueEditorLocalisationObject));
+
+                if (CurrentAsset == null)
+                {
+                    if (m_assetStatus != eAssetStatus.NoAssetsFound)
+                    {
+                        m_assetStatus = eAssetStatus.NoAssetsFound;
+                        Repaint();
+                    }
+                }
+                else
+                {
+                    if (m_assetStatus != eAssetStatus.AssetFound)
+                    {
+                        m_assetStatus = eAssetStatus.AssetFound;
+                        Repaint();
+                    }
+                }
+            }
+
+            // More than one found
+            else if (uids.Length > 1)
+            {
+                // Add them all to a list 
+                int originalCount = _FoundAssets.Count;
+                _FoundAssets.Clear();
+                for (int i = 0; i < uids.Length; i++)
+                {
+                    string path = AssetDatabase.GUIDToAssetPath(uids[i]);
+                    DialogueEditorLocalisationObject obj = (DialogueEditorLocalisationObject)AssetDatabase.LoadAssetAtPath(path, typeof(DialogueEditorLocalisationObject));
+                    if (obj != null)
+                    {
+                        _FoundAssets.Add(obj);
+                    }
+                }
+
+                // Draw info
+                m_assetStatus = eAssetStatus.MultipleAssetsFound;
+                if (originalCount != _FoundAssets.Count)
+                {
+                    GUI.changed = true;
+                    Repaint();
+                }
+            }
+        }
 
         private void ClearSearch()
         {
