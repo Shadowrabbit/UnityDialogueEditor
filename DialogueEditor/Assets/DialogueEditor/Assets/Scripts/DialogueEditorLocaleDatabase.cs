@@ -215,6 +215,19 @@ namespace DialogueEditor
 
             return "";
         }
+
+        public LanguageData GetLanguageData(SystemLanguage lang)
+        {
+            for (int i = 0; i < m_languageData.Count; i++)
+            {
+                if (m_languageData[i].Language == lang)
+                {
+                    return m_languageData[i];
+                }
+            }
+
+            return null;
+        }
     }
 
 

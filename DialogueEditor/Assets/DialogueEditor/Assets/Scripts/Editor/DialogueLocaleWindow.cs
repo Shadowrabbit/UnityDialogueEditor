@@ -45,6 +45,7 @@ namespace DialogueEditor
         private List<SystemLanguage> _supportedLanguages = new List<SystemLanguage>();
         private eWindowMode m_windowMode;
         private List<DialogueEditorLocalisationObject> _FoundAssets = new List<DialogueEditorLocalisationObject>();
+        private bool m_editMode = false;
 
         // Add new entry
         private string m_newID;
@@ -153,24 +154,6 @@ namespace DialogueEditor
             {
                 return;
             }
-
-            //// Get asset the user is selecting
-            //Object newlySelectedAsset = Selection.activeObject;
-
-            //// If it's not null
-            //if (newlySelectedAsset != null)
-            //{
-            //    DialogueEditorLocalisationObject newLocale = newlySelectedAsset as DialogueEditorLocalisationObject;
-            //    if (newLocale != null)
-            //    {
-            //        LoadNewAsset(newLocale);
-            //        Repaint();
-            //        return;
-            //    }
-            //}
-
-            //CurrentAsset = null;
-            //Repaint();
         }
 
 
@@ -233,12 +216,12 @@ namespace DialogueEditor
 
         private void OnGUI()
         {
+            // Invalid / Exit checks. 
             if (Application.isPlaying)
             {
                 DrawWindowMessage(UNAVAILABLE_DURING_PLAY_TEXT);
                 return;
             }
-
             if (m_assetStatus == eAssetStatus.NoAssetsFound)
             {
                 DrawWindowMessage("No Localisation object found in assets.");
@@ -257,6 +240,11 @@ namespace DialogueEditor
                 CurrentAsset.CreateDatabase();
             }
             ValidateStyles();
+            if (_supportedLanguages.Count != CurrentAsset.Database.GetSupportedLanguages.Count)
+            {
+                _supportedLanguages = CurrentAsset.Database.GetSupportedLanguages;
+                _supportedLanguages.Sort();
+            }
 
             // Draw
             DrawTitleBar();
@@ -592,6 +580,7 @@ namespace DialogueEditor
         private void DrawCurrentEntries()
         {
             DrawSectionTitle("View entries:", m_boldStyle);
+            m_editMode = EditorGUILayout.Toggle("Edit mode", m_editMode);
 
             if (CurrentAsset.Database.GetLocalisationEntryCount > 0)
             {
@@ -624,13 +613,13 @@ namespace DialogueEditor
                         GUILayout.EndHorizontal();
 
                         // ID
-                        DrawLanguageEntry("ID:", entry.ID, SPACE);               
+                        DrawLanguageRowID("ID:", entry.ID, SPACE);               
 
                         // Each language
                         for (int j = 0; j < _supportedLanguages.Count; j++)
                         {
                             SystemLanguage lang = _supportedLanguages[j];
-                            DrawLanguageEntry(lang.ToString(), entry.GetLanguageText(lang), SPACE);
+                            DrawLanguageEntry(entry, lang, SPACE, m_editMode);
                         }
 
                         // Button
@@ -739,6 +728,8 @@ namespace DialogueEditor
 
         private void DrawSearchResults()
         {
+            m_editMode = EditorGUILayout.Toggle("Edit mode", m_editMode);
+
             if (m_searchResults.Count > 0)
             {
                 int search_numEntries = m_searchResults.Count;
@@ -769,13 +760,13 @@ namespace DialogueEditor
                         GUILayout.EndHorizontal();
 
                         // ID
-                        DrawLanguageEntry("ID:", entry.ID, SPACE);
+                        DrawLanguageRowID("ID:", entry.ID, SPACE);
 
                         // Each language
                         for (int j = 0; j < _supportedLanguages.Count; j++)
                         {
                             SystemLanguage lang = _supportedLanguages[j];
-                            DrawLanguageEntry(lang.ToString(), entry.GetLanguageText(lang), SPACE);
+                            DrawLanguageEntry(entry, lang, SPACE, m_editMode);
                         }
 
                         // Button
@@ -842,11 +833,28 @@ namespace DialogueEditor
             GUILayout.Space(SMALL_PADDING);
         }
 
-        private void DrawLanguageEntry(string prefixText, string labelText, int space)
+        private void DrawLanguageRowID(string prefixText, string labelText, int space)
         {
             GUILayout.BeginHorizontal();
-            EditorGUILayout.TextArea(labelText, EditorStyles.textField, GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(COLUMN_MAX_WIDTH));
+            EditorGUILayout.TextArea(labelText, EditorStyles.helpBox, GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(COLUMN_MAX_WIDTH));
             GUILayout.Space(space);
+            GUILayout.EndHorizontal();
+        }
+
+        private void DrawLanguageEntry(LocaleEntry entry, SystemLanguage language, int paddingSpace, bool editMode)
+        {
+            GUILayout.BeginHorizontal();
+            if (editMode)
+            {
+                LanguageData data = entry.GetLanguageData(language);
+                data.m_text = EditorGUILayout.TextArea(data.m_text, EditorStyles.textField, GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(COLUMN_MAX_WIDTH));
+            }
+            else
+            {
+                string text = entry.GetLanguageText(language);
+                EditorGUILayout.LabelField(text, EditorStyles.helpBox, GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(COLUMN_MAX_WIDTH));
+            }        
+            GUILayout.Space(paddingSpace);
             GUILayout.EndHorizontal();
         }
 

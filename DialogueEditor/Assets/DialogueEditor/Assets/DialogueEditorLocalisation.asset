@@ -18,12 +18,18 @@ MonoBehaviour:
       m_languageData:
       - m_language: 10
         m_languageAsString: English
-        m_text: Hello sir
+        m_text: what's dfdfd
       - m_language: 14
         m_languageAsString: French
-        m_text: bonjour
+        m_text: bonjouur!
       - m_language: 1
         m_languageAsString: Arabic
+        m_text: 
+      - m_language: 25
+        m_languageAsString: Lithuanian
+        m_text: 
+      - m_language: 28
+        m_languageAsString: Portuguese
         m_text: 
     - m_id: START_QUEST
       m_languageData:
@@ -35,6 +41,12 @@ MonoBehaviour:
         m_text: french quest start
       - m_language: 1
         m_languageAsString: Arabic
+        m_text: 
+      - m_language: 25
+        m_languageAsString: Lithuanian
+        m_text: 
+      - m_language: 28
+        m_languageAsString: Portuguese
         m_text: 
     m_supportedLanguages: 010000000a0000000e000000
   LanguageFontList:
