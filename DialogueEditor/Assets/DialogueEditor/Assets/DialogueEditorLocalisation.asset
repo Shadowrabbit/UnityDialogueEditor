@@ -18,18 +18,22 @@ MonoBehaviour:
       m_languageData:
       - m_language: 10
         m_languageAsString: English
-        m_text: what's dfdfd
+        m_text: hello, how are you doing today?
       - m_language: 14
         m_languageAsString: French
         m_text: bonjouur!
       - m_language: 1
         m_languageAsString: Arabic
-        m_text: 
+        m_text: "\u0645\u0631\u062D\u0628\u0627 \u0643\u064A\u0641 \u062D\u0627\u0644\u0643
+          \u0627\u0644\u064A\u0648\u0645\u061F"
       - m_language: 25
         m_languageAsString: Lithuanian
         m_text: 
       - m_language: 28
         m_languageAsString: Portuguese
+        m_text: 
+      - m_language: 17
+        m_languageAsString: Hebrew
         m_text: 
     - m_id: START_QUEST
       m_languageData:
@@ -41,14 +45,32 @@ MonoBehaviour:
         m_text: french quest start
       - m_language: 1
         m_languageAsString: Arabic
-        m_text: 
+        m_text: "\u0647\u0644 \u062A\u0631\u063A\u0628 \u0641\u064A \u0628\u062F\u0621
+          \u0627\u0644\u0628\u062D\u062B\u061F"
       - m_language: 25
         m_languageAsString: Lithuanian
         m_text: 
       - m_language: 28
         m_languageAsString: Portuguese
         m_text: 
-    m_supportedLanguages: 010000000a0000000e000000
+      - m_language: 17
+        m_languageAsString: Hebrew
+        m_text: 
+    - m_id: WIZARD_NAME
+      m_languageData:
+      - m_language: 10
+        m_languageAsString: English
+        m_text: Henry
+      - m_language: 1
+        m_languageAsString: Arabic
+        m_text: "\u0639\u0627\u0644\u064A"
+      - m_language: 14
+        m_languageAsString: French
+        m_text: simon french man
+      - m_language: 17
+        m_languageAsString: Hebrew
+        m_text: 
+    m_supportedLanguages: 010000000a0000000e00000011000000
   LanguageFontList:
   - Language: 1
-    Font: {fileID: 11400000, guid: d1e79b06c01ff1c4bb15552c18c4e0d3, type: 2}
+    Font: {fileID: 11400000, guid: 25284121523a2dc43aec098a32a6c810, type: 2}

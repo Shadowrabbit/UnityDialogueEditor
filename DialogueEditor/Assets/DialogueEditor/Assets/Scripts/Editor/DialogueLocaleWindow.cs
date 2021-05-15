@@ -20,7 +20,7 @@ namespace DialogueEditor
         private const int MAX_PER_PAGE = 10;
         private const int SMALL_PADDING = 5; 
         private const int LARGE_PADDING = 15;
-        private const int COLUMN_MAX_WIDTH = 80;
+        private const int COLUMN_MAX_WIDTH = 100;
         private const float SIDE_PADDING = 5;
         private const float LOCALE_ENTRY_BOX_TOP_PADDING = 20;
         private const float LOCALE_ENTRY_BOX_ENTRY_HEIGHT = 22.5f;
@@ -235,6 +235,8 @@ namespace DialogueEditor
 
 
             // Validate
+            if (CurrentAsset == null) { return; }
+
             if (CurrentAsset.Database == null)
             {
                 CurrentAsset.CreateDatabase();
@@ -563,7 +565,7 @@ namespace DialogueEditor
                 GUILayout.Space(EditorGUIUtility.singleLineHeight + 5);
                 if (GUILayout.Button("Add Entry", GUILayout.Width(100)))
                 {
-                    CurrentAsset.Database.AddNewEntry(m_newID, m_newEnglish);
+                    CurrentAsset.Database.CreateNewEntry(m_newID, m_newEnglish);
 
                     m_newID = "";
                     m_newEnglish = "";
@@ -1095,7 +1097,7 @@ namespace DialogueEditor
             {
                 LocaleEntry entry = db.GetEntryByIndex(i);
 
-                copy.AddNewEntry(entry.ID, entry.GetLanguageText(SystemLanguage.English));
+                copy.CreateNewEntry(entry.ID, entry.GetLanguageText(SystemLanguage.English));
 
                 for (int j = 0; j < supportedLanguages.Count; j++)
                 {
@@ -1226,7 +1228,7 @@ namespace DialogueEditor
                 // If entry doesn't exist, add it
                 if (!CurrentAsset.Database.DoesIDExist(importedEntry.ID))
                 {
-                    CurrentAsset.Database.AddNewEntry(importedEntry.ID, importedEntry.GetLanguageText(SystemLanguage.English));
+                    CurrentAsset.Database.CreateNewEntry(importedEntry.ID, importedEntry.GetLanguageText(SystemLanguage.English));
                 }
 
                 // For each language...
@@ -1356,7 +1358,7 @@ namespace DialogueEditor
 
                     if (localeEntry == null)
                     {
-                        CurrentAsset.Database.AddNewEntry(id, "");
+                        CurrentAsset.Database.CreateNewEntry(id, "");
                         localeEntry = CurrentAsset.Database.GetEntryByID(id);
                     }
 

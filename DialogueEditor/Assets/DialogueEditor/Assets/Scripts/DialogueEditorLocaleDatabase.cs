@@ -81,13 +81,14 @@ namespace DialogueEditor
 
         public void AddLanguage(SystemLanguage lang)
         {
+            // Add the language to our supported languages list
             if (!IsLanguageSupported(lang))
             {
                 m_supportedLanguages.Add(lang);
 
             }
           
-            // For each entry, add a 
+            // For each localisation entry, add the new language
             for (int i = 0; i < m_localisationEntries.Count; i++)
             {
                 if (!m_localisationEntries[i].HasLanguage(lang))
@@ -108,7 +109,7 @@ namespace DialogueEditor
             m_supportedLanguages.Remove(lang);
         }
 
-        public void AddNewEntry(string id, string englishText)
+        public void CreateNewEntry(string id, string englishText)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -126,7 +127,18 @@ namespace DialogueEditor
             }
 
             LocaleEntry newEntry = new LocaleEntry(id);
+
+            // Set the english text 
             newEntry.SetLanguageText(SystemLanguage.English, englishText); 
+
+            // Add a language entry for each other supported language 
+            foreach (SystemLanguage language in m_supportedLanguages)
+            {
+                if (language == SystemLanguage.English) { continue; }
+                newEntry.SetLanguageText(language, "");
+            }
+
+            // Add to our entries
             m_localisationEntries.Add(newEntry);
         }
 
@@ -177,7 +189,8 @@ namespace DialogueEditor
                 }
             }
 
-            m_languageData.Add(new LanguageData(lang, txt));
+            // If we get to here, the language was not present, hence we need to add it. 
+            AddLanguage(lang);
         }
 
         public void AddLanguage(SystemLanguage lang)

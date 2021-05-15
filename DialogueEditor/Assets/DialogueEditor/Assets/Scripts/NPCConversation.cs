@@ -404,6 +404,7 @@ namespace DialogueEditor
         {
             SpeechNode speech = new SpeechNode();
             speech.Name = editableNode.Name;
+            speech.NameLocalisationID = editableNode.NameLocalisationID;
             speech.Text = editableNode.Text;
             speech.TextLocalisationID = editableNode.TextLocalisationID;
             speech.AutomaticallyAdvance = editableNode.AdvanceDialogueAutomatically;

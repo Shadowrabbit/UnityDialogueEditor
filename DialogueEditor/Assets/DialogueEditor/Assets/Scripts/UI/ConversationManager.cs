@@ -67,13 +67,21 @@ namespace DialogueEditor
             }
         }
 
+        public SystemLanguage CurrentLanguage
+        {
+            get
+            {
+                return m_currentLanguage;
+            }
+        }
+
         // Private
         private float m_elapsedScrollTime;
         private int m_scrollIndex;
         public int m_targetScrollTextCount;
         private eState m_state;
         private float m_stateTime;
-        
+
         private Conversation m_currentConversation;
         private SpeechNode m_currentSpeech;
         private OptionNode m_selectedOption;
@@ -223,7 +231,7 @@ namespace DialogueEditor
                 LogWarning("parameter \'" + paramName + "\' does not exist.");
             }
         }
-        
+
         public void SetBool(string paramName, bool value)
         {
             eParamStatus status;
@@ -308,8 +316,22 @@ namespace DialogueEditor
                         SetColorAlpha(NameText, 0);
 
                         DialogueText.text = "";
-                        NameText.text = m_currentSpeech.Name;
                         NpcIcon.sprite = m_currentSpeech.Icon != null ? m_currentSpeech.Icon : BlankSprite;
+
+
+                        // Setup the text and font for the name
+                        if (m_currentConversation.UseLocalisation)
+                        {
+                            string localisedName = LocalisationObject.Database.GetTranslation(m_currentSpeech.NameLocalisationID, m_currentLanguage);
+                            DEUtil.SetTextmeshText(NameText, localisedName, m_currentLanguage);
+                        }
+                        else
+                        {
+                            DEUtil.SetTextmeshText(NameText, m_currentSpeech.Name, m_currentLanguage);
+                        }
+
+                        SetSpeechFont(NameText, m_currentSpeech);
+
                     }
                     break;
 
@@ -346,7 +368,7 @@ namespace DialogueEditor
 
             if (t > 1)
             {
-                DoSpeech(m_currentSpeech);
+                DoSpeechNode(m_currentSpeech);
                 return;
             }
 
@@ -437,7 +459,7 @@ namespace DialogueEditor
                 }
                 else
                 {
-                    DoSpeech(nextSpeech);
+                    DoSpeechNode(nextSpeech);
                 }
                 return;
             }
@@ -469,10 +491,10 @@ namespace DialogueEditor
 
 
         //--------------------------------------
-        // Do Speech
+        // Do Speech Node
         //--------------------------------------
 
-        private void DoSpeech(SpeechNode speech)
+        private void DoSpeechNode(SpeechNode speech)
         {
             if (speech == null)
             {
@@ -496,8 +518,6 @@ namespace DialogueEditor
                 NpcIcon.sprite = speech.Icon;
             }
 
-            // Set name
-            NameText.text = speech.Name;
 
             // Set text          
             {
@@ -521,9 +541,9 @@ namespace DialogueEditor
                 }
 
                 // Setup UI 
+                DEUtil.SetTextmeshText(DialogueText, speechText, m_currentLanguage);
                 if (ScrollText)
                 {
-                    DialogueText.text = speechText;
                     m_targetScrollTextCount = speechText.Length + 1;
                     DialogueText.maxVisibleCharacters = 0;
                     m_elapsedScrollTime = 0f;
@@ -531,31 +551,13 @@ namespace DialogueEditor
                 }
                 else
                 {
-                    DialogueText.text = speechText;
                     DialogueText.maxVisibleCharacters = speechText.Length;
                 }
             }
 
 
             // Set font
-            {
-                // Specific language font
-                if (m_currentConversation.UseLocalisation)
-                {
-                    DialogueText.font = LocalisationObject.GetLanguageFont(m_currentLanguage);
-                }
-                // Speech specific font
-                else if (speech.TMPFont != null)
-                {
-                    DialogueText.font = speech.TMPFont;
-                }
-                // Default
-                else
-                {
-                    DialogueText.font = null;
-                }
-            }
-
+            SetSpeechFont(DialogueText, speech);
 
             // Call the event
             if (speech.Event != null)
@@ -574,6 +576,104 @@ namespace DialogueEditor
             SetState(eState.ScrollingText);
         }
 
+        private void SetSpeechFont(TMPro.TextMeshProUGUI textmesh, SpeechNode speech)
+        {
+            // Specific language font (if assigned)
+            if (m_currentConversation.UseLocalisation)
+            {
+                TMPro.TMP_FontAsset font = LocalisationObject.GetLanguageFont(m_currentLanguage);
+                if (font != null)
+                {
+                    textmesh.font = font;
+                    return;
+                }
+            }
+
+            // Speech specific font
+            if (speech.TMPFont != null)
+            {
+                textmesh.font = speech.TMPFont;
+            }
+            // Default
+            else
+            {
+                textmesh.font = null;
+            }
+        }
+
+
+        //--------------------------------------
+        // Create Options
+        //--------------------------------------
+
+        private void CreateUIOptions()
+        {
+            // Display new options
+            if (m_currentSpeech.ConnectionType == Connection.eConnectionType.Option)
+            {
+                for (int i = 0; i < m_currentSpeech.Connections.Count; i++)
+                {
+                    OptionConnection connection = m_currentSpeech.Connections[i] as OptionConnection;
+                    if (ConditionsMet(connection))
+                    {
+                        UIConversationButton uiOption = CreateButton();
+                        uiOption.SetAsOptionButton(connection.OptionNode, m_currentConversation.UseLocalisation, m_currentLanguage, this.LocalisationObject);
+                    }
+                }
+            }
+            // Display Continue/End options
+            else
+            {
+                bool notAutoAdvance = !m_currentSpeech.AutomaticallyAdvance;
+                bool allowVisibleOptionWithAuto = (m_currentSpeech.AutomaticallyAdvance && m_currentSpeech.AutoAdvanceShouldDisplayOption);
+
+                if (notAutoAdvance || allowVisibleOptionWithAuto)
+                {
+                    if (m_currentSpeech.ConnectionType == Connection.eConnectionType.Speech)
+                    {
+                        UIConversationButton uiOption = CreateButton();
+                        SpeechNode next = GetValidSpeechOfNode(m_currentSpeech);
+
+                        // If there was no valid speech node (due to no conditions being met) this becomes a None button type
+                        if (next == null)
+                        {
+                            uiOption.SetAsEndButton(m_currentConversation.UseLocalisation, m_currentLanguage, this.LocalisationObject, m_currentConversation.EndConversationFont);
+                        }
+                        // Else, valid speech node found
+                        else
+                        {
+                            uiOption.SetAsContinueButton(next, m_currentConversation.UseLocalisation, m_currentLanguage, this.LocalisationObject, m_currentConversation.ContinueFont);
+                        }
+
+                    }
+                    else if (m_currentSpeech.ConnectionType == Connection.eConnectionType.None)
+                    {
+                        UIConversationButton uiOption = CreateButton();
+                        uiOption.SetAsEndButton(m_currentConversation.UseLocalisation, m_currentLanguage, this.LocalisationObject, m_currentConversation.EndConversationFont);
+                    }
+                }
+
+            }
+            SetSelectedOption(0);
+
+            // Set the button sprite and alpha
+            for (int i = 0; i < m_uiOptions.Count; i++)
+            {
+                m_uiOptions[i].SetImage(OptionImage, OptionImageSliced);
+                m_uiOptions[i].SetAlpha(0);
+                m_uiOptions[i].gameObject.SetActive(false);
+            }
+        }
+
+        private void ClearOptions()
+        {
+            while (m_uiOptions.Count != 0)
+            {
+                GameObject.Destroy(m_uiOptions[0].gameObject);
+                m_uiOptions.RemoveAt(0);
+            }
+        }
+
 
 
 
@@ -583,7 +683,7 @@ namespace DialogueEditor
 
         public void SpeechSelected(SpeechNode speech)
         {
-            DoSpeech(speech);
+            DoSpeechNode(speech);
         }
 
         public void OptionSelected(OptionNode option)
@@ -613,7 +713,7 @@ namespace DialogueEditor
                 SpeechNode next = GetValidSpeechOfNode(m_currentSpeech);
                 if (next != null)
                 {
-                    DoSpeech(next);
+                    DoSpeechNode(next);
                     return true;
                 }
             }
@@ -672,74 +772,6 @@ namespace DialogueEditor
 #if UNITY_EDITOR
             // Debug.Log("[ConversationManager]: Conversation UI off.");
 #endif
-        }
-
-        private void CreateUIOptions()
-        {
-            // Display new options
-            if (m_currentSpeech.ConnectionType == Connection.eConnectionType.Option)
-            {
-                for (int i = 0; i < m_currentSpeech.Connections.Count; i++)
-                    {
-                    OptionConnection connection = m_currentSpeech.Connections[i] as OptionConnection;
-                    if (ConditionsMet(connection))
-                    {
-                        UIConversationButton uiOption = CreateButton();
-                        uiOption.SetAsOptionButton(connection.OptionNode, m_currentConversation.UseLocalisation, m_currentLanguage, this.LocalisationObject);
-                    }
-                }
-            }
-            // Display Continue/End options
-            else
-            {
-                bool notAutoAdvance = !m_currentSpeech.AutomaticallyAdvance;
-                bool allowVisibleOptionWithAuto = (m_currentSpeech.AutomaticallyAdvance && m_currentSpeech.AutoAdvanceShouldDisplayOption);
-
-                if (notAutoAdvance || allowVisibleOptionWithAuto)
-                {
-                    if (m_currentSpeech.ConnectionType == Connection.eConnectionType.Speech)
-                    {
-                        UIConversationButton uiOption = CreateButton();
-                        SpeechNode next = GetValidSpeechOfNode(m_currentSpeech);
-
-                        // If there was no valid speech node (due to no conditions being met) this becomes a None button type
-                        if (next == null)
-                        {
-                            uiOption.SetAsEndButton(m_currentConversation.UseLocalisation, m_currentLanguage, this.LocalisationObject, m_currentConversation.EndConversationFont); 
-                        }
-                        // Else, valid speech node found
-                        else
-                        {
-                            uiOption.SetAsContinueButton(next, m_currentConversation.UseLocalisation, m_currentLanguage, this.LocalisationObject, m_currentConversation.ContinueFont); 
-                        }
-                        
-                    }
-                    else if (m_currentSpeech.ConnectionType == Connection.eConnectionType.None)
-                    {
-                        UIConversationButton uiOption = CreateButton();
-                        uiOption.SetAsEndButton(m_currentConversation.UseLocalisation, m_currentLanguage, this.LocalisationObject, m_currentConversation.EndConversationFont);
-                    }
-                }
-
-            }
-            SetSelectedOption(0);
-
-            // Set the button sprite and alpha
-            for (int i = 0; i < m_uiOptions.Count; i++)
-            {
-                m_uiOptions[i].SetImage(OptionImage, OptionImageSliced);
-                m_uiOptions[i].SetAlpha(0);
-                m_uiOptions[i].gameObject.SetActive(false);
-            }
-        }
-
-        private void ClearOptions()
-        {
-            while (m_uiOptions.Count != 0)
-            {
-                GameObject.Destroy(m_uiOptions[0].gameObject);
-                m_uiOptions.RemoveAt(0);
-            }
         }
 
         private void SetColorAlpha(MaskableGraphic graphic, float a)

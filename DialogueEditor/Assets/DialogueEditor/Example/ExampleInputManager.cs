@@ -6,9 +6,9 @@ namespace DialogueEditor
 {
     public class ExampleInputManager : MonoBehaviour
     {
-        public KeyCode m_UpKey;
-        public KeyCode m_DownKey;
-        public KeyCode m_SelectKey;
+        public KeyCode m_UpKey = KeyCode.UpArrow;
+        public KeyCode m_DownKey = KeyCode.DownArrow;
+        public KeyCode m_SelectKey = KeyCode.F;
 
         private void Update()
         {

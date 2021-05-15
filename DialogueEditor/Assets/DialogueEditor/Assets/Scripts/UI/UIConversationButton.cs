@@ -178,14 +178,15 @@ namespace DialogueEditor
 
             if (useLocalisation)
             {
-                TextMesh.text = locale.Database.GetTranslation(node.TextLocalisationID, currentLanguage);
+                string localisedText = locale.Database.GetTranslation(node.TextLocalisationID, currentLanguage);
+                DEUtil.SetTextmeshText(TextMesh, localisedText, currentLanguage);
+                SetLanguageFont(currentLanguage);
             }
             else
             {
-                TextMesh.text = node.Text;
+                DEUtil.SetTextmeshText(TextMesh, node.Text, currentLanguage);
+                TextMesh.font = node.TMPFont;
             }
-
-            TextMesh.font = node.TMPFont;
         }
 
         public void SetAsContinueButton(ConversationNode node, bool useLocalisation, SystemLanguage currentLanguage, DialogueEditorLocalisationObject locale, TMPro.TMP_FontAsset continueFont = null)
@@ -195,14 +196,14 @@ namespace DialogueEditor
 
             if (useLocalisation)
             {
-                TextMesh.text = "Continue"; // locale todo
+                DEUtil.SetTextmeshText(TextMesh, "Continue", currentLanguage); // locale todo
+                SetLanguageFont(currentLanguage);
             }
             else
             {
-                TextMesh.text = "Continue";
-            }
-
-            TextMesh.font = continueFont;
+                DEUtil.SetTextmeshText(TextMesh, "Continue", currentLanguage);
+                TextMesh.font = continueFont;
+            }           
         }
 
         public void SetAsEndButton(bool useLocalisation, SystemLanguage currentLanguage, DialogueEditorLocalisationObject locale, TMPro.TMP_FontAsset endFont = null)
@@ -212,14 +213,14 @@ namespace DialogueEditor
 
             if (useLocalisation)
             {
-                TextMesh.text = "End"; // locale todo
+                DEUtil.SetTextmeshText(TextMesh, "End", currentLanguage); // locale todo
+                SetLanguageFont(currentLanguage);
             }
             else
             {
-                TextMesh.text = "End";
+                DEUtil.SetTextmeshText(TextMesh, "End", currentLanguage);
+                TextMesh.font = endFont;
             }
-
-            TextMesh.font = endFont;
         }
 
     
@@ -228,6 +229,11 @@ namespace DialogueEditor
         //--------------------------------------
         // Private logic
         //--------------------------------------
+
+        private void SetLanguageFont(SystemLanguage currentLanguage)
+        {
+            TextMesh.font = ConversationManager.Instance.LocalisationObject.GetLanguageFont(currentLanguage);
+        }
 
         private void DoClickBehaviour()
         {
