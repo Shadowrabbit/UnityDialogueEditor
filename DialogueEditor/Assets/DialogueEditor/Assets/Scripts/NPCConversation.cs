@@ -413,6 +413,12 @@ namespace DialogueEditor
 
             CopyParamActions(editableNode, option);
 
+            NodeEventHolder holder = this.GetNodeData(editableNode.ID);
+            if (holder != null)
+            {
+                option.Event = holder.Event;
+            }
+
             return option;
         }
 

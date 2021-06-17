@@ -78,5 +78,8 @@ namespace DialogueEditor
     public class OptionNode : ConversationNode
     {
         public override eNodeType NodeType { get { return eNodeType.Option; } }
+
+        /// <summary> UnityEvent, to betriggered when this Option is chosen. </summary>
+        public UnityEngine.Events.UnityEvent Event;
     }
 }

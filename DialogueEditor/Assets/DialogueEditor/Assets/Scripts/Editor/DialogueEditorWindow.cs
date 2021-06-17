@@ -795,6 +795,38 @@ namespace DialogueEditor
                         node.TMPFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(node.TMPFont, typeof(TMPro.TMP_FontAsset), false);
                         EditorGUILayout.Space();
 
+
+                        // Event
+                        {
+                            NodeEventHolder NodeEvent = CurrentAsset.GetNodeData(node.ID);
+                            if (differentNodeSelected)
+                            {
+                                CurrentAsset.Event = NodeEvent.Event;
+                            }
+
+                            if (NodeEvent != null && NodeEvent.Event != null)
+                            {
+                                // Load the object and property of the node
+                                SerializedObject o = new SerializedObject(NodeEvent);
+                                SerializedProperty p = o.FindProperty("Event");
+
+                                // Load the dummy event
+                                SerializedObject o2 = new SerializedObject(CurrentAsset);
+                                SerializedProperty p2 = o2.FindProperty("Event");
+
+                                // Draw dummy event
+                                GUILayout.Label("Events:", EditorStyles.boldLabel);
+                                EditorGUILayout.PropertyField(p2);
+
+                                // Apply changes to dummy
+                                o2.ApplyModifiedProperties();
+
+                                // Copy dummy changes onto the nodes event
+                                p = p2;
+                                o.ApplyModifiedProperties();
+                            }
+                        }
+
                         Panel_NodeParamActions(node);
                     }
                 }
