@@ -1,3 +1,26 @@
+V1.1.05
+-Added UnityEvent to Option nodes
+
+V1.1.04
+-Fixed window opening after recompile 
+-TMPFont asset is now set for the ui options (option nodes) 
+-Added 'Continue' and 'End' button Font options
+
+V1.1.03
+-Fix DialogueEditor window opening after every recompile
+
+V1.1.02
+-Fix issue where ConversationManager.PressSelectedOption wouldn't work as intended when AllowMouseInteraction was false
+
+V1.1.01
+-Fixed issues with calling ConversationManager.StartConversation() from another class by moving behaviour from Start to Awake.
+
+V1.1
+-Added Paramteres and Conditions
+
+V1.04
+-Update to Unity 2019.4. Fix issues with data loss
+
 V1.03
 -Added methods to allow users to write their own custom UI input 
 -Added mouse selection interaction 
