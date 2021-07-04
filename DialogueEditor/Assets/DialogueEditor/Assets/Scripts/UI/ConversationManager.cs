@@ -690,6 +690,8 @@ namespace DialogueEditor
         {
             m_selectedOption = option;
             DoParamAction(option);
+            if (option.Event != null)
+                option.Event.Invoke();
             SetState(eState.TransitioningOptionsOff);
         }
 
