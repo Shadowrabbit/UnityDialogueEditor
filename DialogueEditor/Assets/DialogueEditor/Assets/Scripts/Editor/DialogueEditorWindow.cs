@@ -266,6 +266,10 @@ namespace DialogueEditor
             conversationNameStyle = new GUIStyle();
             conversationNameStyle.wordWrap = true;
             conversationNameStyle.fontSize = 12;
+            if (EditorGUIUtility.isProSkin)
+            {
+                conversationNameStyle.normal.textColor = DialogueEditorUtil.ProSkinTextColour;
+            }
         }
 
         private void OnDisable()
@@ -639,7 +643,7 @@ namespace DialogueEditor
                     }
                     else if (selectedNode is UIOptionNode)
                     {
-                        DrawPanel_DrawOptionNode(selectedNode);
+                        DrawPanel_DrawOptionNode(selectedNode, differentNodeSelected);
                     }
                 }
                 // If we've selected a CONNECTION...
@@ -811,44 +815,12 @@ namespace DialogueEditor
             node.TMPFont = (TMPro.TMP_FontAsset)EditorGUILayout.ObjectField(node.TMPFont, typeof(TMPro.TMP_FontAsset), false);
             DrawLine();
 
-            // Event
-            {
-                NodeEventHolder NodeEvent = CurrentAsset.GetNodeData(node.ID);
-                if (differentNodeSelected)
-                {
-                    CurrentAsset.Event = NodeEvent.Event;
-                }
-
-                if (NodeEvent != null && NodeEvent.Event != null)
-                {
-                    // Load the object and property of the node
-                    SerializedObject o = new SerializedObject(NodeEvent);
-                    SerializedProperty p = o.FindProperty("Event");
-
-                    // Load the dummy event
-                    SerializedObject o2 = new SerializedObject(CurrentAsset);
-                    SerializedProperty p2 = o2.FindProperty("Event");
-
-                    // Draw dummy event
-                    GUILayout.Label("Events:", EditorStyles.boldLabel);
-                    EditorGUILayout.PropertyField(p2);
-
-                    // Apply changes to dummy
-                    o2.ApplyModifiedProperties();
-
-                    // Copy dummy changes onto the nodes event
-                    p = p2;
-                    o.ApplyModifiedProperties();
-                    DrawLine();
-                }
-            }
+            Panel_NodeEvent(node, differentNodeSelected);
 
             Panel_NodeParamActions(node);
-
-
         }
 
-        private void DrawPanel_DrawOptionNode(UINode selectedNode)
+        private void DrawPanel_DrawOptionNode(UINode selectedNode, bool differentNodeSelected)
         {
             EditableOptionNode node = (selectedNode.Info as EditableOptionNode);
             GUILayout.Label("[" + node.ID + "] Option Node.", panelTitleStyle);
@@ -875,6 +847,8 @@ namespace DialogueEditor
             EditorGUILayout.Space();
 
             DrawLine();
+
+            Panel_NodeEvent(node, differentNodeSelected);
 
             Panel_NodeParamActions(node);
         }
@@ -1070,6 +1044,38 @@ namespace DialogueEditor
                 (position.height) - TOOLBAR_HEIGHT);
             GUILayout.BeginArea(new Rect(panelResizerRect.position, new Vector2(2, position.height)), resizerStyle);
             GUILayout.EndArea();
+        }
+
+        private void Panel_NodeEvent(EditableConversationNode node, bool differentNodeSelected)
+        {
+            NodeEventHolder NodeEvent = CurrentAsset.GetNodeData(node.ID);
+            if (differentNodeSelected)
+            {
+                CurrentAsset.Event = NodeEvent.Event;
+            }
+
+            if (NodeEvent != null && NodeEvent.Event != null)
+            {
+                // Load the object and property of the node
+                SerializedObject o = new SerializedObject(NodeEvent);
+                SerializedProperty p = o.FindProperty("Event");
+
+                // Load the dummy event
+                SerializedObject o2 = new SerializedObject(CurrentAsset);
+                SerializedProperty p2 = o2.FindProperty("Event");
+
+                // Draw dummy event
+                GUILayout.Label("Events:", EditorStyles.boldLabel);
+                EditorGUILayout.PropertyField(p2);
+
+                // Apply changes to dummy
+                o2.ApplyModifiedProperties();
+
+                // Copy dummy changes onto the nodes event
+                p = p2;
+                o.ApplyModifiedProperties();
+                DrawLine();
+            }
         }
 
         private void Panel_NodeParamActions(EditableConversationNode node)

@@ -248,6 +248,7 @@ namespace DialogueEditor
                 _supportedLanguages.Sort();
             }
 
+
             // Draw
             DrawTitleBar();
 
