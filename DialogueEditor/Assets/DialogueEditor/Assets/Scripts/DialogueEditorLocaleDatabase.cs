@@ -180,6 +180,11 @@ namespace DialogueEditor
 
         public void SetLanguageText(SystemLanguage lang, string txt)
         {
+            if (!HasLanguage(lang))
+            {
+                AddLanguage(lang);
+            }
+
             for (int i = 0; i < m_languageData.Count; i++)
             {
                 if (m_languageData[i].Language == lang)
@@ -188,9 +193,6 @@ namespace DialogueEditor
                     return;
                 }
             }
-
-            // If we get to here, the language was not present, hence we need to add it. 
-            AddLanguage(lang);
         }
 
         public void AddLanguage(SystemLanguage lang)
