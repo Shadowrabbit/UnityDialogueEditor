@@ -25,6 +25,7 @@ namespace DialogueEditor
         private const float LOCALE_ENTRY_BOX_TOP_PADDING = 20;
         private const float LOCALE_ENTRY_BOX_ENTRY_HEIGHT = 22.5f;
         private const float LOCALE_ENTRY_BOX_BOTTOM_SCROLLBAR_PADDING = 40;
+        private const int LANGUAGE_BUTTON_WIDTH = 200;
 
         // -- Enums -- :
 
@@ -338,7 +339,10 @@ namespace DialogueEditor
             }
 
             GUILayout.FlexibleSpace();
-
+            if (GUILayout.Button("Select", EditorStyles.toolbarButton))
+            {
+                EditorGUIUtility.PingObject(CurrentAsset);
+            }
             if (GUILayout.Button("Reset", EditorStyles.toolbarButton))
             {
                 // Display an extra confirmation window
@@ -427,11 +431,14 @@ namespace DialogueEditor
 
         private void DrawLanguages()
         {
+            // Title
             DrawSectionTitle("Supported languages:", m_titleStyle);
 
-            GUILayout.BeginHorizontal(GUILayout.MaxWidth(this.position.width));
 
-            if (GUILayout.Button("Add Language"))
+            // Button 1 - Add language
+            GUILayout.BeginHorizontal(GUILayout.MaxWidth(this.position.width));
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Add Language", GUILayout.Width(LANGUAGE_BUTTON_WIDTH)))
             {
                 GenericMenu menu = new GenericMenu();
                 var allLanguages = System.Enum.GetValues(typeof(SystemLanguage));
@@ -450,8 +457,14 @@ namespace DialogueEditor
 
                 menu.ShowAsContext();
             }
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
 
-            if (GUILayout.Button("Remove Language"))
+
+            // Button 2 - Remove language
+            GUILayout.BeginHorizontal(GUILayout.MaxWidth(this.position.width));
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Remove Language", GUILayout.Width(LANGUAGE_BUTTON_WIDTH)))
             {
                 GenericMenu menu = new GenericMenu();
                 var currentLanguages = CurrentAsset.Database.GetSupportedLanguages;
@@ -468,12 +481,13 @@ namespace DialogueEditor
 
                 menu.ShowAsContext();
             }
-
+            GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
 
+
+            // Sort the languages
             _supportedLanguages = CurrentAsset.Database.GetSupportedLanguages;
             _supportedLanguages.Sort();
-
             string supportedString = "";
             for (int i = 0; i < _supportedLanguages.Count; i++)
             {
@@ -482,10 +496,14 @@ namespace DialogueEditor
                     supportedString += ", ";
             }
 
+
+            // Draw the languages
+            GUILayout.Space(LARGE_PADDING);
             GUILayout.BeginHorizontal(GUILayout.MaxWidth(this.position.width));
             GUILayout.Space(SIDE_PADDING);
             GUILayout.TextArea("Supported languages: " + supportedString, m_wordWrapStyle);
             GUILayout.EndHorizontal();
+
 
             // Draw line
             DrawLine();
@@ -493,13 +511,13 @@ namespace DialogueEditor
 
         private void DrawLanguageFonts()
         {
+            // Title and description
             DrawSectionTitle("Language Fonts:", m_titleStyle);
 
-            GUILayout.Label("You can specify any override fonts to be used for a specific language here.");
-
+            // Add Language Button
             GUILayout.BeginHorizontal(GUILayout.MaxWidth(this.position.width));
-
-            if (GUILayout.Button("Add Language Font"))
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Add Language Font", GUILayout.Width(LANGUAGE_BUTTON_WIDTH)))
             {
                 GenericMenu menu = new GenericMenu();
                 var supportedLanguages = CurrentAsset.Database.GetSupportedLanguages;
@@ -517,8 +535,14 @@ namespace DialogueEditor
 
                 menu.ShowAsContext();
             }
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
 
-            if (GUILayout.Button("Remove Language Font"))
+
+            // Remove Language Font Button 
+            GUILayout.BeginHorizontal(GUILayout.MaxWidth(this.position.width));
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Remove Language Font", GUILayout.Width(LANGUAGE_BUTTON_WIDTH)))
             {
                 GenericMenu menu = new GenericMenu();
                 var supportedLanguages = CurrentAsset.Database.GetSupportedLanguages;
@@ -536,9 +560,15 @@ namespace DialogueEditor
 
                 menu.ShowAsContext();
             }
-
+            GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
 
+            // Description
+            GUILayout.Space(SMALL_PADDING);
+            GUILayout.Label("You can specify any override fonts to be used for a specific language here.");
+
+            // Draw the fonts
+            GUILayout.Space(SMALL_PADDING);
             for (int i = 0; i < CurrentAsset.LanguageFontList.Count; i++)
             {
                 GUILayout.BeginHorizontal(GUILayout.MaxWidth(this.position.width));
@@ -553,47 +583,46 @@ namespace DialogueEditor
 
         private void DrawAddNewEntry()
         {
+            const float LABEL_MAX_WID = 75;
+            const float ADD_BUTTON_WID = 150;
+            const float BOX_MAX_WIDTH = 250;
+
             DrawSectionTitle("Add new entry:", m_titleStyle);
 
+            // Row 1 - ID 
             GUILayout.BeginHorizontal(GUILayout.MaxWidth(this.position.width));
-            {
-                const float LABEL_MAX_WID = 75;
-                const float BOX_MAX_WIDTH = 150;
-
-                // ID 
-                GUILayout.BeginVertical(m_entryStyle, GUILayout.Width(150));
-                EditorGUILayout.LabelField("ID:", GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(LABEL_MAX_WID));
-                m_newID = EditorGUILayout.TextArea(m_newID, EditorStyles.textField, GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(BOX_MAX_WIDTH));
-                GUILayout.EndVertical();
-
-                GUILayout.FlexibleSpace();
-
-                // English Text
-                GUILayout.BeginVertical(m_entryStyle, GUILayout.Width(150));
-                EditorGUILayout.LabelField("English text:", GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(LABEL_MAX_WID));
-                m_newEnglish = EditorGUILayout.TextArea(m_newEnglish, EditorStyles.textField, GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(BOX_MAX_WIDTH));
-                GUILayout.EndVertical();
-
-
-                GUILayout.FlexibleSpace();
-
-                // Button
-                GUILayout.BeginVertical();
-                GUILayout.Space(EditorGUIUtility.singleLineHeight + 5);
-                if (GUILayout.Button("Add Entry", GUILayout.Width(100)))
-                {
-                    CurrentAsset.Database.CreateNewEntry(m_newID, m_newEnglish);
-
-                    m_newID = "";
-                    m_newEnglish = "";
-
-                    ClearSearch();
-                }
-                GUILayout.EndVertical();
-            }
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.LabelField("ID:", GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(LABEL_MAX_WID));
+            m_newID = EditorGUILayout.TextArea(m_newID, EditorStyles.textField, GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(BOX_MAX_WIDTH));
+            GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
-            DrawLine();
 
+            // Row 2 - English Text 
+            GUILayout.BeginHorizontal(GUILayout.MaxWidth(this.position.width));
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.LabelField("English text:", GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(LABEL_MAX_WID));
+            float inputBoxHeight = EditorStyles.textArea.CalcHeight(new GUIContent(m_newEnglish), BOX_MAX_WIDTH);
+            m_newEnglish = EditorGUILayout.TextArea(m_newEnglish, EditorStyles.textArea, GUILayout.Height(inputBoxHeight), GUILayout.Width(BOX_MAX_WIDTH));
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+
+            // Row 3 - 'Add' button
+            GUILayout.BeginHorizontal(GUILayout.MaxWidth(this.position.width));
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Add Entry", GUILayout.Width(ADD_BUTTON_WID)))
+            {
+                CurrentAsset.Database.CreateNewEntry(m_newID, m_newEnglish);
+
+                m_newID = "";
+                m_newEnglish = "";
+
+                ClearSearch();
+            }
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+
+            // End
+            DrawLine();
         }
 
         private void DrawCurrentEntries()
@@ -705,43 +734,52 @@ namespace DialogueEditor
 
         private void DrawSearchEntries()
         {
-            DrawSectionTitle("Search:", m_titleStyle);
+            const float LABEL_MAX_WID = 115;
+            const float BOX_MAX_WIDTH = 150;
+            const float SEARCH_BTN_WIDTH = 85;
 
-            {
-                const float LABEL_MAX_WID = 125;
-                const float BOX_MAX_WIDTH = 125;
-                const float SEARCH_BTN_WIDTH = 85;
-
-                // ID 
-                GUILayout.BeginHorizontal(m_entryStyle, GUILayout.Width(100));
-                EditorGUILayout.LabelField("Search by ID:", GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(LABEL_MAX_WID));
-                m_searchID = EditorGUILayout.TextArea(m_searchID, EditorStyles.textField, GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(BOX_MAX_WIDTH));
-                if (GUILayout.Button("Search", GUILayout.Width(SEARCH_BTN_WIDTH)))
-                {
-                    SearchByID();
-                }
-                GUILayout.EndHorizontal();
-
-                // English
-                GUILayout.BeginHorizontal(m_entryStyle, GUILayout.Width(100));
-                EditorGUILayout.LabelField("Search by English:", GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(LABEL_MAX_WID));
-                m_searchEnglish = EditorGUILayout.TextArea(m_searchEnglish, EditorStyles.textField, GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(BOX_MAX_WIDTH));
-                if (GUILayout.Button("Search", GUILayout.Width(SEARCH_BTN_WIDTH)))
-                {
-                    SearchByEnglish();
-                }
-                GUILayout.EndHorizontal();
-
-                // Button
-                if (GUILayout.Button("Clear search", GUILayout.Width(100)))
-                {
-                    ClearSearch();
-                }
-            }
-
+            // Validation
             if (m_searchResults == null)
                 m_searchResults = new List<LocaleEntry>();
 
+            // Draw title
+            DrawSectionTitle("Search:", m_titleStyle);
+
+            // Row 1 - Search by ID 
+            GUILayout.BeginHorizontal(GUILayout.MaxWidth(this.position.width));
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.LabelField("Search by ID:", GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(LABEL_MAX_WID));
+            m_searchID = EditorGUILayout.TextArea(m_searchID, EditorStyles.textField, GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(BOX_MAX_WIDTH));
+            if (GUILayout.Button("Search", GUILayout.Width(SEARCH_BTN_WIDTH)))
+            {
+                SearchByID();
+            }
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+
+            // Row 2 - Search by English
+            GUILayout.BeginHorizontal(GUILayout.MaxWidth(this.position.width));
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.LabelField("Search by English:", GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(LABEL_MAX_WID));
+            m_searchEnglish = EditorGUILayout.TextArea(m_searchEnglish, EditorStyles.textField, GUILayout.Height(EditorGUIUtility.singleLineHeight), GUILayout.Width(BOX_MAX_WIDTH));
+            if (GUILayout.Button("Search", GUILayout.Width(SEARCH_BTN_WIDTH)))
+            {
+                SearchByEnglish();
+            }
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+
+            // Row 3 - 'Clear Search' button
+            GUILayout.BeginHorizontal(GUILayout.MaxWidth(this.position.width));
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Clear search", GUILayout.Width(BOX_MAX_WIDTH)))
+            {
+                ClearSearch();
+            }
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+
+            // Line
             DrawLine();
             GUILayout.Space(LARGE_PADDING);
         }
