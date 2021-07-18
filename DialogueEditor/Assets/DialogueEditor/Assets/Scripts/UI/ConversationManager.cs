@@ -39,6 +39,8 @@ namespace DialogueEditor
         public bool OptionImageSliced;
         public bool AllowMouseInteraction;
         public DialogueEditorLocalisationObject LocalisationObject;
+        public string ContinueLocalisationID = "";
+        public string EndLocalisationID = "";
 
         // Non-User facing 
         // Not exposed via custom inspector

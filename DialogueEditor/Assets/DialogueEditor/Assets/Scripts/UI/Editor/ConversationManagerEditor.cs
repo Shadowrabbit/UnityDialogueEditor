@@ -23,6 +23,8 @@ namespace DialogueEditor
         SerializedProperty ScrollTextSpeedProperty;
         SerializedProperty AllowMouseInteractionProperty;
         SerializedProperty LocalisationProperty;
+        SerializedProperty LocalisationContinueIDProperty;
+        SerializedProperty LocalisationEndIDProperty;
 
         private void OnEnable()
         {
@@ -34,6 +36,8 @@ namespace DialogueEditor
             ScrollTextSpeedProperty = serializedObject.FindProperty("ScrollSpeed");
             AllowMouseInteractionProperty = serializedObject.FindProperty("AllowMouseInteraction");
             LocalisationProperty = serializedObject.FindProperty("LocalisationObject");
+            LocalisationContinueIDProperty = serializedObject.FindProperty("ContinueLocalisationID");
+            LocalisationEndIDProperty = serializedObject.FindProperty("EndLocalisationID");
         }
 
         public override void OnInspectorGUI()
@@ -76,6 +80,8 @@ namespace DialogueEditor
             // Localisation
             GUILayout.Label("Localisation", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(LocalisationProperty);
+            EditorGUILayout.PropertyField(LocalisationContinueIDProperty);
+            EditorGUILayout.PropertyField(LocalisationEndIDProperty);
 
             // Apply changes to the serializedProperty - always do this in the end of OnInspectorGUI.
             serializedObject.ApplyModifiedProperties();

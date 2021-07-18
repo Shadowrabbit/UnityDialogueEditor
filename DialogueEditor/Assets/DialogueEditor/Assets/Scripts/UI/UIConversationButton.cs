@@ -20,6 +20,9 @@ namespace DialogueEditor
             End
         }
 
+        public const string CONTINUE_TXT = "Continue";
+        public const string END_TXT = "End";
+
         // Getters
         public eButtonType ButtonType { get { return m_buttonType; } }
 
@@ -196,12 +199,13 @@ namespace DialogueEditor
 
             if (useLocalisation)
             {
-                DEUtil.SetTextmeshText(TextMesh, "Continue", currentLanguage); // locale todo
+                string localisedText = locale.Database.GetTranslation(ConversationManager.Instance.ContinueLocalisationID, currentLanguage);
+                DEUtil.SetTextmeshText(TextMesh, localisedText, currentLanguage); 
                 SetLanguageFont(currentLanguage);
             }
             else
             {
-                DEUtil.SetTextmeshText(TextMesh, "Continue", currentLanguage);
+                DEUtil.SetTextmeshText(TextMesh, CONTINUE_TXT, currentLanguage);
                 TextMesh.font = continueFont;
             }           
         }
@@ -213,12 +217,13 @@ namespace DialogueEditor
 
             if (useLocalisation)
             {
-                DEUtil.SetTextmeshText(TextMesh, "End", currentLanguage); // locale todo
+                string localisedText = locale.Database.GetTranslation(ConversationManager.Instance.EndLocalisationID, currentLanguage);
+                DEUtil.SetTextmeshText(TextMesh, localisedText, currentLanguage);
                 SetLanguageFont(currentLanguage);
             }
             else
             {
-                DEUtil.SetTextmeshText(TextMesh, "End", currentLanguage);
+                DEUtil.SetTextmeshText(TextMesh, END_TXT, currentLanguage);
                 TextMesh.font = endFont;
             }
         }
