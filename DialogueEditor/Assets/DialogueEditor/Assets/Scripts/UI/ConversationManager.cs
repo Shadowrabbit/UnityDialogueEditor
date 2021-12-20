@@ -302,6 +302,8 @@ namespace DialogueEditor
 
                 case eState.TransitioningOptionsOn:
                     {
+                        SetColorAlpha(DialogueText, 1);
+
                         CreateUIOptions();
 
                         for (int i = 0; i < m_uiOptions.Count; i++)
@@ -538,7 +540,14 @@ namespace DialogueEditor
                 AudioPlayer.Play();
             }
 
-            SetState(eState.ScrollingText);
+            if (ScrollText)
+            {
+                SetState(eState.ScrollingText);
+            }
+            else
+            {
+                SetState(eState.TransitioningOptionsOn);
+            }            
         }
 
 
